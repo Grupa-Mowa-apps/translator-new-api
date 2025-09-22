@@ -1,5 +1,5 @@
 from enum import Enum
 
 class QuoteType(str, Enum):
-    FR = "fr"   # « »
-    GR = "ge"   # » «
+    FR = "fr"   # French quotes « »
+    GR = "ge"   # German quotes » «
