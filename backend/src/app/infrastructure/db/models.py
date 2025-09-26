@@ -1,4 +1,4 @@
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base, relationship, backref
 from sqlalchemy import Column, String, Integer, Text, ForeignKey, UniqueConstraint
 
 Base = declarative_base()
@@ -37,12 +37,12 @@ class ChapterDB(Base):
 
     id = Column(String, primary_key=True)
     book_id = Column(String, ForeignKey("books.id", ondelete="CASCADE"), index=True, nullable=False)
-    parent_id = Column(String, ForeignKey("chapters.id", ondelete="SET NULL"), index=True, nullable=True)
+    parent_id = Column(String, ForeignKey("chapters.id", ondelete="CASCADE"), index=True, nullable=True)
 
     content = Column(Text, nullable=True)
 
     book = relationship("BookDB", back_populates="chapters")
-    parent = relationship("ChapterDB", backref="children", passive_deletes=True)
+    parent = relationship("ChapterDB", remote_side="ChaprerDB.id", backref=backref("children", passive_deletes=True, cascade="all, delete-orphan"))
 
 class AnnotationSetDB(Base):
     __tablename__ = "annotation_sets"
