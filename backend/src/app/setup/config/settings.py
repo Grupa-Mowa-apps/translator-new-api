@@ -1,7 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-# wczyta .env z roota projektu (uruchamiaj z root)
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
