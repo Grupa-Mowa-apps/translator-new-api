@@ -42,7 +42,7 @@ class ChapterDB(Base):
     content = Column(Text, nullable=True)
 
     book = relationship("BookDB", back_populates="chapters")
-    parent = relationship("ChapterDB", remote_side="ChaprerDB.id", backref=backref("children", passive_deletes=True, cascade="all, delete-orphan"))
+    parent = relationship("ChapterDB", remote_side="ChapterDB.id", backref=backref("children", passive_deletes=True, cascade="all, delete-orphan"))
 
 class AnnotationSetDB(Base):
     __tablename__ = "annotation_sets"
