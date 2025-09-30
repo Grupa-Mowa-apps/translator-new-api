@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-from domain.value_objects.chapter_content import ChapterContent
+from app.domain.value_objects.chapter_content import ChapterContent
 
 @dataclass
 class Chapter:
