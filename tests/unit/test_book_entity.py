@@ -25,7 +25,7 @@ def test_version_bumps_on_mutations():
     b.change_genre("science")
     assert b.version == v + 1
     v = b.version
-    b.change_quotation_marks(QuoteType.GE)
+    b.change_quotation_marks(QuoteType.GR)
     assert b.version == v + 1
 
 def test_rename_title_validation():

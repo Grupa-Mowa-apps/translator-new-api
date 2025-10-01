@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from backend.src.app.domain.value_objects.annotation_status import AnnotationStatus
+from app.domain.value_objects.annotation_status import AnnotationStatus
 from app.domain.errors import AnnotationSetErrors
 from app.domain.constants import INITIAL_VERSION
 
