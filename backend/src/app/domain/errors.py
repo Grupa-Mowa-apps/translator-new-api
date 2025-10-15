@@ -11,3 +11,5 @@ class AnnotationSetErrors:
 
 class UserErrors:
     EMAIL_CANNOT_BE_EMPTY = "Email cannot be empty"
+    EMAIL_ALREADY_IN_USE = "This email is already in use"
+    USER_NOT_FOUND = "There is no user with such id"
