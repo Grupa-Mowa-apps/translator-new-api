@@ -39,6 +39,9 @@ class ChapterDB(Base):
     book_id = Column(String, ForeignKey("books.id", ondelete="CASCADE"), index=True, nullable=False)
     parent_id = Column(String, ForeignKey("chapters.id", ondelete="CASCADE"), index=True, nullable=True)
 
+    chapter_number = Column(Integer, nullable=False)
+    title = Column(String, nullable=False)
+
     content = Column(Text, nullable=True)
 
     book = relationship("BookDB", back_populates="chapters")
