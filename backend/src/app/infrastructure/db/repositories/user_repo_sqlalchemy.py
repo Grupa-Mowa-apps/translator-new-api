@@ -3,7 +3,10 @@ from app.domain.entities.user import User
 from app.domain.ports.user_repository import UserRepository
 from app.infrastructure.db.models import UserDB
 from app.domain.errors import UserErrors
-from typing import Optional
+from typing import Iterable, Optional
+
+def _row_to_domain_user(user: UserDB) -> User:
+    return User(id=user.id, email=user.email, name=user.name)
 
 class SqlAlchemyUserRepository(UserRepository):
     def __init__(self, session: Session):
@@ -39,3 +42,10 @@ class SqlAlchemyUserRepository(UserRepository):
             raise ValueError(UserErrors.USER_NOT_FOUND)
         self.session.delete(user_row)
         self.session.commit()
+
+    def list_paginated_filtered(self, limit: int, email_like: Optional[str]) -> Iterable[User]:
+        q = self.session.query(UserDB)
+        if email_like:
+            q = q.filter(UserDB.email.ilike(f"%{email_like}%"))
+        q = q.order_by(UserDB.email.asc()).limit(limit)
+        return [_row_to_domain_user(user_row) for user_row in q.all()]
