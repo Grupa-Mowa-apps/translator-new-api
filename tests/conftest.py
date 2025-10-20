@@ -1,16 +1,23 @@
 from pathlib import Path
-import os
+import os, logging
 from dotenv import load_dotenv
 import pytest
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, clear_mappers
 from app.infrastructure.db.models import Base
 
+logger = logging.getLogger(__name__)
+
 ROOT = Path(__file__).resolve().parents[1]
 ENV_PATH = ROOT / "backend" / ".env"
-load_dotenv(ENV_PATH, override=False)
+
+loaded = load_dotenv(ENV_PATH, override=False)
+if not loaded:
+    logger.warning(f"Could not find or could not load .env file at {ENV_PATH}")
+
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
-print(TEST_DATABASE_URL)
+if not TEST_DATABASE_URL:
+    raise pytest.UsageError("TEST_DATABASE_URL not found")
 
 @pytest.fixture(scope="session")
 def engine():
@@ -18,12 +25,11 @@ def engine():
     if TEST_DATABASE_URL.startswith("sqlite"):
         with engine.connect() as conn:
             conn.execute(text("PRAGMA foreign_keys=ON"))
-        Base.metadata.create_all(engine)
+        
+    Base.metadata.create_all(engine)
+    try:
         yield engine
-        Base.metadata.drop_all(engine)
-    else:
-        Base.metadata.create_all(engine)
-        yield engine
+    finally:
         Base.metadata.drop_all(engine)
 
 @pytest.fixture()
