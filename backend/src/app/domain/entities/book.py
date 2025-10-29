@@ -4,6 +4,7 @@ from domain.entities.chapter import Chapter
 from domain.value_objects.quotation_marks import QuoteType
 from domain.value_objects.book_status import BookStatus
 from domain.constants import INITIAL_VERSION
+from domain.errors import BookErrors
 
 @dataclass
 class Book:
@@ -26,13 +27,13 @@ class Book:
     
     def rename_title(self, new_title: str) -> None:
         if not new_title or not new_title.strip():
-            raise ValueError("Title cannot be empty")
+            raise ValueError(BookErrors.TITLE_CANNOT_BE_EMPTY)
         self.title = new_title.strip()
         self._update_version()
 
     def change_genre(self, new_genre: str) -> None:
         if not new_genre or not new_genre.strip():
-            raise ValueError("Genre cannot be empty")
+            raise ValueError(BookErrors.GENRE_CANNOT_BE_EMPTY)
         self.genre = new_genre.strip()
         self._update_version()
 

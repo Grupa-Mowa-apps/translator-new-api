@@ -11,3 +11,14 @@ class AnnotationSetErrors:
 
 class UserErrors:
     EMAIL_CANNOT_BE_EMPTY = "Email cannot be empty"
+
+class BookErrors:
+    TITLE_CANNOT_BE_EMPTY = "Title cannot be empty"
+    GENRE_CANNOT_BE_EMPTY = "Genre cannot be empty"
+
+class FileErrors:
+    FILENAME_CANNOT_BE_EMPTY = "Filename cannot be empty"
+    PATH_CANNOT_BE_EMPTY = "Path cannot be empty"
+    OWNER_ID_CANNOT_BE_EMPTY = "Owner id cannot be empty"
+    BOOK_ID_CANNOT_BE_EMPTY = "Book id cannot be empty"
+    INVALID_FILE_KIND = "Invalid file kind"
