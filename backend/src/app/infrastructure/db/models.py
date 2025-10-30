@@ -11,6 +11,7 @@ class UserDB(Base):
     name = Column(String, nullable=True)
 
     books = relationship("BookDB", back_populates="owner")
+    files = relationship("FileDB", back_populates="owner")
 
 class BookDB(Base):
     __tablename__ = "books"
@@ -31,6 +32,7 @@ class BookDB(Base):
     chapters = relationship("ChapterDB", back_populates="book", cascade="all, delete-orphan")
     annotation_set = relationship("AnnotationSetDB", back_populates="book", uselist=False)
     translation_task = relationship("TranslationTaskDB", back_populates="book", uselist=False)
+    files = relationship("FileDB", back_populates="book", passive_deletes=True)
 
 class ChapterDB(Base):
     __tablename__ = "chapters"
@@ -79,3 +81,18 @@ class TranslationTaskDB(Base):
     __table_args__ = (
         UniqueConstraint("book_id", name="uq_translation_task_book"),
     )
+
+class FileDB(Base):
+    __tablename__ = "files"
+
+    id = Column(String, primary_key=True)
+    owner_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
+
+    kind = Column(String, nullable=False)
+    path = Column(String, nullable=False)
+    filename = Column(String, nullable=False)
+    book_id = Column(String, ForeignKey("books.id", ondelete="SET NULL"), index=True, nullable=True)
+    version = Column(String, nullable=False, default=1)
+
+    owner = relationship("UserDB", back_populates="files", uselist=False)
+    book = relationship("BookDB", back_populates="files", uselist=False)

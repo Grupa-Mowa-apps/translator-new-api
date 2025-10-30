@@ -22,3 +22,4 @@ class FileErrors:
     OWNER_ID_CANNOT_BE_EMPTY = "Owner id cannot be empty"
     BOOK_ID_CANNOT_BE_EMPTY = "Book id cannot be empty"
     INVALID_FILE_KIND = "Invalid file kind"
+    FILE_NOT_FOUND = "File not found"
