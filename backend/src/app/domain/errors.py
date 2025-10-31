@@ -11,10 +11,13 @@ class AnnotationSetErrors:
 
 class UserErrors:
     EMAIL_CANNOT_BE_EMPTY = "Email cannot be empty"
+    EMAIL_ALREADY_IN_USE = "This email is already in use"
+    USER_NOT_FOUND = "There is no user with such id"
 
 class BookErrors:
     TITLE_CANNOT_BE_EMPTY = "Title cannot be empty"
     GENRE_CANNOT_BE_EMPTY = "Genre cannot be empty"
+    BOOK_NOT_FOUND = "There is no book with such id"
 
 class FileErrors:
     FILENAME_CANNOT_BE_EMPTY = "Filename cannot be empty"
