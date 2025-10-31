@@ -12,7 +12,7 @@ services:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     healthcheck: 
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d postgres -h localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,6 +33,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
+    working_dir: /app/backend
+    command: uvicorn app.run:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
     volumes:
@@ -43,6 +45,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
+      PYTHONPATH: /app/backend
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: translator_db
