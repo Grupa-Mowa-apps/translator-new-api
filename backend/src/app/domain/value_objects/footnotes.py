@@ -17,6 +17,9 @@ class Footnote:
 class FootnoteSet:
     items: List[Footnote]
     
+    def __len__(self):
+        return len(self.items)
+
     def __repr__(self):
         cls = self.__class__.__name__
         return f"{cls}(count={len(self)}, items={self.items!r})"

@@ -11,6 +11,8 @@ class ChapterContent:
         cls = self.__class__.__name__
         return f"{cls}(text={self.text!r}, footnotes={self.footnotes!r})"
     
-    def __str__(self):
-        count = len(self.footnotes) if self.footnotes else 0
-        return f"ChapterContent(len(text))={len(self.text)}, footnotes(len(footnotes))={count}"
+    def _footnote_count(self):
+        return len(self.footnotes) if self.footnotes else 0
+
+    def __str__(self):  
+        return f"ChapterContent(len(text))={len(self.text)}, footnotes(len(footnotes))={self._footnote_count()}"
