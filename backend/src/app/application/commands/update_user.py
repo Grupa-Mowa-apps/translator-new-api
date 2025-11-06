@@ -7,12 +7,12 @@ class UpdateUserCommand:
         self.repo = repo
 
     def run(self, user_id: str, dto: UpdateUserRequest) -> UserResponse:
-        u = self.repo.get(user_id)
-        if not u:
+        user = self.repo.get(user_id)
+        if not user:
             raise ValueError(UserErrors.USER_NOT_FOUND)
-        if not dto.email:
-            u.change_email(dto.email)
-        if not dto.name:
-            u.change_name(dto.name)
-        self.repo.update(u)
-        return UserResponse(id=u.id, email=u.email, name=u.name)
+        if dto.email:
+            user.change_email(dto.email)
+        if dto.name:
+            user.change_name(dto.name)
+        self.repo.update(user)
+        return UserResponse(id=user.id, email=user.email, name=user.name)

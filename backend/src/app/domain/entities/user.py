@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
-from domain.errors import UserErrors
+from app.domain.errors import UserErrors
 
 @dataclass
 class User:
