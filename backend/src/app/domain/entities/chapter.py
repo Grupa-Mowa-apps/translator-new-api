@@ -1,15 +1,16 @@
 from dataclasses import dataclass
 from typing import Optional
-from domain.value_objects.chapter_content import ChapterContent
+from app.domain.value_objects.chapter_content import ChapterContent
 
 @dataclass
 class Chapter:
     id: str
     book_id: str
-    parent_id: Optional[str] = None
 
     chapter_number: int
     title: str
+
+    parent_id: Optional[str] = None
     
     content: Optional[ChapterContent] = None
 

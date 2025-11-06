@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import List, Optional
-from domain.entities.chapter import Chapter
-from domain.value_objects.quotation_marks import QuoteType
-from domain.value_objects.book_status import BookStatus
-from domain.constants import INITIAL_VERSION
-from domain.errors import BookErrors
+from app.domain.entities.chapter import Chapter
+from app.domain.value_objects.quotation_marks import QuoteType
+from app.domain.value_objects.book_status import BookStatus
+from app.domain.constants import INITIAL_VERSION
+from app.domain.errors import BookErrors
 
 @dataclass
 class Book:
@@ -14,10 +14,10 @@ class Book:
     title: str
     genre: str
     quotation_marks: QuoteType
-
-    file_path: Optional[str]
     
     chapters: List[Chapter]
+
+    file_path: Optional[str] = None
     
     status: BookStatus = BookStatus.UPLOADED
     version: int = INITIAL_VERSION
