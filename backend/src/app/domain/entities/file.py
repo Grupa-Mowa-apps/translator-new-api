@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from app.domain.value_objects.file_kind import FileKind
 from typing import Optional
-from domain.constants import INITIAL_VERSION
-from domain.errors import FileErrors
+from app.domain.constants import INITIAL_VERSION
+from app.domain.errors import FileErrors
 
 @dataclass
 class File:
@@ -23,7 +23,7 @@ class File:
     def rename(self, new_filename: str) -> None:
         if not new_filename or not new_filename.strip():
             raise ValueError(FileErrors.FILENAME_CANNOT_BE_EMPTY)
-        self.title = new_filename.strip()
+        self.filename = new_filename.strip()
         self._update_version()
 
     def move_to(self, new_path: str) -> None:
@@ -41,16 +41,18 @@ class File:
     def attach_to_book(self, book_id: str) -> None:
         if not book_id or not book_id.strip():
             raise ValueError(FileErrors.BOOK_ID_CANNOT_BE_EMPTY)
-        self.book_id = book_id
+        self.book_id = book_id.strip()
         self._update_version()
 
     def detach_from_book(self) -> None:
         self.book_id = None
+        self._update_version()
 
     def change_kind(self, new_kind: FileKind) -> None:
         if not isinstance(new_kind, FileKind):
             raise ValueError(FileErrors.INVALID_FILE_KIND)
         self.kind = new_kind
+        self._update_version()
 
     def __repr__(self):
         cls = self.__class__.__name__
