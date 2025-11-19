@@ -24,7 +24,7 @@ def mock_user_repository():
 def mock_book_repository():
     return Mock(spec=BookRepository)
 
-class TestUserCommand:
+class TestUserCommands:
     def test_create_user_successfully(self, mock_user_repository):
         mock_user_repository.get_by_email.return_value = None
 
