@@ -6,13 +6,13 @@ class UploadFileRequest(BaseModel):
     owner_id: str
     kind: FileKind
     filename: str
-    book_id: str
+    book_id: Optional[str] = None
 
 class UpdateFileRequest(BaseModel):
-    owner_id: Optional[str]
-    kind: Optional[FileKind]
-    filename: Optional[str]
-    book_id: Optional[str]
+    owner_id: Optional[str] = None
+    kind: Optional[FileKind] = None
+    filename: Optional[str] = None
+    book_id: Optional[str] = None
 
 class FileResponse(BaseModel):
     id: str
@@ -20,5 +20,5 @@ class FileResponse(BaseModel):
     kind: FileKind
     path: str
     filename: str
-    book_id: str
+    book_id: Optional[str] = None
     version: int
