@@ -10,10 +10,11 @@ def user_repository(db_session: Session):
     return SqlAlchemyUserRepository(db_session)
 
 class TestSqlAlchemyUserRepository:
-    def test_add_and_get_user(self, user_repository):
+    def test_add_and_get_user(self, user_repository, db_session):
         user = User(id="123", email="user@example.com", name="example user")
 
         user_repository.add(user)
+        db_session.flush()
 
         retrieved_user = user_repository.get("123")
 
@@ -27,9 +28,10 @@ class TestSqlAlchemyUserRepository:
             user_repository.get("nonexistent-id")
         assert str(e.value) == UserErrors.USER_NOT_FOUND
 
-    def test_get_by_email(self, user_repository):
+    def test_get_by_email(self, user_repository, db_session):
         user = User(id="123", email="user@example.com", name="example user")
         user_repository.add(user)
+        db_session.flush()
 
         found_user = user_repository.get_by_email("user@example.com")
 
@@ -42,15 +44,18 @@ class TestSqlAlchemyUserRepository:
             user_repository.get_by_email("nonexistent@example.com")
         assert str(e.value) == UserErrors.USER_NOT_FOUND
 
-    def test_update_user(self, user_repository):
+    def test_update_user(self, user_repository, db_session):
         user = User(id="123", email="user@example.com", name="example user")
         user_repository.add(user)
+        db_session.flush()
 
         user.email = "new-email@example.com"
         user.name = "new name"
         user_repository.update(user)
+        db_session.flush()
 
         updated_user = user_repository.get("123")
+
         assert updated_user is not None
         assert updated_user.id == "123"
         assert updated_user.email == "new-email@example.com"
@@ -63,11 +68,13 @@ class TestSqlAlchemyUserRepository:
             user_repository.update(user)
         assert str(e.value) == UserErrors.USER_NOT_FOUND
 
-    def test_delete_user(self, user_repository):
+    def test_delete_user(self, user_repository, db_session):
         user = User(id="123", email="user@example.com", name="example user")
         user_repository.add(user)
+        db_session.flush()
 
         user_repository.delete("123")
+        db_session.flush()
 
         with pytest.raises(ValueError) as e:
             user_repository.get("123")
@@ -78,7 +85,7 @@ class TestSqlAlchemyUserRepository:
             user_repository.delete("nonexistant-id")
         assert str(e.value) == UserErrors.USER_NOT_FOUND
 
-    def test_list_paginated_filtered_no_filter(self, user_repository):
+    def test_list_paginated_filtered_no_filter(self, user_repository, db_session):
         users = [
             User(id="user1", email="user1@email.com", name="user one"),
             User(id="user2", email="user2@email.com", name="user two"),
@@ -88,6 +95,7 @@ class TestSqlAlchemyUserRepository:
         ]
         for user in users:
             user_repository.add(user)
+            db_session.flush()
 
         result1 = user_repository.list_paginated_filtered(limit=3, email_like=None)
 
@@ -100,7 +108,7 @@ class TestSqlAlchemyUserRepository:
         assert isinstance(result2, list)
         assert len(result2) == len(users)
 
-    def test_list_paginated_filtered_with_filter(self, user_repository):
+    def test_list_paginated_filtered_with_filter(self, user_repository, db_session):
         users = [
             User(id="user1", email="user1@email.com", name="user one"),
             User(id="user2", email="user2example@email.com", name="user two"),
@@ -110,6 +118,7 @@ class TestSqlAlchemyUserRepository:
         ]
         for user in users:
             user_repository.add(user)
+            db_session.flush()
         
         result = user_repository.list_paginated_filtered(limit=3, email_like="example")
 
