@@ -95,7 +95,7 @@ class FileDB(Base):
     path = Column(String, nullable=False)
     filename = Column(String, nullable=False)
     book_id = Column(String, ForeignKey("books.id", ondelete="SET NULL"), index=True, nullable=True)
-    version = Column(String, nullable=False, default=1)
+    version = Column(Integer, nullable=False, default=1)
 
     owner = relationship("UserDB", back_populates="files", uselist=False)
     book = relationship("BookDB", back_populates="files", uselist=False)

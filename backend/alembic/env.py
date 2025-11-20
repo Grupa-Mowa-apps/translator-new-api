@@ -1,11 +1,11 @@
 import os
 import sys
 from logging.config import fileConfig
-from dotenv import load_dotenv
 
 from sqlalchemy import engine_from_config, pool
-
 from alembic import context
+
+from dotenv import load_dotenv
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(ROOT_DIR, os.pardir))
@@ -15,14 +15,11 @@ if SRC_DIR not in sys.path:
 
 from app.infrastructure.db.models import Base
 
-load_dotenv()
-
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
     config.set_main_option("sqlalchemy.url", DATABASE_URL)
