@@ -24,16 +24,23 @@ if not TEST_DATABASE_URL:
 
 @pytest.fixture(scope="session")
 def engine():
-    engine = create_engine(TEST_DATABASE_URL, future=True)
+    engine = create_engine(
+        TEST_DATABASE_URL, 
+        future=True,
+        echo=False,
+    )
+
     if TEST_DATABASE_URL.startswith("sqlite"):
         with engine.connect() as conn:
             conn.execute(text("PRAGMA foreign_keys=ON"))
-        
+    
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     try:
         yield engine
     finally:
         Base.metadata.drop_all(engine)
+        engine.dispose()
 
 @pytest.fixture()
 def db_session(engine):
@@ -53,4 +60,4 @@ def db_session(engine):
         session.close()
         trans.rollback()
         connection.close()
-        clear_mappers()
+        # clear_mappers()
