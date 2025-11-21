@@ -26,3 +26,6 @@ class FileErrors:
     BOOK_ID_CANNOT_BE_EMPTY = "Book id cannot be empty"
     INVALID_FILE_KIND = "Invalid file kind"
     FILE_NOT_FOUND = "File not found"
+
+class QuoteTypeErrors:
+    INVALID_QUOTE_TYPE = "Invalid quote type"
