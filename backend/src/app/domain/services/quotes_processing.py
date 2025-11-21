@@ -48,6 +48,8 @@ def find_quotes_matches(paragraph: str, quote_type: QuoteType) -> list[re.Match]
     matches = []
     for pattern in quote_patterns:
         matches.extend(re.finditer(pattern=pattern, string=paragraph, flags=re.DOTALL))
+
+    matches.sort(key=lambda m: m.start())
     return matches
 
 def find_quotes(paragraph: str, quote_type: QuoteType) -> list[str]:
@@ -69,3 +71,32 @@ def find_quotes(paragraph: str, quote_type: QuoteType) -> list[str]:
         quote = re.sub(r'\\([\\[\]\(\)*_{}~`>#+\-.!|=])', r'\1', quote)
         quotes.append(quote)
     return quotes
+
+def remove_quotes_from_paragraph(paragraph: str, quote_list: list[str], quote_type: QuoteType) -> tuple[str, dict]:
+    """
+    Removes, and replaces with code, quotes from a paragraph so that they will not be visible for the LLM.
+
+    Args:
+        paragraph(str): Paragraph in which we are looking for the quotes.
+        quote_list(list[str]): List of quotes we are searching for.
+        quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
+
+    Returns:
+        tuple[str, dict]: 
+    """
+
+    quote_dict = {}
+    updated_paragraph = paragraph
+    quote_counter = 0
+
+    quotes_in_paragraph = find_quotes(paragraph=paragraph, quote_type=quote_type)
+    for quote in quotes_in_paragraph:
+        quote_counter += 1
+        quote_text = quote[1:-1].strip()
+        if quote in quote_list:
+            code = f'QUOTE {quote_counter}'
+            quote_dict[code] = quote_text
+
+            escaped_quote = re.escape(quote_text)
+            updated_paragraph = re.sub(escaped_quote, f'"{code}', updated_paragraph)
+    return (updated_paragraph, quote_dict)
