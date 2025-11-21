@@ -7,7 +7,7 @@ from app.application.dto.book_dto import BookResponse
 from app.application.commands.create_user import CreateUserCommand
 from app.application.commands.update_user import UpdateUserCommand
 from app.application.commands.delete_user import DeleteUserCommand
-from app.application.commands.get_user_books import GetUserBooksCommand
+from app.application.queries.get_user_books import GetUserBooksCommand
 from app.application.queries.get_user import GetUserQuery
 from app.application.queries.list_users import ListUsersQuery
 from app.infrastructure.db.repositories.user_repo_sqlalchemy import SqlAlchemyUserRepository
