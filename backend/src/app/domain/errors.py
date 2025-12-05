@@ -29,3 +29,6 @@ class FileErrors:
 
 class QuoteTypeErrors:
     INVALID_QUOTE_TYPE = "Invalid quote type"
+
+class LLMErrors:
+    LLM_REQUEST_FAILED = "LLM request failed"
