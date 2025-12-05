@@ -13,3 +13,5 @@ if not DATABASE_URL:
     raise RuntimeError("Missing env var: DATABASE_URL")
 
 LLM_MODEL = "chatgpt-4o-latest"
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
