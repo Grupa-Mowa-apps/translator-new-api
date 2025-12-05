@@ -18,7 +18,6 @@ def _replace_footnote_match(match: re.Match, translations: dict[tuple[str, str],
     Args:
         match(re.Match): Match for a single footnote definition in Markdown.
         translations(dict[tuple[str, str], str]): A dictionary with keys (footnote_id, original content) -> english content.
-
     Returns:
         str: Footnote replaced with the translated version if it exists in translations, otherwise the original.
     """
@@ -40,7 +39,6 @@ def apply_footnotes_translations(markdown_text: str, translations: dict[tuple[st
     Args:
         markdown_text(str): Full markdown text.
         translations(dict[tuple[str, str], str]): A dictionary with keys (footnote_id, original content) -> english content.
-
     Returns:
         str: Text with replaced original footnotes with the translated ones.
     """
@@ -53,4 +51,18 @@ def apply_footnotes_translations(markdown_text: str, translations: dict[tuple[st
         markdown_text,
     )
 
+def apply_quotes_translations(markdown_text: str, translations: dict[str, str]) -> str:
+    """
+    Replaces quotes (normal or blockquotes) in markdown with their translations.
 
+    Args:
+        markdown_text(str): Full markdown text.
+        translations(dict[str, str]): Dictionary with translations {original Polish quote/blockquote} -> {English quote/blockquote}
+    Returns:
+        str: Text with replaced original quotes with the translated ones.
+    """
+
+    text_with_translations = markdown_text
+    for original in sorted(translations.keys(), key=len, reverse=True):
+        text_with_translations = text_with_translations.replace(original, translations[original])
+    return text_with_translations
