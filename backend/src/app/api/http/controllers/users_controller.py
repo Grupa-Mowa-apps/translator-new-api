@@ -25,11 +25,8 @@ def book_repo(db: Session):
 
 @router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(dto: CreateUserRequest, db: Session = Depends(get_db)):
-    # [CODE REVIEW] [BLOCKER] Brak 'return' - endpoint nie zwraca utworzonego użytkownika,
-    # mimo że response_model=UserResponse. Powinno być:
-    # return CreateUserCommand(user_repo(db)).run(dto)
     try:
-        CreateUserCommand(user_repo(db)).run(dto)
+        return CreateUserCommand(user_repo(db)).run(dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     
@@ -58,8 +55,6 @@ def delete_user(user_id: str, db: Session=Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
-# [CODE REVIEW] [BLOCKER] Błąd: ścieżka ma {user_id} ale funkcja przyjmuje owner_id.
-# Parametr funkcji powinien nazywać się user_id, nie owner_id.
-@router.get("/{user_id}/books", response_model=List[BookResponse], status_code=status.HTTP_200_OK)
+@router.get("/{owner_id}/books", response_model=List[BookResponse], status_code=status.HTTP_200_OK)
 def list_user_books(owner_id: str, db: Session=Depends(get_db)):
     return GetUserBooksCommand(book_repo(db)).run(owner_id)

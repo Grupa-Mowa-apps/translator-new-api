@@ -3,7 +3,6 @@ from app.domain.ports.book_repository import BookRepository
 from app.domain.entities.book import Book
 from app.domain.entities.chapter import Chapter
 from app.infrastructure.db.models import BookDB, ChapterDB
-from app.domain.errors import BookErrors
 from typing import Optional, Iterable
 
 def _row_to_domain_book(book: BookDB) -> Book:
@@ -34,23 +33,21 @@ class SqlAlchemyBookRepository(BookRepository):
         self.session.commit()
 
     def get(self, book_id: str) -> Optional[Book]:
-        # [CODE REVIEW] [BLOCKER] Analogicznie jak w innych repozytoriach - get() powinno zwracać None,
-        # nie rzucać wyjątku. Warstwa infrastructure nie powinna decydować o logice biznesowej.
         book_row = self.session.get(BookDB, book_id)
-        if not book_row:
-            raise ValueError(BookErrors.BOOK_NOT_FOUND)
+        if book_row is None:
+            return None
         return _row_to_domain_book(book_row)
     
     def get_by_title(self, title: str) -> Optional[Book]:
         book_row = self.session.query(BookDB).filter(BookDB.title == title).first()
-        if not book_row:
-            raise ValueError(BookErrors.BOOK_NOT_FOUND)
+        if book_row is None:
+            return None
         return _row_to_domain_book(book_row)
     
-    def update(self, book: Book) -> None:
+    def update(self, book: Book) -> bool:
         book_row = self.session.get(BookDB, book.id)
-        if not book_row:
-            raise ValueError(BookErrors.BOOK_NOT_FOUND)
+        if book_row is None:
+            return False
         book_row.title = book.title
         book_row.genre = book.genre
         book_row.quotation_marks = book.quotation_marks
@@ -58,13 +55,15 @@ class SqlAlchemyBookRepository(BookRepository):
         book_row.status = book.status
         book_row.version = book.version
         self.session.commit()
+        return True
 
-    def delete(self, book_id: str) -> None:
+    def delete(self, book_id: str) -> bool:
         book_row = self.session.get(BookDB, book_id)
-        if not book_row:
-            raise ValueError(BookErrors.BOOK_NOT_FOUND)
+        if book_row is None:
+            return False
         self.session.delete(book_row)
         self.session.commit()
+        return True
 
     def list_books_for_owner(self, owner_id: str) -> Iterable[Book]:
         book_rows = self.session.query(BookDB).filter(BookDB.owner_id == owner_id).all()

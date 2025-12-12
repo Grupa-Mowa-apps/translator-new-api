@@ -4,7 +4,6 @@ from app.infrastructure.db.models import FileDB
 from app.domain.entities.file import File
 from app.domain.value_objects.file_kind import FileKind
 from app.domain.ports.file_repository import FileRepository
-from app.domain.errors import FileErrors
 
 def _row_to_domain_file(file_row: FileDB) -> File:
     return File(id=file_row.id, owner_id=file_row.owner_id,
@@ -26,18 +25,15 @@ class SqlAlchemyFileRepository(FileRepository):
         self.session.commit()
 
     def get(self, file_id: str) -> Optional[File]:
-        # [CODE REVIEW] [BLOCKER] Metoda get() w repozytorium powinna zwracać Optional[File],
-        # a nie rzucać wyjątek gdy nie znajdzie. Rzucanie wyjątku powinno być w warstwie application.
-        # To łamie kontrakt portu i powoduje duplikację obsługi błędów.
         file_row = self.session.get(FileDB, file_id)
-        if not file_row:
-            raise ValueError(FileErrors.FILE_NOT_FOUND)
+        if file_row is None:
+            return None
         return _row_to_domain_file(file_row)
     
-    def update(self, file: File) -> None:
+    def update(self, file: File) -> bool:
         file_row = self.session.get(FileDB, file.id)
         if not file_row:
-            raise ValueError(FileErrors.FILE_NOT_FOUND)
+            return False
         file_row.owner_id = file.owner_id
         file_row.kind = file.kind
         file_row.path = file.path
@@ -45,13 +41,15 @@ class SqlAlchemyFileRepository(FileRepository):
         file_row.book_id = file.book_id
         file_row.version = file.version
         self.session.commit()
+        return True
 
-    def delete(self, file_id: str) -> None:
+    def delete(self, file_id: str) -> bool:
         file_row = self.session.get(FileDB, file_id)
         if not file_row:
-            raise ValueError(FileErrors.FILE_NOT_FOUND)
+            return False
         self.session.delete(file_row)
         self.session.commit()
+        return True
 
     def save(self, destination_name: str) -> None:
         pass
