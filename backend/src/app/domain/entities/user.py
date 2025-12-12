@@ -8,11 +8,14 @@ class User:
     email: str
     name: Optional[str] = None
 
+    # [CODE REVIEW] [NIT] Brak type hint dla parametru new_email: str
     def change_email(self, new_email) -> None:
         if not new_email or not new_email.strip():
             raise ValueError(UserErrors.EMAIL_CANNOT_BE_EMPTY)
         self.email = new_email.strip()
 
+    # [CODE REVIEW] [NIT] Brak type hint dla parametru new_name: str
+    # [CODE REVIEW] [SUGGESTION] Brak walidacji dla pustego name - czy None jest OK ale pusty string nie?
     def change_name(self, new_name) -> None:
         self.name = new_name.strip()
 

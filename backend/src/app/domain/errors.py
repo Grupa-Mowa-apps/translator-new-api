@@ -5,8 +5,10 @@ class TranslationTaskErrors:
     CANNOT_CANCEL_FINISHED = "Cannot cancel a finished task"
 
 class AnnotationSetErrors:
+    # [CODE REVIEW] [NIT] Literówka: TRANSALTED -> TRANSLATED
     MUST_BE_EXTRACTED_BEFORE_TRANSLATED = "Must be EXTRACTED before TRANSALTED"
     MUST_BE_TRANSLATED_BEFORE_REVIEWED = "Must be TRANSLATED before REVIEWED"
+    # [CODE REVIEW] [NIT] Błąd w komunikacie: "TRANSLATED" powinno być "REVIEWED"
     MUST_BE_REVIEWED_BEFORE_APPLIED = "Must be TRANSLATED before APPLIED"
 
 class UserErrors:

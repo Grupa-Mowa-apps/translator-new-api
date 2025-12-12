@@ -26,6 +26,9 @@ class SqlAlchemyFileRepository(FileRepository):
         self.session.commit()
 
     def get(self, file_id: str) -> Optional[File]:
+        # [CODE REVIEW] [BLOCKER] Metoda get() w repozytorium powinna zwracać Optional[File],
+        # a nie rzucać wyjątek gdy nie znajdzie. Rzucanie wyjątku powinno być w warstwie application.
+        # To łamie kontrakt portu i powoduje duplikację obsługi błędów.
         file_row = self.session.get(FileDB, file_id)
         if not file_row:
             raise ValueError(FileErrors.FILE_NOT_FOUND)

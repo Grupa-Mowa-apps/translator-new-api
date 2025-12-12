@@ -17,12 +17,17 @@ class SqlAlchemyUserRepository(UserRepository):
         self.session.commit()
 
     def get(self, user_id: str) -> Optional[User]:
+        # [CODE REVIEW] [BLOCKER] Metoda get() powinna zwracać None gdy nie znajdzie użytkownika,
+        # nie rzucać wyjątku. Obsługa błędów "not found" powinna być w warstwie application.
         user_row = self.session.get(UserDB, user_id)
         if not user_row:
             raise ValueError(UserErrors.USER_NOT_FOUND)
         return User(id=user_row.id, email=user_row.email, name=user_row.name)
     
     def get_by_email(self, email: str) -> Optional[User]:
+        # [CODE REVIEW] [BLOCKER] get_by_email() powinno zwracać None gdy nie znajdzie.
+        # W CreateUserCommand używasz: if self.repo.get_by_email(dto.email) - to nigdy nie zadziała
+        # poprawnie, bo metoda rzuci wyjątek zamiast zwrócić None.
         user_row = self.session.query(UserDB).filter(UserDB.email == email).first()
         if not user_row:
             raise ValueError(UserErrors.USER_NOT_FOUND)

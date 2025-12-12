@@ -34,6 +34,8 @@ class SqlAlchemyBookRepository(BookRepository):
         self.session.commit()
 
     def get(self, book_id: str) -> Optional[Book]:
+        # [CODE REVIEW] [BLOCKER] Analogicznie jak w innych repozytoriach - get() powinno zwracać None,
+        # nie rzucać wyjątku. Warstwa infrastructure nie powinna decydować o logice biznesowej.
         book_row = self.session.get(BookDB, book_id)
         if not book_row:
             raise ValueError(BookErrors.BOOK_NOT_FOUND)

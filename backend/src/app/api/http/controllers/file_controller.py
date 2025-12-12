@@ -18,6 +18,8 @@ def file_repo(db: Session):
 
 @router.post("", response_model=FileResponse, status_code=status.HTTP_201_CREATED)
 async def upload_file(dto: UploadFileRequest, file: UploadFile = File(...), db: Session = Depends(get_db)):
+    # [CODE REVIEW] [SUGGESTION] Zmienna 'content' jest nieużywana - czy upload faktycznie zapisuje plik?
+    # Wygląda na to, że plik jest tylko odczytywany ale nigdzie nie zapisywany.
     content = await file.read()
     return UploadFileCommand(file_repo(db)).run(dto)
 
@@ -28,6 +30,8 @@ def get_file(file_id: str, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
+# [CODE REVIEW] [BLOCKER] Błąd: ścieżka ma {book_id} ale funkcja przyjmuje owner_id.
+# Powinno być: "/by-owner/{owner_id}" lub zmiana parametru na book_id
 @router.get("/by-owner/{book_id}", response_model=List[FileResponse], status_code=status.HTTP_200_OK)
 def list_files_for_owner(
     owner_id: str, 
