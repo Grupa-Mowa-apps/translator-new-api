@@ -6,6 +6,6 @@ class ListUsersQuery:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
-    def run(self, limit: int, email_like: Optional[str]) -> List[UserResponse]:
-        users = self.repo.list_paginated_filtered(limit, email_like)
-        return [UserResponse(id=u.id, email=u.id, name=u.name) for u in users]
+    def run(self, limit: int, offset: int, email_like: Optional[str]) -> List[UserResponse]:
+        users = self.repo.list_paginated_filtered(limit, offset, email_like)
+        return [UserResponse(id=u.id, email=u.email, name=u.name) for u in users]

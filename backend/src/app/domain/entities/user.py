@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from typing import Optional
+import re
 from app.domain.errors import UserErrors
+
+EMAIL_REGEX = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
 @dataclass
 class User:
@@ -8,10 +11,17 @@ class User:
     email: str
     name: Optional[str] = None
 
+    def __post_init__(self) -> None:
+        if not re.match(EMAIL_REGEX, self.email):
+            raise ValueError(UserErrors.INVALID_EMAIL_FORMAT)
+
     def change_email(self, new_email: str) -> None:
-        if not new_email or not new_email.strip():
+        email = new_email.strip()
+        if not email:
             raise ValueError(UserErrors.EMAIL_CANNOT_BE_EMPTY)
-        self.email = new_email.strip()
+        if not re.match(EMAIL_REGEX, email):
+            raise ValueError(UserErrors.INVALID_EMAIL_FORMAT)
+        self.email = email
 
     def change_name(self, new_name: Optional[str]) -> None:
         if new_name is None:
