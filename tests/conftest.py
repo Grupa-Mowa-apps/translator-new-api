@@ -1,11 +1,10 @@
 from pathlib import Path
-# NIT: Rozdziel importy na osobne linie (PEP 8)
-import os  # TODO: Było: import os, logging
+import os
 import logging
 from dotenv import load_dotenv
 import pytest
 from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker, clear_mappers
+from sqlalchemy.orm import sessionmaker
 from app.infrastructure.db.models import Base
 
 logger = logging.getLogger(__name__)
@@ -21,14 +20,14 @@ TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 if not TEST_DATABASE_URL:
     raise pytest.UsageError("TEST_DATABASE_URL not found")
 
+SQLITE_ENABLE_FOREIGN_KEYS = "PRAGMA foreign_keys=ON"
+
 @pytest.fixture(scope="session")
 def engine():
     engine = create_engine(TEST_DATABASE_URL, future=True)
-    # SUGGESTION: Wydziel magic string do stałej
-    # SQLITE_ENABLE_FOREIGN_KEYS = "PRAGMA foreign_keys=ON"
     if TEST_DATABASE_URL.startswith("sqlite"):
         with engine.connect() as conn:
-            conn.execute(text("PRAGMA foreign_keys=ON"))  # TODO: Magic string
+            conn.execute(text(SQLITE_ENABLE_FOREIGN_KEYS))
         
     Base.metadata.create_all(engine)
     try:
@@ -54,4 +53,3 @@ def db_session(engine):
         session.close()
         trans.rollback()
         connection.close()
-        clear_mappers()

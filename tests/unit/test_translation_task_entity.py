@@ -56,3 +56,26 @@ def test_reset_progress_and_cancel():
     translation_task.cancel("bye")
     assert translation_task.status == TranslationStatus.CANCELED
     assert translation_task.message == "bye"
+
+def test_fail_from_any_state():
+    translation_task = TranslationTask(id="t4", book_id="b1")
+    translation_task.fail("error")
+    assert translation_task.status == TranslationStatus.FAILED
+    assert translation_task.message == "error"
+
+def test_progress_boundaries():
+    translation_task = TranslationTask(id="t5", book_id="b1")
+    translation_task.start_translation_task()
+    
+    translation_task.update_progress(150)
+    assert translation_task.progress == 100
+    
+    translation_task.update_progress(-10)
+    assert translation_task.progress == 100
+
+def test_cannot_start_twice():
+    translation_task = TranslationTask(id="t6", book_id="b1")
+    translation_task.start_translation_task()
+    
+    with pytest.raises(ValueError):
+        translation_task.start_translation_task()

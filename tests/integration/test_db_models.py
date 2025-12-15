@@ -1,18 +1,34 @@
 from app.infrastructure.db.models import UserDB, BookDB, ChapterDB
 
 def test_user_book_chapter_crud(db_session):
-    user = UserDB(id="u1", email="a@b.com", name="Sara")
+    user = UserDB()
+    user.id = "u1"
+    user.email = "a@b.com"
+    user.name = "Sara"
     db_session.add(user)
 
-    book = BookDB(
-        id="b1", owner_id="u1",
-        title="title", genre="genre", quotation_marks="fr",
-        file_path="/tmp/x.md", status="uploaded", version=1
-    )
+    book = BookDB()
+    book.id = "b1"
+    book.owner_id = "u1"
+    book.title = "title"
+    book.genre = "genre"
+    book.quotation_marks = "fr"
+    book.file_path = "/tmp/x.md"
+    book.status = "uploaded"
+    book.version = 1
     db_session.add(book)
 
-    chapter1 = ChapterDB(id="c1", book_id="b1", parent_id=None, content="Chapter 1")
-    chapter2 = ChapterDB(id="c2", book_id="b1", parent_id="c1", content="Subchapter 1.1")
+    chapter1 = ChapterDB()
+    chapter1.id = "c1"
+    chapter1.book_id = "b1"
+    chapter1.parent_id = None
+    chapter1.content = "Chapter 1"
+    
+    chapter2 = ChapterDB()
+    chapter2.id = "c2"
+    chapter2.book_id = "b1"
+    chapter2.parent_id = "c1"
+    chapter2.content = "Subchapter 1.1"
     db_session.add_all([chapter1, chapter2])
 
     db_session.commit()
