@@ -17,30 +17,36 @@ def book():
         chapters=[chapter],
     )
 
+# CODE REVIEW: Uprość test - usuń niepotrzebne przypisania
+# MAJOR: book = book jest redundantne (fixture już dostarcza book)
+# SUGGESTION: Użyj initial_version i sprawdzaj przyrosty
 def test_book_version_increments_on_changes(book):
-    book = book
+    book = book  # TODO: Usuń to - niepotrzebne
     version = book.version
     book.rename_title("New Title")
     assert book.version == version + 1
-    version = book.version
+    version = book.version  # TODO: Można uprościć - użyj initial_version + 2
     book.change_genre("science")
     assert book.version == version + 1
-    version = book.version
+    version = book.version  # TODO: Można uprościć - użyj initial_version + 3
     book.change_quotation_marks(QuoteType.GR)
     assert book.version == version + 1
 
+# CODE REVIEW: Usuń redundantne przypisanie
 def test_invalid_title_raises_error(book):
-    book = book
+    book = book  # TODO: Usuń - niepotrzebne
     with pytest.raises(ValueError):
         book.rename_title("  ")
 
+# CODE REVIEW: Usuń redundantne przypisanie
 def test_change_genre_validation(book):
-    book = book
+    book = book  # TODO: Usuń - niepotrzebne
     with pytest.raises(ValueError):
         book.change_genre("")
 
+# CODE REVIEW: Usuń redundantne przypisanie
 def test_status_flow_happy_path(book):
-    book = book
+    book = book  # TODO: Usuń - niepotrzebne
     assert book.status == BookStatus.UPLOADED
 
     book.mark_parsed()
@@ -55,8 +61,13 @@ def test_status_flow_happy_path(book):
     book.mark_translated()
     assert book.status == BookStatus.TRANSLATED
 
+# CODE REVIEW: Usuń redundantne przypisanie i rozdziel asserty
+# NIT: Złożony assert - lepiej rozdzielić na dwa
 def test_mark_failed_sets_failed_and_bumps_version(book):
-    book = book
+    book = book  # TODO: Usuń - niepotrzebne
     version = book.version
     book.mark_failed()
+    # TODO: Rozdziel na dwa asserty dla lepszej czytelności:
+    # assert book.status == BookStatus.FAILED
+    # assert book.version == version + 1
     assert book.status == BookStatus.FAILED and book.version == version + 1

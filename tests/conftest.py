@@ -1,5 +1,7 @@
 from pathlib import Path
-import os, logging
+# NIT: Rozdziel importy na osobne linie (PEP 8)
+import os  # TODO: Było: import os, logging
+import logging
 from dotenv import load_dotenv
 import pytest
 from sqlalchemy import create_engine, text
@@ -22,9 +24,11 @@ if not TEST_DATABASE_URL:
 @pytest.fixture(scope="session")
 def engine():
     engine = create_engine(TEST_DATABASE_URL, future=True)
+    # SUGGESTION: Wydziel magic string do stałej
+    # SQLITE_ENABLE_FOREIGN_KEYS = "PRAGMA foreign_keys=ON"
     if TEST_DATABASE_URL.startswith("sqlite"):
         with engine.connect() as conn:
-            conn.execute(text("PRAGMA foreign_keys=ON"))
+            conn.execute(text("PRAGMA foreign_keys=ON"))  # TODO: Magic string
         
     Base.metadata.create_all(engine)
     try:
