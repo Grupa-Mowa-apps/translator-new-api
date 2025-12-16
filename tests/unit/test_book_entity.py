@@ -23,7 +23,7 @@ def test_book_version_increments_on_changes(book):
     assert book.version == initial_version + 1
     book.change_genre("science")
     assert book.version == initial_version + 2
-    book.change_quotation_marks(QuoteType.GR)
+    book.change_quotation_marks(QuoteType.GE)
     assert book.version == initial_version + 3
 
 def test_invalid_title_raises_error(book):
