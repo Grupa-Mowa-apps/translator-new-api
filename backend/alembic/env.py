@@ -13,7 +13,7 @@ SRC_DIR = os.path.join(PROJECT_ROOT, "src")
 if SRC_DIR not in sys.path:
     sys.path.insert(0, SRC_DIR)
 
-from src.app.infrastructure.db.models import Base
+from app.infrastructure.db.models import Base
 
 load_dotenv()
 
