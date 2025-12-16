@@ -1,6 +1,6 @@
 from enum import Enum
 
 class FileKind(str, Enum):
-    MARKDOWN ="markdown"
+    MARKDOWN = "markdown"
     XLSX = "xlsx"
-    TRANSALTED_MARKDOWN = "translated_md"
+    TRANSLATED_MARKDOWN = "translated_md"

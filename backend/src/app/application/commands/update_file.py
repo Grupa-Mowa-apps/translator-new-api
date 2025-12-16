@@ -1,8 +1,10 @@
+import logging
 from typing import Optional
 from app.domain.ports.file_repository import FileRepository
 from app.application.dto.file_dto import UpdateFileRequest, FileResponse
 from app.domain.errors import FileErrors
 
+logger = logging.getLogger(__name__)
 
 class UpdateFileCommand:
     def __init__(self, repo: FileRepository):
@@ -19,6 +21,9 @@ class UpdateFileCommand:
         if dto.filename:
             file.rename(dto.filename)
         self.repo.update(file)
+        self.repo.session.commit()
+        logger.info(f"File updated: {file.id}")
+        
         return FileResponse(
             id=file.id,
             owner_id=file.owner_id,

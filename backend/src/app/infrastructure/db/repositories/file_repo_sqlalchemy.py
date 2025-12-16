@@ -18,37 +18,34 @@ def _domain_to_row_file(file: File) -> FileDB:
 
 class SqlAlchemyFileRepository(FileRepository):
     def __init__(self, session: Session):
-        self.session = session
+        self.session: Session = session
 
     def add(self, file: File) -> None:
         file_row = _domain_to_row_file(file)
         self.session.add(file_row)
-        self.session.commit()
 
     def get(self, file_id: str) -> Optional[File]:
         file_row = self.session.get(FileDB, file_id)
         if not file_row:
-            raise ValueError(FileErrors.FILE_NOT_FOUND)
+            return None
         return _row_to_domain_file(file_row)
     
     def update(self, file: File) -> None:
         file_row = self.session.get(FileDB, file.id)
         if not file_row:
-            raise ValueError(FileErrors.FILE_NOT_FOUND)
+            return None
         file_row.owner_id = file.owner_id
         file_row.kind = file.kind
         file_row.path = file.path
         file_row.filename = file.filename
         file_row.book_id = file.book_id
         file_row.version = file.version
-        self.session.commit()
 
     def delete(self, file_id: str) -> None:
         file_row = self.session.get(FileDB, file_id)
         if not file_row:
-            raise ValueError(FileErrors.FILE_NOT_FOUND)
+            return None
         self.session.delete(file_row)
-        self.session.commit()
 
     def save(self, destination_name: str) -> None:
         pass
