@@ -16,4 +16,14 @@ class UserErrors:
     USER_NOT_FOUND = "There is no user with such id"
 
 class BookErrors:
+    TITLE_CANNOT_BE_EMPTY = "Title cannot be empty"
+    GENRE_CANNOT_BE_EMPTY = "Genre cannot be empty"
     BOOK_NOT_FOUND = "There is no book with such id"
+
+class FileErrors:
+    FILENAME_CANNOT_BE_EMPTY = "Filename cannot be empty"
+    PATH_CANNOT_BE_EMPTY = "Path cannot be empty"
+    OWNER_ID_CANNOT_BE_EMPTY = "Owner id cannot be empty"
+    BOOK_ID_CANNOT_BE_EMPTY = "Book id cannot be empty"
+    INVALID_FILE_KIND = "Invalid file kind"
+    FILE_NOT_FOUND = "File not found"
