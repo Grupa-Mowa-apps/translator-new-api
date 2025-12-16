@@ -14,6 +14,7 @@ from app.infrastructure.db.models import Base
 logger = logging.getLogger(__name__)
 
 ENV_PATH = ROOT / "backend" / ".env"
+
 loaded = load_dotenv(ENV_PATH, override=False)
 if not loaded:
     logger.warning(f"Could not find or could not load .env file at {ENV_PATH}")
@@ -60,4 +61,3 @@ def db_session(engine):
         session.close()
         trans.rollback()
         connection.close()
-        # clear_mappers()

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
-from domain.value_objects.translation_status import TranslationStatus
-from domain.errors import TranslationTaskErrors
-from domain.constants import INITIAL_PROGRESS, INITIAL_TRANSLATED_CHAPTERS
+from app.domain.value_objects.translation_status import TranslationStatus
+from app.domain.errors import TranslationTaskErrors
+from app.domain.constants import INITIAL_PROGRESS, INITIAL_TRANSLATED_CHAPTERS
 
 @dataclass
 class TranslationTask:

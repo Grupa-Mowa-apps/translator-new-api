@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -38,8 +38,13 @@ def get_user(user_id: str, db: Session=Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
 @router.get("", response_model=List[UserResponse], status_code=status.HTTP_200_OK)
-def list_users(limit: int, email_like: Optional[str], db: Session=Depends(get_db)):
-    return ListUsersQuery(user_repo(db)).run(limit, email_like)
+def list_users(
+    limit: int = Query(default=10, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    email_like: Optional[str] = None,
+    db: Session = Depends(get_db)
+):
+    return ListUsersQuery(user_repo(db)).run(limit, offset, email_like)
 
 @router.put("/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
 def update_user(user_id: str, dto: UpdateUserRequest, db: Session=Depends(get_db)):
@@ -55,6 +60,6 @@ def delete_user(user_id: str, db: Session=Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
-@router.get("/{owner_id}/books", response_model=List[BookResponse], status_code=status.HTTP_200_OK)
-def list_user_books(owner_id: str, db: Session=Depends(get_db)):
-    return GetUserBooksCommand(book_repo(db)).run(owner_id)
+@router.get("/{user_id}/books", response_model=List[BookResponse], status_code=status.HTTP_200_OK)
+def list_user_books(user_id: str, db: Session = Depends(get_db)):
+    return GetUserBooksCommand(book_repo(db)).run(user_id)

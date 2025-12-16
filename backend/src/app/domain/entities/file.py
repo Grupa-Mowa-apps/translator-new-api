@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from app.domain.value_objects.file_kind import FileKind
 from typing import Optional
+from app.domain.value_objects.file_kind import FileKind
 from app.domain.constants import INITIAL_VERSION
 from app.domain.errors import FileErrors
 
@@ -54,12 +54,12 @@ class File:
         self.kind = new_kind
         self._update_version()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         cls = self.__class__.__name__
         return (
             f"{cls}(id={self.id!r}, kind={self.kind.name}, filename={self.filename!r}, "
             f"version={self.version})"
         )
     
-    def __str__(self):
+    def __str__(self) -> str:
         return f"{self.kind.name} {self.filename} v({self.version})"
