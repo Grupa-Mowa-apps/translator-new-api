@@ -40,6 +40,8 @@ services:
       - ./uploads:/app/backend/uploads
     depends_on:
       - postgres
+    env_file:
+      - ./backend/.env
     environment:
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432

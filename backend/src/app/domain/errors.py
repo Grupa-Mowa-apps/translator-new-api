@@ -11,3 +11,9 @@ class AnnotationSetErrors:
 
 class UserErrors:
     EMAIL_CANNOT_BE_EMPTY = "Email cannot be empty"
+    INVALID_EMAIL_FORMAT = "Invalid email format"
+    EMAIL_ALREADY_IN_USE = "This email is already in use"
+    USER_NOT_FOUND = "There is no user with such id"
+
+class BookErrors:
+    BOOK_NOT_FOUND = "There is no book with such id"
