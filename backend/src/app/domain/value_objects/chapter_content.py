@@ -1,14 +1,19 @@
 from dataclasses import dataclass
 from typing import Optional
+from app.domain.value_objects.footnotes import FootnoteSet
 
 @dataclass(frozen=True)
 class ChapterContent:
     text: str
-    footnotes_md: Optional[str] = None
+    footnotes: Optional[FootnoteSet] = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         cls = self.__class__.__name__
-        return f"{cls}(text={self.text!r}, footnotes_md={self.footnotes_md!r})"
+        return f"{cls}(text={self.text!r}, footnotes={self.footnotes!r})"
     
-    def __str__(self):
-        return f"ChapterContent: {self.text}, {self.footnotes_md}"
+    @property
+    def footnote_count(self) -> int:
+        return len(self.footnotes) if self.footnotes else 0
+
+    def __str__(self) -> str:
+        return f"ChapterContent(text_len={len(self.text)}, footnotes_count={self.footnote_count})"
