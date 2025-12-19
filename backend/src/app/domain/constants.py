@@ -6,7 +6,7 @@ INITIAL_PROGRESS: int = 0
 INITIAL_TRANSLATED_CHAPTERS: int = 0
 INITIAL_CHAPTER_NUMBER: int = 0
 
-QUOTE_PATTERNS: tuple[str, ...] = [
+QUOTE_PATTERNS = [
     r'"(.*?)"',
     r"'(.*?)'",
     r'“(.*?)”',
