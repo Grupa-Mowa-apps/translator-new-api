@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 import re
-from app.domain.constants import QUOTE_PATTERNS, MARKDOWN_SPECIAL_CHARS, MARKDOWN_UNESCAPE_RE
+from app.domain.constants import QUOTE_PATTERNS, MARKDOWN_UNESCAPE_RE
 
 def _unescape_md(text: str) -> str:
     """
