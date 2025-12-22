@@ -1,3 +1,5 @@
+"This module contains quotes processing in order to hide them later from LLM"
+
 import re
 from app.domain.value_objects.quotation_marks import QuoteType
 from app.domain.errors import QuoteTypeErrors
