@@ -9,6 +9,7 @@ def _clean_md_text(markdown_text: str) -> str:
     Returns:
         str: Processed text.
     """
+    markdown_text = " ".join(markdown_text.split())
     return re.sub(r'\\([\\[\]\(\)*_{}~`>#+\-.!|=])', r"\1", markdown_text.strip())
 
 def _replace_footnote_match(match: re.Match, translations: dict[tuple[str, str], str]) -> str:
@@ -30,7 +31,6 @@ def _replace_footnote_match(match: re.Match, translations: dict[tuple[str, str],
         return f"[^{footnote_id}]: {translated}"
     
     return match.group(0)
-
 
 def apply_footnotes_translations(markdown_text: str, translations: dict[tuple[str, str], str]) -> str:
     """
