@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 import re
-from app.domain.constants import MARKDOWN_UNESCAPE_RE
+# from app.domain.constants import MARKDOWN_UNESCAPE_RE
+
+MARKDOWN_SPECIAL_CHARS = r"\\[\]\(\)*_{}~`>#+\-.!|="
+MARKDOWN_UNESCAPE_RE = re.compile(rf"\\([{MARKDOWN_SPECIAL_CHARS}])")
 
 def _unescape_md(text: str) -> str:
     """
