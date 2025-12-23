@@ -20,3 +20,8 @@ QUOTE_PATTERNS = [
 
 MARKDOWN_SPECIAL_CHARS = r"\\[\]\(\)*_{}~`>#+\-.!|="
 MARKDOWN_UNESCAPE_RE = re.compile(rf"\\([{MARKDOWN_SPECIAL_CHARS}])")
+
+BIBLIO_HEADER_RE = re.compile(
+    r"\b(bibliografia|prace cytowane|references|works cited)\b",
+    re.IGNORECASE
+)
