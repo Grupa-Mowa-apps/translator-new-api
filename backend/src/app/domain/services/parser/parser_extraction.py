@@ -1,6 +1,7 @@
 import re
 from app.domain.services.quotes_processing import find_quotes_matches
 from app.domain.value_objects.quotation_marks import QuoteType
+from app.domain.constants import BIBLIO_HEADER_RE
 
 def build_footnotes_dict(footnotes_raw: list[dict[str, str]]) -> dict[str, str]:
     """
@@ -18,9 +19,9 @@ def build_footnotes_dict(footnotes_raw: list[dict[str, str]]) -> dict[str, str]:
         for f in footnotes_raw
     }
 
-def cut_text_before_last_heading(markdown_text: str, headers: list[dict[str, any]]) -> str:
+def cut_text_before_bibliography(markdown_text: str, headers: list[dict[str, any]]) -> str:
     """
-    Cuts the text so that it does not contain bibliography (the last header).
+    Cuts the text so that it does not contain bibliography.
 
     Args:
         markdown_text(str): Full markdown text.
@@ -34,13 +35,35 @@ def cut_text_before_last_heading(markdown_text: str, headers: list[dict[str, any
         return markdown_text
     
     lines = markdown_text.splitlines()
-    last_heading = headers[-1]
-    cutoff_line = last_heading["line"]
-    return "\n".join(lines[: cutoff_line - 1])
+
+    for h in headers:
+        title = (h.get("text") or "").strip()
+        if BIBLIO_HEADER_RE.search(title):
+            cutoff_line = h["line"]
+            return "\n".join(lines[: cutoff_line - 1])
+    
+    return markdown_text
+
+def _normalize_headers(raw_headers: dict[str, any]) -> list[dict[str, any]]:
+    """
+    Normalizes the headers structure returned by MarkdownAnalyzer into a single, consistent list of header
+    dictionaries.
+
+    Args:
+        raw_headers(dict[str, any]): Dict of headers returned by the MarkdownAnalyzer.
+
+    Returns:
+        list[dict[str, any]]: Normalized list of headers.
+    """
+    if isinstance(raw_headers, dict):
+        return raw_headers.get("Header", raw_headers.get("Headers", []))
+    if isinstance(raw_headers, list):
+        return raw_headers
+    return []
 
 def extract_quotes_with_related_footnotes(
         markdown_text: str,
-        headers: list[dict[str, any]],
+        headers: dict[str, any],
         quote_type: QuoteType,
         footnotes_dict: dict[str, str],
 ) -> tuple[list[str], list[str]]:
@@ -50,7 +73,7 @@ def extract_quotes_with_related_footnotes(
 
     Args:
         markdown_text(str): Full markdown text.
-        headers(list[dict[str, any]]): List of headers returned by the MarkdownAnalyzer.
+        headers(list[dict[str, any]]): Dict of headers returned by the MarkdownAnalyzer.
         quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
         footnotes_dict(dict[str, str]): Footnotes dictionary {footenote_id -> footnote content}.
     
@@ -59,28 +82,33 @@ def extract_quotes_with_related_footnotes(
         footnote content (or "" if none).
     """
 
-    text_no_biblio = cut_text_before_last_heading(markdown_text=markdown_text, headers=headers)
+    norm_headers = _normalize_headers(raw_headers=headers)
 
-    quotes_matches = find_quotes_matches(paragraph=markdown_text, quote_type=quote_type)
+    text_no_biblio = cut_text_before_bibliography(markdown_text=markdown_text, headers=norm_headers)
 
     all_quotes = []
     footnote_for_quotes = []
 
-    for match in quotes_matches:
-        quote_text = match.group(1).strip()
-        quote_text = re.sub(r'\\([\\[\]\(\)*_{}~`>#+\-.!|=])', r"\1", quote_text)
+    paragraphs = re.split(r"\n\s*\n", text_no_biblio)
 
-        end_idx = match.end()
-        is_footnote = re.match(r"\[\^(\d+)\]", text_no_biblio[end_idx:])
+    for para in paragraphs:
+        for match in find_quotes_matches(paragraph=para, quote_type=quote_type):
+            quote_text = match.group(1).strip()
+            quote_text = re.sub(r'\\([\\[\]\(\)*_{}~`>#+\-.!|=])', r"\1", quote_text)
 
-        if is_footnote:
-            footnote_id = is_footnote.group(1)
-            footnote_content = footnotes_dict.get(footnote_id, "")
-            all_quotes.append(quote_text)
-            footnote_for_quotes.append(footnote_content)
-        elif len(quote_text.split()) > 2:
-            all_quotes.append(quote_text)
-            footnote_for_quotes.append("")
+            end_idx = match.end()
+            is_footnote = re.match(
+                r"^[\s\.,;:!\?\)\]\}”’\"…-]*\[\^(\d+)\]",
+                para[end_idx:]
+            )
+            if is_footnote:
+                footnote_id = is_footnote.group(1)
+                footnote_content = footnotes_dict.get(footnote_id, "")
+                all_quotes.append(quote_text)
+                footnote_for_quotes.append(footnote_content)
+            else:
+                all_quotes.append(quote_text)
+                footnote_for_quotes.append("")
 
     unique_quotes = {}
     for quote, footnote in zip(all_quotes, footnote_for_quotes):
