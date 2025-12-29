@@ -19,6 +19,7 @@ class BookErrors:
     TITLE_CANNOT_BE_EMPTY = "Title cannot be empty"
     GENRE_CANNOT_BE_EMPTY = "Genre cannot be empty"
     BOOK_NOT_FOUND = "There is no book with such id"
+    BOOK_FILE_PATH_NOT_SET = "Book file path is not set"
 
 class FileErrors:
     FILENAME_CANNOT_BE_EMPTY = "Filename cannot be empty"
