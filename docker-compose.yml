@@ -45,7 +45,7 @@ services:
     env_file:
       - ./backend/.env
     environment:
-      PYTHONPATH: /app/backend
+      PYTHONPATH: /app/backend/src
       POSTGRES_HOST: postgres
       POSTGRES_PORT: 5432
       POSTGRES_DB: translator_db
