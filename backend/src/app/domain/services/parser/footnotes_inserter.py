@@ -1,6 +1,21 @@
 import re
 from dataclasses import dataclass
 
+def _normalize_footnote_id(value) -> str:
+    """
+    Normalizuje ID przypisu z Excela/pandas:
+    1, 1.0, "1", "1.0" -> "1"
+    """
+    if value is None:
+        return ""
+    s = str(value).strip()
+    if not s:
+        return ""
+    try:
+        return str(int(float(s)))
+    except (ValueError, TypeError):
+        return s
+
 def _clean_md_text(markdown_text: str) -> str:
     """
     Removes backslashes before special markdown characters and trims whitespace at the ends.
@@ -25,7 +40,7 @@ def _clean_footnote_translations_keys(
         dict[tuple[str, str], str]: Normalized dictionary with footnotes translations.
     """
     return {
-        (str(int(footnote_id)), _clean_md_text(pl_text)): en_text
+        (_normalize_footnote_id(footnote_id), _clean_md_text(pl_text)): en_text
         for (footnote_id, pl_text), en_text in translations.items()
         if footnote_id and pl_text and en_text
     }
@@ -41,7 +56,7 @@ def _replace_footnote_match(match: re.Match, translations: dict[tuple[str, str],
         str: Footnote replaced with the translated version if it exists in translations, otherwise the original.
     """
 
-    footnote_id = str(int(match.group(1)))
+    footnote_id = _normalize_footnote_id(match.group(1))
     content_pl = _clean_md_text(match.group(2))
     translated = translations.get((footnote_id, content_pl))
 
