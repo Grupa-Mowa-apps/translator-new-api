@@ -81,7 +81,6 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             if pl and en and pl.lower() != "nan" and en.lower() != "nan":
                 quotes[pl] = en
 
-        # blockquotes dict (do osobnego portu lub tu)
         blockquotes = {}
         for _, r in df.iterrows():
             pl = str(r.get("blockquotes PL", "")).strip()
@@ -95,7 +94,6 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             pl = str(r.get("footnotes PL", "")).strip()
             en = str(r.get("footnotes EN", "")).strip()
             if str(fid).strip() and pl and en:
-                # ważne: w footnotes_inserter masz czyszczenie kluczy, więc tu może być surowe
                 footnotes[(str(fid).strip(), pl)] = en
 
         md_text = md_input_path.read_text(encoding="utf-8")
