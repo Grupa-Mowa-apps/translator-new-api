@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 
 from app.domain.ports.excel_quotes_footnotes import ExcelQuotesFootnotesPort
@@ -19,12 +20,17 @@ from app.infrastructure.parsing.markdown_analyzer_adapter import MarkdownAnalyze
 
 class ParserAdapter(ExcelQuotesFootnotesPort):
     def __init__(self, base_dir: str):
-        self.base_dir = base_dir
+        self.base_dir = Path(base_dir)
 
-    def export_from_markdown(self, md_path: str, quote_type: QuoteType, excel_path: str | None = None) -> tuple[str, dict]:
+    def export_from_markdown(
+            self, md_path: str, 
+            quote_type: QuoteType, 
+            excel_path: str | None = None,
+    ) -> tuple[str, dict]:
+        md_path = Path(md_path)
+
         analyzer = MarkdownAnalyzerAdapter(file_path=md_path)
         md_text = analyzer.load_text()
-
         headers = analyzer.identify_headers()
         footnotes_raw = analyzer.identify_footnotes()
 
@@ -63,6 +69,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
 
         out_dir = self.base_dir / "exports"
         out_dir.mkdir(parents=True, exist_ok=True)
+
         filename = excel_path or f"{md_path.stem}_quotes_footnotes.xlsx"
         out_path = out_dir / filename
 
@@ -71,7 +78,15 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
         stats = {"footnotes": len(footnotes_dict), "quotes": len(quotes_pl), "blockquotes": len(blockquotes_pl)}
         return str(out_path), stats
     
-    def apply_translations_from_excel(self, excel_path: str, md_input_path: str, md_output_path: str | None = None):
+    def apply_translations_from_excel(
+            self, 
+            excel_path: str,
+            md_input_path: str, 
+            md_output_path: str | None = None
+    ) -> str:
+        excel_path = Path(excel_path)
+        md_input_path = Path(md_input_path)
+
         df = pd.read_excel(excel_path)
 
         quotes = {}
