@@ -20,8 +20,7 @@ class MarkdownAnalyzerAdapter(MarkdownAnalyzerPort):
     
     def identify_headers(self) -> list[dict[str, any]]:
         raw_headers = self._analyzer.identify_headers()
-        headers = raw_headers.get("Header", raw_headers)
-        return headers
+        return raw_headers
     
     def identify_footnotes(self) -> list[dict[str, any]]:
         footnotes = self._analyzer.identify_footnotes()
