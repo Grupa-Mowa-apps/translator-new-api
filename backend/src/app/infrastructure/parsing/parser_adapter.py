@@ -46,7 +46,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
 
         footnote_items = list(footnotes_dict.items())
 
-        df_footnote = pd.DataFrame(
+        df_footnotes = pd.DataFrame(
             [{"footnote number": k, "footnotes PL": v, "footnotes EN": ""} for k, v in footnote_items]
         )
         df_quotes = pd.DataFrame(
@@ -56,7 +56,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             [{"blockquotes PL": bq, "blockquotes EN": ""} for bq in blockquotes_pl]
         )
 
-        max_len = max(len(df_footnote), len(df_quotes), len(df_blockquotes), 1)
+        max_len = max(len(df_footnotes), len(df_quotes), len(df_blockquotes), 1)
         df_footnotes = df_footnotes.reindex(range(max_len)).fillna("")
         df_quotes = df_quotes.reindex(range(max_len)).fillna("")
         df_blockquotes = df_blockquotes.reindex(range(max_len)).fillna("")
