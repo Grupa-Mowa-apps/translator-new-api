@@ -4,7 +4,8 @@ import logging
 from app.api.http.controllers.file_controller import router as files_router
 from app.api.http.controllers.users_controller import router as users_router
 
-from app.api.http.controllers.parser_controller import router as parser_router
+# from app.api.http.controllers.parser_controller import router as parser_router
+from app.api.http.controllers.parser_dev_controller import router as parser_dev_router
 
 logging.basicConfig(
     level=logging.INFO,
@@ -22,7 +23,8 @@ def health():
 
 app.include_router(users_router)
 app.include_router(files_router)
-app.include_router(parser_router)
+# app.include_router(parser_router)
+app.include_router(parser_dev_router)
 
 if __name__ == "__main__":
     import uvicorn
