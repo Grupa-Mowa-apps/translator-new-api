@@ -7,13 +7,14 @@ class ExportParserRequest(BaseModel):
     excel_filename: str | None = None
 
 class ExportParserResponse(BaseModel):
+    annotation_set_id: str
     excel_path: str
     footnotes_count: int
     quotes_count: int
     blockquotes_count: int
 
 class ApplyParserTranslationsRequest(BaseModel):
-    excel_path: str
+    annotation_set_id: str
     output_md_filename: str | None = None
 
 class ApplyParserTranslationsResponse(BaseModel):

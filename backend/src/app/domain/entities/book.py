@@ -44,6 +44,10 @@ class Book:
     def mark_parsed(self) -> None:
         self.status = BookStatus.PARSED
         self._update_version()
+
+    def mark_annotations_applied(self) -> None:
+        self.status = BookStatus.ANNOTATIONS_APPLIED
+        self._update_version()
     
     def mark_ready_to_translate(self) -> None:
         self.status = BookStatus.READY_TO_TRANSLATE
