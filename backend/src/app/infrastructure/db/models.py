@@ -30,7 +30,12 @@ class BookDB(Base):
 
     owner = relationship("UserDB", back_populates="books")
     chapters = relationship("ChapterDB", back_populates="book", cascade="all, delete-orphan")
-    annotation_set = relationship("AnnotationSetDB", back_populates="book", uselist=False)
+    annotation_sets = relationship(
+        "AnnotationSetDB", 
+        back_populates="book", 
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
     translation_task = relationship("TranslationTaskDB", back_populates="book", uselist=False)
     files = relationship("FileDB", back_populates="book", passive_deletes=True)
 
@@ -53,18 +58,14 @@ class AnnotationSetDB(Base):
     __tablename__ = "annotation_sets"
 
     id = Column(String, primary_key=True)
-    book_id = Column(String, ForeignKey("books.id", ondelete="SET NULL"), index=True, nullable=True)
+    book_id = Column(String, ForeignKey("books.id", ondelete="CASCADE"), index=True, nullable=False)
 
-    file_path = Column(String, nullable=False)
+    file_path = Column(String, nullable=False, unique=True, index=True)
 
     status = Column(String, nullable=False, default="extracted_from_md_to_xlsx")
     version = Column(Integer, nullable=False, default=1)
 
-    book = relationship("BookDB", back_populates="annotation_set")
-
-    __table_args__ = (
-        UniqueConstraint("book_id", name="uq_annotation_set_book"),
-    )
+    book = relationship("BookDB", back_populates="annotation_sets")
 
 class TranslationTaskDB(Base):
     __tablename__ = "translation_tasks"
