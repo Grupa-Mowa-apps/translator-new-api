@@ -23,7 +23,7 @@ class BookDB(Base):
     genre = Column(String, nullable=False)
     quotation_marks = Column(String, nullable=False)
 
-    file_path = Column(String, nullable=True)
+    file_id = Column(String, ForeignKey("files.id", ondelete="SET NULL"), nullable=True)
 
     status = Column(String, nullable=False, default="uploaded")
     version = Column(Integer, nullable=False, default=1)
@@ -95,6 +95,7 @@ class FileDB(Base):
     kind = Column(String, nullable=False)
     path = Column(String, nullable=False)
     filename = Column(String, nullable=False)
+    
     book_id = Column(String, ForeignKey("books.id", ondelete="SET NULL"), index=True, nullable=True)
     version = Column(Integer, nullable=False, default=1)
 
