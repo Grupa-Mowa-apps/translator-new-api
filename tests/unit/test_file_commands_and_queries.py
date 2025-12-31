@@ -15,7 +15,9 @@ from app.domain.errors import FileErrors
 
 @pytest.fixture
 def mock_file_repository():
-    return Mock(spec=FileRepository)
+    repo = Mock(spec=FileRepository)
+    repo.session = Mock()
+    return repo
 
 class TestFileCommands:
     def test_create_file_successfully(self, mock_file_repository):
@@ -127,7 +129,7 @@ class TestFileQueries:
         files = [
             File(id="file1", owner_id="owner1", kind=FileKind.MARKDOWN, path="file1.md", filename="markdown-file1"),
             File(id="file2", owner_id="owner2", kind=FileKind.XLSX, path="file2.xlsx", filename="excel-file2"),
-            File(id="file3", owner_id="owner1", kind=FileKind.TRANSALTED_MARKDOWN, path="file3.md", filename="markdown-file3"),
+            File(id="file3", owner_id="owner1", kind=FileKind.TRANSLATED_MARKDOWN, path="file3.md", filename="markdown-file3"),
             File(id="file4", owner_id="owner4", kind=FileKind.MARKDOWN, path="file4.md", filename="markdown-file4"),
             File(id="file5", owner_id="owner5", kind=FileKind.MARKDOWN, path="file5.md", filename="markdown-file5"),
         ]
@@ -185,7 +187,7 @@ class TestFileQueries:
         files = [
             File(id="file1", owner_id="owner1", kind=FileKind.MARKDOWN, path="file1.md", filename="markdown-file1", book_id="book1"),
             File(id="file2", owner_id="owner2", kind=FileKind.XLSX, path="file2.xlsx", filename="excel-file2", book_id="book2"),
-            File(id="file3", owner_id="owner1", kind=FileKind.TRANSALTED_MARKDOWN, path="file3.md", filename="markdown-file3", book_id="book3"),
+            File(id="file3", owner_id="owner1", kind=FileKind.TRANSLATED_MARKDOWN, path="file3.md", filename="markdown-file3", book_id="book3"),
             File(id="file4", owner_id="owner4", kind=FileKind.MARKDOWN, path="file4.md", filename="markdown-file4", book_id="book2"),
             File(id="file5", owner_id="owner5", kind=FileKind.MARKDOWN, path="file5.md", filename="markdown-file5", book_id="book2"),
         ]
@@ -212,7 +214,7 @@ class TestFileQueries:
         files = [
             File(id="file1", owner_id="owner1", kind=FileKind.MARKDOWN, path="file1.md", filename="markdown-file1", book_id="book1"),
             File(id="file2", owner_id="owner2", kind=FileKind.XLSX, path="file2.xlsx", filename="excel-file2", book_id="book2"),
-            File(id="file3", owner_id="owner1", kind=FileKind.TRANSALTED_MARKDOWN, path="file3.md", filename="markdown-file3", book_id="book3"),
+            File(id="file3", owner_id="owner1", kind=FileKind.TRANSLATED_MARKDOWN, path="file3.md", filename="markdown-file3", book_id="book3"),
             File(id="file4", owner_id="owner4", kind=FileKind.MARKDOWN, path="file4.md", filename="markdown-file4", book_id="book2"),
             File(id="file5", owner_id="owner5", kind=FileKind.MARKDOWN, path="file5.md", filename="markdown-file5", book_id="book2"),
             File(id="file6", owner_id="owner6", kind=FileKind.MARKDOWN, path="file6.md", filename="markdown-file6", book_id="book2"),

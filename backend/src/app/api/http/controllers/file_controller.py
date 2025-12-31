@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -17,8 +17,7 @@ def file_repo(db: Session):
     return SqlAlchemyFileRepository(db)
 
 @router.post("", response_model=FileResponse, status_code=status.HTTP_201_CREATED)
-async def upload_file(dto: UploadFileRequest, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    content = await file.read()
+def upload_file(dto: UploadFileRequest, db: Session = Depends(get_db)):
     return UploadFileCommand(file_repo(db)).run(dto)
 
 @router.get("/{file_id}", response_model=FileResponse, status_code=status.HTTP_200_OK)
@@ -32,7 +31,7 @@ def get_file(file_id: str, db: Session = Depends(get_db)):
 def list_files_for_owner(
     owner_id: str, 
     kind: Optional[FileKind] = Query(None), 
-    limit: int = Query(None), 
+    limit: int = Query(10, ge=1, le=100), 
     db: Session = Depends(get_db)
 ):
     return ListFilesForOwnerQuery(file_repo(db)).run(owner_id, kind, limit)
@@ -41,7 +40,7 @@ def list_files_for_owner(
 def list_files_for_book(
     book_id: str,
     kind: Optional[FileKind] = Query(None), 
-    limit: int = Query(None), 
+    limit: int = Query(10, ge=1, le=100), 
     db: Session = Depends(get_db)
 ):
     return ListFilesForBookQuery(file_repo(db)).run(book_id, kind, limit)

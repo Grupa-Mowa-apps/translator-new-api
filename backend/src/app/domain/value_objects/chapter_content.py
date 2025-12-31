@@ -7,12 +7,13 @@ class ChapterContent:
     text: str
     footnotes: Optional[FootnoteSet] = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         cls = self.__class__.__name__
         return f"{cls}(text={self.text!r}, footnotes={self.footnotes!r})"
     
-    def _footnote_count(self):
+    @property
+    def footnote_count(self) -> int:
         return len(self.footnotes) if self.footnotes else 0
 
-    def __str__(self):  
-        return f"ChapterContent(len(text))={len(self.text)}, footnotes(len(footnotes))={self._footnote_count()}"
+    def __str__(self) -> str:
+        return f"ChapterContent(text_len={len(self.text)}, footnotes_count={self.footnote_count})"

@@ -5,3 +5,11 @@ __pycache__/
 *.pyc
 
 .DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# Test databases
+*.db
+test.db

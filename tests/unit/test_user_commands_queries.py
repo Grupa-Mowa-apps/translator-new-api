@@ -7,7 +7,7 @@ from app.application.commands.delete_user import DeleteUserCommand
 from app.application.commands.update_user import UpdateUserCommand
 from app.application.queries.get_user import GetUserQuery
 from app.application.queries.list_users import ListUsersQuery
-from app.application.queries.get_user_books import GetUserBooksCommand
+from app.application.queries.get_user_books import GetUserBooksQuery
 from app.application.dto.user_dto import CreateUserRequest, UserResponse, UpdateUserRequest
 from app.domain.entities.user import User
 from app.domain.entities.book import Book
@@ -18,7 +18,9 @@ from app.domain.errors import UserErrors
 
 @pytest.fixture
 def mock_user_repository():
-    return Mock(spec=UserRepository)
+    repo = Mock(spec=UserRepository)
+    repo.session = Mock()
+    return repo
 
 @pytest.fixture
 def mock_book_repository():
@@ -150,13 +152,13 @@ class TestUserQueries:
             User(id="user5", email="user5@email.com", name="user five")
         ]
         mock_user_repository.list_paginated_filtered.side_effect = (
-            lambda limit, email_like: users[:limit]
+            lambda limit, offset, email_like: users[:limit]
         )
 
         query = ListUsersQuery(mock_user_repository)
-        result = query.run(3, email_like=None)
+        result = query.run(3, 0, email_like=None)
 
-        mock_user_repository.list_paginated_filtered.assert_called_once_with(3, None)
+        mock_user_repository.list_paginated_filtered.assert_called_once_with(3, 0, None)
 
         assert isinstance(result, List)
         assert result[0].id == "user1"
@@ -188,7 +190,7 @@ class TestUserQueries:
             lambda owner_id: [b for b in books if b.owner_id == user.id]
         )
 
-        query = GetUserBooksCommand(mock_book_repository)
+        query = GetUserBooksQuery(mock_book_repository)
         owner_id = "user"
 
         result = query.run(owner_id)
