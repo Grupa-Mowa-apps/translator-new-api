@@ -1,3 +1,4 @@
+from pathlib import Path
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -10,16 +11,34 @@ from app.application.queries.get_file import GetFileQuery
 from app.domain.value_objects.file_kind import FileKind
 from app.application.commands.delete_file import DeleteFileCommand
 from app.application.queries.list_files import ListFilesForBookQuery, ListFilesForOwnerQuery
+from backend.src.app.infrastructure.files.file_storage_adapter import FileStorageAdapter
 
 router = APIRouter(prefix="/files", tags=["files"])
 
-def file_repo(db: Session):
+def file_repo(db: Session) -> SqlAlchemyFileRepository:
     return SqlAlchemyFileRepository(db)
 
+def file_storage() -> FileStorageAdapter:
+    return FileStorageAdapter(base_dir=Path("storage"))
+
 @router.post("", response_model=FileResponse, status_code=status.HTTP_201_CREATED)
-async def upload_file(dto: UploadFileRequest, file: UploadFile = File(...), db: Session = Depends(get_db)):
-    content = await file.read()
-    return UploadFileCommand(file_repo(db)).run(dto)
+async def upload_file(
+    dto: UploadFileRequest, 
+    file: UploadFile = File(...), 
+    db: Session = Depends(get_db)
+):
+    try:
+        content = await file.read()
+        cmd = UploadFileCommand(repo=file_repo(db=db), storage=file_storage())
+        return cmd.run(
+            owner_id=dto.owner_id,
+            filename=file.filename or dto.filename or "file",
+            content=content,
+            content_type=file.content_type,
+            kind=dto.kind,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.get("/{file_id}", response_model=FileResponse, status_code=status.HTTP_200_OK)
 def get_file(file_id: str, db: Session = Depends(get_db)):

@@ -6,14 +6,26 @@ from app.domain.value_objects.file_kind import FileKind
 from app.domain.ports.file_repository import FileRepository
 
 def _row_to_domain_file(file_row: FileDB) -> File:
-    return File(id=file_row.id, owner_id=file_row.owner_id,
-                kind=file_row.kind, path=file_row.path, filename=file_row.filename,
-                book_id=file_row.book_id, version=file_row.version)
+    return File(
+        id=file_row.id, 
+        owner_id=file_row.owner_id,
+        kind=FileKind(file_row.kind), 
+        path=file_row.path, 
+        filename=file_row.filename,
+        book_id=file_row.book_id, 
+        version=file_row.version,
+    )
 
 def _domain_to_row_file(file: File) -> FileDB:
-    return FileDB(id=file.id, owner_id=file.owner_id,
-                  kind=file.kind, path=file.path, filename=file.filename,
-                  book_id=file.book_id, version=file.version)
+    return FileDB(
+        id=file.id, 
+        owner_id=file.owner_id,
+        kind=file.kind.value, 
+        path=file.path, 
+        filename=file.filename,
+        book_id=file.book_id, 
+        version=file.version,
+    )
 
 class SqlAlchemyFileRepository(FileRepository):
     def __init__(self, session: Session):
@@ -35,7 +47,7 @@ class SqlAlchemyFileRepository(FileRepository):
         if not file_row:
             return False
         file_row.owner_id = file.owner_id
-        file_row.kind = file.kind
+        file_row.kind = file.kind.value
         file_row.path = file.path
         file_row.filename = file.filename
         file_row.book_id = file.book_id
@@ -50,12 +62,6 @@ class SqlAlchemyFileRepository(FileRepository):
         self.session.delete(file_row)
         self.session.commit()
         return True
-
-    def save(self, destination_name: str) -> None:
-        pass
-
-    def open(self, path: str) -> None:
-        pass
 
     def list_files_for_owner(self, owner_id: str, kind: Optional[FileKind], limit: Optional[int]) -> List[File]:
         file_rows = self.session.query(FileDB).filter(FileDB.owner_id == owner_id)

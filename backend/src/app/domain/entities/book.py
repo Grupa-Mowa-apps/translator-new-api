@@ -17,7 +17,7 @@ class Book:
     
     chapters: List[Chapter]
 
-    file_path: Optional[str] = None
+    file_id: Optional[str] = None
     
     status: BookStatus = BookStatus.UPLOADED
     version: int = INITIAL_VERSION

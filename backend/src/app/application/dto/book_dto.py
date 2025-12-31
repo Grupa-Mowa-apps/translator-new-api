@@ -7,13 +7,13 @@ class CreateBookRequest(BaseModel):
     title: str
     genre: str
     quotation_marks: QuoteType
-    file_path: str | None = None
+    file_id: str | None = None
 
 class UpdateBookRequest(BaseModel):
     title: str | None = None
     genre: str | None = None
     quotation_marks: QuoteType | None = None
-    file_path: str | None = None
+    file_id: str | None = None
     status: BookStatus | None = None
     version: int | None = None
 
@@ -23,6 +23,6 @@ class BookResponse(BaseModel):
     title: str
     genre: str
     quotation_marks: QuoteType
-    file_path: str | None = None
+    file_id: str | None = None
     status: str
     version: int

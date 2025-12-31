@@ -14,7 +14,7 @@ class GetUserBooksQuery:
                     title=b.title, 
                     genre=b.genre,
                     quotation_marks=b.quotation_marks,
-                    file_path=b.file_path,
+                    file_id=b.file_id,
                     status=b.status,
                     version=b.version
                 ) for b in books]
