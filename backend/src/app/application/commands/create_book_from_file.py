@@ -3,7 +3,7 @@ from app.domain.ports.book_repository import BookRepository
 from app.domain.ports.file_repository import FileRepository
 from app.application.dto.book_dto import BookResponse, CreateBookRequest
 from app.domain.errors import BookErrors, FileErrors
-from backend.src.app.domain.entities.book import Book
+from app.domain.entities.book import Book
 
 
 class CreateBookFromFileCommand:

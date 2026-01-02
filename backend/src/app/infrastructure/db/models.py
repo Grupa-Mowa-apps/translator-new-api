@@ -37,7 +37,18 @@ class BookDB(Base):
         passive_deletes=True,
     )
     translation_task = relationship("TranslationTaskDB", back_populates="book", uselist=False)
-    files = relationship("FileDB", back_populates="book", passive_deletes=True)
+    file = relationship(
+        "FileDB", 
+        foreign_keys=[file_id],
+        uselist=False,
+        post_update=True
+    )
+    files = relationship(
+        "FileDB",
+        back_populates="book",
+        foreign_keys="FileDB.book_id",
+        passive_deletes=True,
+    )
 
 class ChapterDB(Base):
     __tablename__ = "chapters"
@@ -95,9 +106,14 @@ class FileDB(Base):
     kind = Column(String, nullable=False)
     path = Column(String, nullable=False)
     filename = Column(String, nullable=False)
-    
+
     book_id = Column(String, ForeignKey("books.id", ondelete="SET NULL"), index=True, nullable=True)
     version = Column(Integer, nullable=False, default=1)
 
     owner = relationship("UserDB", back_populates="files", uselist=False)
-    book = relationship("BookDB", back_populates="files", uselist=False)
+    book = relationship(
+        "BookDB",
+        back_populates="files",
+        foreign_keys=[book_id],
+        uselist=False,
+    )

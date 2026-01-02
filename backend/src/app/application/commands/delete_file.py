@@ -1,10 +1,12 @@
 from app.domain.ports.file_repository import FileRepository
 from app.domain.errors import FileErrors
+from app.domain.ports.file_storage import FileStorage
 
 
 class DeleteFileCommand:
-    def __init__(self, repo: FileRepository):
+    def __init__(self, repo: FileRepository, storage: FileStorage):
         self.repo = repo
+        self.storage = storage
 
     def run(self, file_id: str) -> None:
         file = self.repo.get(file_id)

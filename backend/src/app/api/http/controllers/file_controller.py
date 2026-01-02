@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
@@ -11,7 +11,7 @@ from app.application.queries.get_file import GetFileQuery
 from app.domain.value_objects.file_kind import FileKind
 from app.application.commands.delete_file import DeleteFileCommand
 from app.application.queries.list_files import ListFilesForBookQuery, ListFilesForOwnerQuery
-from backend.src.app.infrastructure.files.file_storage_adapter import FileStorageAdapter
+from app.infrastructure.files.file_storage_adapter import FileStorageAdapter
 
 router = APIRouter(prefix="/files", tags=["files"])
 
@@ -23,7 +23,8 @@ def file_storage() -> FileStorageAdapter:
 
 @router.post("", response_model=FileResponse, status_code=status.HTTP_201_CREATED)
 async def upload_file(
-    dto: UploadFileRequest, 
+    owner_id: str = Form(...),
+    kind: FileKind = Form(...),
     file: UploadFile = File(...), 
     db: Session = Depends(get_db)
 ):
@@ -31,11 +32,11 @@ async def upload_file(
         content = await file.read()
         cmd = UploadFileCommand(repo=file_repo(db=db), storage=file_storage())
         return cmd.run(
-            owner_id=dto.owner_id,
-            filename=file.filename or dto.filename or "file",
+            owner_id=owner_id,
+            filename=file.filename or "file",
             content=content,
             content_type=file.content_type,
-            kind=dto.kind,
+            kind=kind,
         )
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -68,6 +69,6 @@ def list_files_for_book(
 @router.delete("/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_file(file_id: str, db: Session = Depends(get_db)):
     try:
-        DeleteFileCommand(file_repo(db)).run(file_id)
+        DeleteFileCommand(file_repo(db), file_storage()).run(file_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
