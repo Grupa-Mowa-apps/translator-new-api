@@ -41,6 +41,10 @@ class Book:
         self.quotation_marks = new_qt
         self._update_version()
 
+    def mark_mapped(self) -> None:
+        self.status = BookStatus.MAPPED
+        self._update_version()
+
     def mark_parsed(self) -> None:
         self.status = BookStatus.PARSED
         self._update_version()

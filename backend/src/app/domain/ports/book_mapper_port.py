@@ -1,0 +1,6 @@
+from typing import Protocol
+
+
+class BookMapperPort(Protocol):
+    def map_chapters(self, file_path: str) -> list[dict[str, any]]: ...
+    def map_footnotes(self, file_path: str) -> list[dict[str, any]]: ...

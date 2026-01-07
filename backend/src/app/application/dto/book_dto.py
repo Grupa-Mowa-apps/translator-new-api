@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from app.application.dto.chapter_dto import ChapterResponse
 from app.domain.value_objects.quotation_marks import QuoteType
 from app.domain.value_objects.book_status import BookStatus
 
@@ -26,3 +27,17 @@ class BookResponse(BaseModel):
     file_id: str | None = None
     status: str
     version: int
+
+class ProcessBookRequest(BaseModel):
+    book_id: str
+
+class BookWithChaptersResponse(BaseModel):
+    id: str
+    owner_id: str
+    title: str
+    genre: str
+    quotation_marks: str
+    file_id: str | None = None
+    status: str
+    version: int
+    chapters: list[ChapterResponse]

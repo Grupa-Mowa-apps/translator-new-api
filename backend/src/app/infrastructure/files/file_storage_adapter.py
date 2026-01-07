@@ -53,3 +53,27 @@ class FileStorageAdapter(FileStorage):
 
         if absolute_path.exists():
             absolute_path.unlink()
+
+    def read_bytes(self, storage_path: str) -> bytes:
+        if not storage_path:
+            raise ValueError(FileErrors.INVALID_STORAGE_PATH)
+        
+        relative_path = Path(storage_path)
+        base = self.base_dir.resolve()
+        absolute_path = (self.base_dir / relative_path).resolve()
+
+        if base not in absolute_path.parents and absolute_path != base:
+            raise ValueError(FileErrors.INVALID_STORAGE_PATH)
+        
+        if not absolute_path.exists() or not absolute_path.is_file():
+            raise ValueError(FileErrors.FILE_NOT_FOUND)
+        
+        return absolute_path.read_bytes()
+    
+    def read_text(self, storage_path: str, encoding: str = "utf-8") -> str:
+        data = self.read_bytes(storage_path=storage_path)
+
+        try:
+            return data.decode(encoding=encoding)
+        except UnicodeDecodeError:
+            return data.decode(encoding=encoding, errors="replace")

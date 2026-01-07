@@ -24,6 +24,10 @@ class BookErrors:
     BOOK_FILE_PATH_NOT_SET = "Book file path is not set"
     TITLE_ALREADY_EXISTS = "Book with this title already exists"
     FILE_NOT_FOUND = "Book file not found"
+    BOOK_MAPPING_FAILED = "Book mapping failed"
+
+class ChapterErrors:
+    CHAPTER_NOT_FOUND = "Chapter not found"
 
 class FileErrors:
     FILENAME_CANNOT_BE_EMPTY = "Filename cannot be empty"
