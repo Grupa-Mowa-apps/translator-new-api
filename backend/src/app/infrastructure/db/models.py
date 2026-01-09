@@ -55,7 +55,7 @@ class ChapterDB(Base):
 
     id = Column(String, primary_key=True)
     book_id = Column(String, ForeignKey("books.id", ondelete="CASCADE"), index=True, nullable=False)
-    parent_id = Column(String, ForeignKey("chapters.id", ondelete="CASCADE"), index=True, nullable=True)
+    parent_id = Column(String, ForeignKey("chapters.id", ondelete="SET NULL"), index=True, nullable=True)
 
     chapter_number = Column(Integer, nullable=False)
     title = Column(String, nullable=False)
@@ -63,7 +63,16 @@ class ChapterDB(Base):
     content = Column(Text, nullable=True)
 
     book = relationship("BookDB", back_populates="chapters")
-    parent = relationship("ChapterDB", remote_side="ChapterDB.id", backref=backref("children", passive_deletes=True, cascade="all, delete-orphan"))
+    parent = relationship(
+        "ChapterDB", 
+        remote_side=[id], 
+        backref=backref("children", passive_deletes=True),
+    )
+
+    __table_args__ = (
+        UniqueConstraint("book_id", "chapter_number", name="uq_chapters_book_chapter_number"),
+    )
+
 
 class AnnotationSetDB(Base):
     __tablename__ = "annotation_sets"
