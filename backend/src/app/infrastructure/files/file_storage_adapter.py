@@ -16,7 +16,9 @@ def _sanitize_filename(name: str) -> str:
     return name[:200] or "file"
 
 class FileStorageAdapter(FileStorage):
-    def __init__(self, base_dir: Path):
+    def __init__(self, base_dir: Path | None = None):
+        if base_dir is None:
+            base_dir = Path(os.environ.get("FILE_STORAGE_DIR", "/app/backend/storage"))
         self.base_dir = base_dir
 
     def save(

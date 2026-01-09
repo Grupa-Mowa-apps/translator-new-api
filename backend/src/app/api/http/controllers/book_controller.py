@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -18,7 +19,6 @@ from app.application.queries.list_books import ListBooksForOwnerQuery
 from app.infrastructure.files.file_storage_adapter import FileStorageAdapter
 from app.infrastructure.parsing.markdown_analyzer_adapter import MarkdownAnalyzerAdapter
 
-
 router = APIRouter(prefix="/books", tags=["books"])
 
 
@@ -32,10 +32,14 @@ def chapter_repo(db: Session) -> SqlAlchemyChapterRepository:
     return SqlAlchemyChapterRepository(session=db)
 
 def file_storage() -> FileStorageAdapter:
-    return FileStorageAdapter(base_dir=Path("storage"))
+    return FileStorageAdapter()
 
 def book_mapper() -> BookMapperAdapter:
-    md_analyzer_factory = lambda fp: MarkdownAnalyzerAdapter(file_path=fp)
+    base_dir = Path(os.environ.get("FILE_STORAGE_DIR", "/app/backend/storage"))
+
+    md_analyzer_factory = lambda rel_path: MarkdownAnalyzerAdapter(
+        file_path=str((base_dir / rel_path).resolve())
+    )
     return BookMapperAdapter(md_analyzer_factory=md_analyzer_factory)
     
 

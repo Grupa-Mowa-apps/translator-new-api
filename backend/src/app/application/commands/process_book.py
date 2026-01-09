@@ -63,7 +63,7 @@ class ProcessBookCommand:
                     )
                 )
 
-            for chapter, raw_chapter in zip(Chapter, raw_chapters):
+            for chapter, raw_chapter in zip(chapters, raw_chapters):
                 parent_number = raw_chapter.get("parent_number")
                 if parent_number is not None:
                     chapter.set_parent(number_to_id[int(parent_number)])
@@ -74,10 +74,10 @@ class ProcessBookCommand:
             book.mark_mapped()
             self.book_repo.update(book=book)
 
-        except Exception:
+        except Exception as e:
             book.mark_failed()
             self.book_repo.update(book=book)
-            raise ValueError(BookErrors.BOOK_MAPPING_FAILED)
+            raise ValueError(f"{BookErrors.BOOK_MAPPING_FAILED}: {e}") from e 
         
         return BookResponse(
             id=book.id,
