@@ -32,7 +32,6 @@ class SqlAlchemyAnnotationSetRepository(AnnotationSetRepository):
     def add(self, annotation_set: AnnotationSet) -> None:
         annotation_row = _to_orm(annotation_set)
         self.session.add(annotation_row)
-        self.session.commit()
 
     def get(self, annotation_set_id: str) -> Optional[AnnotationSet]:
         annotation_row = self.session.get(AnnotationSetDB, annotation_set_id)
@@ -57,7 +56,6 @@ class SqlAlchemyAnnotationSetRepository(AnnotationSetRepository):
         annotation_row.status = str(annotation_set.status)
         annotation_row.version = annotation_set.version
 
-        self.session.commit()
         return True
 
     def delete(self, annotation_set: AnnotationSet) -> bool:
@@ -67,9 +65,9 @@ class SqlAlchemyAnnotationSetRepository(AnnotationSetRepository):
             raise ValueError(AnnotationSetErrors.ANNOTATION_SET_NOT_FOUND)
         
         self.session.delete(annotation_row)
-        self.session.commit()
         return True
     
-    def list_for_book(self, book_id: str) -> list[AnnotationSet]:
+from typing import List
+    def list_for_book(self, book_id: str) -> List[AnnotationSet]:
         annotation_rows = self.session.query(AnnotationSetDB).filter(AnnotationSetDB.book_id == book_id)
         return [_to_domain(annotation_model=annotation_row) for annotation_row in annotation_rows]

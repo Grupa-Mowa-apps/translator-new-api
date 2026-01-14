@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional, List
 from app.application.dto.chapter_dto import ChapterResponse
 from app.domain.value_objects.quotation_marks import QuoteType
 from app.domain.value_objects.book_status import BookStatus
@@ -8,15 +9,15 @@ class CreateBookRequest(BaseModel):
     title: str
     genre: str
     quotation_marks: QuoteType
-    file_id: str | None = None
+    file_id: Optional[str] = None
 
 class UpdateBookRequest(BaseModel):
-    title: str | None = None
-    genre: str | None = None
-    quotation_marks: QuoteType | None = None
-    file_id: str | None = None
-    status: BookStatus | None = None
-    version: int | None = None
+    title: Optional[str] = None
+    genre: Optional[str] = None
+    quotation_marks: Optional[QuoteType] = None
+    file_id: Optional[str] = None
+    status: Optional[BookStatus] = None
+    version: Optional[int] = None
 
 class BookResponse(BaseModel):
     id: str
@@ -24,7 +25,7 @@ class BookResponse(BaseModel):
     title: str
     genre: str
     quotation_marks: QuoteType
-    file_id: str | None = None
+    file_id: Optional[str] = None
     status: str
     version: int
 
@@ -37,7 +38,7 @@ class BookWithChaptersResponse(BaseModel):
     title: str
     genre: str
     quotation_marks: str
-    file_id: str | None = None
+    file_id: Optional[str] = None
     status: str
     version: int
-    chapters: list[ChapterResponse]
+    chapters: List[ChapterResponse]

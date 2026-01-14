@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>AWS AI Practitioner - Lista Narzędzi</title>
+    <style>
+        @media print {
+            body { margin: 1.5cm; }
+            h1, h2, h3 { page-break-after: avoid; }
+            pre, blockquote { page-break-inside: avoid; }
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #FF9900;
+            border-bottom: 3px solid #FF9900;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #232F3E;
+            margin-top: 30px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #FF9900;
+            margin-top: 20px;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        strong {
+            color: #232F3E;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin: 30px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .emoji {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+
+<h1>AWS AI Practitioner - Lista Narzędzi</h1>
+
+<h2>🤖 SERWISY AI/ML</h2>
+
+<h3><strong>Amazon SageMaker</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Kompleksowa platforma do budowania, trenowania i wdrażania modeli ML</li>
+<li><strong>Funkcje:</strong> Training jobs, endpoints, notebooks, autopilot</li>
+<li><strong>Kiedy używać:</strong> Gdy budujesz własne modele ML od zera</li>
+</ul>
+
+<h3><strong>Amazon Bedrock</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Dostęp do gotowych modeli foundation (LLM) przez API</li>
+<li><strong>Funkcje:</strong> Claude, Llama, Stable Diffusion - bez zarządzania infrastrukturą</li>
+<li><strong>Kiedy używać:</strong> Gdy chcesz używać gotowych modeli AI (ChatGPT-like)</li>
+</ul>
+
+<h3><strong>Amazon Q</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Asystent AI dla biznesu i deweloperów</li>
+<li><strong>Funkcje:</strong> Odpowiedzi na pytania, generowanie kodu, analiza dokumentów</li>
+<li><strong>Kiedy używać:</strong> Chatbot dla pracowników, pomoc w kodowaniu</li>
+</ul>
+
+<hr>
+
+<h2>👁️ COMPUTER VISION (Obrazy/Wideo)</h2>
+
+<h3><strong>Amazon Rekognition</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Analiza obrazów i wideo</li>
+<li><strong>Funkcje:</strong> Rozpoznawanie twarzy, obiektów, tekstu, moderacja treści</li>
+<li><strong>Przykład:</strong> Wykrywanie nieodpowiednich zdjęć, rozpoznawanie celebrytów</li>
+</ul>
+
+<h3><strong>Amazon Textract</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Ekstrakcja tekstu i danych z dokumentów (OCR++)</li>
+<li><strong>Funkcje:</strong> Odczytywanie faktur, formularzy, tabel z PDF/obrazów</li>
+<li><strong>Przykład:</strong> Automatyczne przetwarzanie faktur, skanowanie dokumentów</li>
+</ul>
+
+<hr>
+
+<h2>🗣️ NATURAL LANGUAGE PROCESSING (Tekst/Mowa)</h2>
+
+<h3><strong>Amazon Comprehend</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Analiza tekstu i wydobywanie informacji</li>
+<li><strong>Funkcje:</strong> Sentiment analysis, wykrywanie języka, entity recognition</li>
+<li><strong>Przykład:</strong> Analiza opinii klientów, klasyfikacja dokumentów</li>
+</ul>
+
+<h3><strong>Amazon Translate</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Tłumaczenie maszynowe</li>
+<li><strong>Funkcje:</strong> Tłumaczenie tekstu między 75+ językami</li>
+<li><strong>Przykład:</strong> Tłumaczenie strony www, dokumentów</li>
+</ul>
+
+<h3><strong>Amazon Transcribe</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Konwersja mowy na tekst (Speech-to-Text)</li>
+<li><strong>Funkcje:</strong> Transkrypcja audio/wideo, rozpoznawanie mówców</li>
+<li><strong>Przykład:</strong> Napisy do filmów, transkrypcja spotkań</li>
+</ul>
+
+<h3><strong>Amazon Polly</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Konwersja tekstu na mowę (Text-to-Speech)</li>
+<li><strong>Funkcje:</strong> Generowanie naturalnie brzmiącej mowy</li>
+<li><strong>Przykład:</strong> Audiobooki, asystenci głosowi, IVR</li>
+</ul>
+
+<h3><strong>Amazon Lex</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Budowanie chatbotów i interfejsów konwersacyjnych</li>
+<li><strong>Funkcje:</strong> NLU (rozumienie języka), zarządzanie dialogiem</li>
+<li><strong>Przykład:</strong> Chatbot obsługi klienta, asystent głosowy</li>
+</ul>
+
+<hr>
+
+<h2>🔮 PERSONALIZACJA I REKOMENDACJE</h2>
+
+<h3><strong>Amazon Personalize</strong></h3>
+<ul>
+<li><strong>Cel:</strong> System rekomendacji oparty na ML</li>
+<li><strong>Funkcje:</strong> Personalizowane rekomendacje produktów, treści</li>
+<li><strong>Przykład:</strong> "Klienci którzy kupili X, kupili też Y"</li>
+</ul>
+
+<h3><strong>Amazon Forecast</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Prognozowanie szeregów czasowych</li>
+<li><strong>Funkcje:</strong> Przewidywanie popytu, sprzedaży, ruchu</li>
+<li><strong>Przykład:</strong> Prognoza sprzedaży na następny kwartał</li>
+</ul>
+
+<hr>
+
+<h2>🔍 WYKRYWANIE ANOMALII I OSZUSTW</h2>
+
+<h3><strong>Amazon Fraud Detector</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Wykrywanie oszustw online</li>
+<li><strong>Funkcje:</strong> Detekcja fałszywych kont, transakcji, recenzji</li>
+<li><strong>Przykład:</strong> Blokowanie podejrzanych płatności kartą</li>
+</ul>
+
+<h3><strong>Amazon Lookout for Metrics</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Automatyczne wykrywanie anomalii w metrykach biznesowych</li>
+<li><strong>Funkcje:</strong> Monitorowanie KPI, alertowanie o odchyleniach</li>
+<li><strong>Przykład:</strong> Wykrywanie spadku sprzedaży, wzrostu błędów</li>
+</ul>
+
+<h3><strong>Amazon Lookout for Vision</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Wykrywanie defektów w produkcji (computer vision)</li>
+<li><strong>Funkcje:</strong> Kontrola jakości produktów na taśmie produkcyjnej</li>
+<li><strong>Przykład:</strong> Wykrywanie uszkodzonych części w fabryce</li>
+</ul>
+
+<h3><strong>Amazon Lookout for Equipment</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Predykcyjna konserwacja maszyn przemysłowych</li>
+<li><strong>Funkcje:</strong> Wykrywanie anomalii w danych z czujników</li>
+<li><strong>Przykład:</strong> Przewidywanie awarii maszyn przed ich wystąpieniem</li>
+</ul>
+
+<hr>
+
+<h2>📊 DANE I ETL</h2>
+
+<h3><strong>AWS Glue</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Serverless ETL (Extract, Transform, Load)</li>
+<li><strong>Funkcje:</strong> Przygotowanie danych, crawlers, Data Catalog</li>
+<li><strong>Kiedy używać:</strong> Czyszczenie i transformacja danych przed ML</li>
+</ul>
+
+<h3><strong>AWS Glue Data Catalog</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Centralny katalog metadanych</li>
+<li><strong>Funkcje:</strong> Przechowywanie informacji o strukturze, lokalizacji danych</li>
+<li><strong>Kiedy używać:</strong> Zarządzanie metadanymi dla Athena, Redshift, EMR</li>
+</ul>
+
+<h3><strong>Amazon Athena</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Zapytania SQL bezpośrednio na danych w S3</li>
+<li><strong>Funkcje:</strong> Serverless, płacisz za zapytanie</li>
+<li><strong>Kiedy używać:</strong> Analiza danych bez ładowania do bazy</li>
+</ul>
+
+<h3><strong>Amazon S3 (Simple Storage Service)</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Przechowywanie obiektów (plików)</li>
+<li><strong>Funkcje:</strong> Data lake, storage dla modeli ML, datasety</li>
+<li><strong>Kiedy używać:</strong> Przechowywanie danych treningowych, modeli</li>
+</ul>
+
+<h3><strong>Amazon Kinesis</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Przetwarzanie danych strumieniowych w czasie rzeczywistym</li>
+<li><strong>Funkcje:</strong> Kinesis Data Streams, Firehose, Analytics</li>
+<li><strong>Kiedy używać:</strong> Real-time analytics, streaming data</li>
+</ul>
+
+<hr>
+
+<h2>🔐 BEZPIECZEŃSTWO I ZGODNOŚĆ</h2>
+
+<h3><strong>Amazon Macie</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Wykrywanie i ochrona wrażliwych danych (PII)</li>
+<li><strong>Funkcje:</strong> Skanowanie S3 w poszukiwaniu danych osobowych</li>
+<li><strong>Przykład:</strong> Znajdowanie numerów kart kredytowych w plikach</li>
+</ul>
+
+<h3><strong>AWS IAM (Identity and Access Management)</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Zarządzanie dostępem do zasobów AWS</li>
+<li><strong>Funkcje:</strong> Users, roles, policies, permissions</li>
+<li><strong>Kiedy używać:</strong> Kontrola kto ma dostęp do modeli ML</li>
+</ul>
+
+<h3><strong>Amazon GuardDuty</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Wykrywanie zagrożeń bezpieczeństwa</li>
+<li><strong>Funkcje:</strong> Monitorowanie podejrzanej aktywności w AWS</li>
+<li><strong>Przykład:</strong> Wykrywanie nieautoryzowanego dostępu</li>
+</ul>
+
+<hr>
+
+<h2>💻 COMPUTE I INFRASTRUKTURA</h2>
+
+<h3><strong>AWS Lambda</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Serverless compute - uruchamianie kodu bez serwerów</li>
+<li><strong>Funkcje:</strong> Płacisz tylko za czas wykonania</li>
+<li><strong>Kiedy używać:</strong> Inference dla małych modeli, event-driven ML</li>
+</ul>
+
+<h3><strong>Amazon EC2 (Elastic Compute Cloud)</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Wirtualne serwery w chmurze</li>
+<li><strong>Funkcje:</strong> Różne typy instancji (CPU, GPU, pamięć)</li>
+<li><strong>Kiedy używać:</strong> Trenowanie modeli, custom infrastructure</li>
+</ul>
+
+<h3><strong>Amazon ECS/EKS</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Uruchamianie kontenerów Docker</li>
+<li><strong>Funkcje:</strong> ECS (AWS), EKS (Kubernetes)</li>
+<li><strong>Kiedy używać:</strong> Wdrażanie modeli w kontenerach</li>
+</ul>
+
+<hr>
+
+<h2>📈 MONITORING I OPTYMALIZACJA</h2>
+
+<h3><strong>Amazon CloudWatch</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Monitoring i logowanie</li>
+<li><strong>Funkcje:</strong> Metryki, logi, alarmy, dashboardy</li>
+<li><strong>Kiedy używać:</strong> Monitorowanie wydajności modeli, alertowanie</li>
+</ul>
+
+<h3><strong>AWS CloudTrail</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Audyt i śledzenie działań w AWS</li>
+<li><strong>Funkcje:</strong> Logowanie wszystkich API calls</li>
+<li><strong>Kiedy używać:</strong> Compliance, security audits</li>
+</ul>
+
+<hr>
+
+<h2>🎯 BUSINESS INTELLIGENCE</h2>
+
+<h3><strong>Amazon QuickSight</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Business Intelligence i wizualizacja danych</li>
+<li><strong>Funkcje:</strong> Dashboardy, raporty, ML insights</li>
+<li><strong>Kiedy używać:</strong> Tworzenie raportów biznesowych z danych ML</li>
+</ul>
+
+<hr>
+
+<h2>🏗️ INNE WAŻNE SERWISY</h2>
+
+<h3><strong>AWS Step Functions</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Orkiestracja workflow (przepływów pracy)</li>
+<li><strong>Funkcje:</strong> Koordynacja wielu serwisów AWS</li>
+<li><strong>Kiedy używać:</strong> Złożone pipeline ML (data prep → training → deploy)</li>
+</ul>
+
+<h3><strong>Amazon EventBridge</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Event bus - routing zdarzeń między serwisami</li>
+<li><strong>Funkcje:</strong> Trigger Lambda, Step Functions na podstawie eventów</li>
+<li><strong>Kiedy używać:</strong> Event-driven architecture dla ML</li>
+</ul>
+
+<h3><strong>Amazon SNS (Simple Notification Service)</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Wysyłanie powiadomień (pub/sub)</li>
+<li><strong>Funkcje:</strong> Email, SMS, push notifications</li>
+<li><strong>Kiedy używać:</strong> Alertowanie o wynikach modelu, anomaliach</li>
+</ul>
+
+<h3><strong>Amazon SQS (Simple Queue Service)</strong></h3>
+<ul>
+<li><strong>Cel:</strong> Kolejki wiadomości</li>
+<li><strong>Funkcje:</strong> Asynchroniczne przetwarzanie</li>
+<li><strong>Kiedy używać:</strong> Buforowanie requestów do modelu ML</li>
+</ul>
+
+<hr>
+
+<h2>📚 KLUCZOWE KONCEPCJE DO ZAPAMIĘTANIA</h2>
+
+<h3><strong>Serverless vs Managed vs Self-Managed</strong></h3>
+<ul>
+<li><strong>Serverless:</strong> Lambda, Athena - zero zarządzania infrastrukturą</li>
+<li><strong>Managed:</strong> SageMaker, Rekognition - AWS zarządza, Ty konfigurujesz</li>
+<li><strong>Self-Managed:</strong> EC2 - pełna kontrola, pełna odpowiedzialność</li>
+</ul>
+
+<h3><strong>Real-time vs Batch Inference</strong></h3>
+<ul>
+<li><strong>Real-time:</strong> Endpoint SageMaker, Lambda - natychmiastowa odpowiedź</li>
+<li><strong>Batch:</strong> Batch Transform, Glue - przetwarzanie dużych zbiorów</li>
+</ul>
+
+<h3><strong>Training vs Inference</strong></h3>
+<ul>
+<li><strong>Training:</strong> Tworzenie modelu (SageMaker Training Jobs)</li>
+<li><strong>Inference:</strong> Używanie modelu (SageMaker Endpoints, Lambda)</li>
+</ul>
+
+<hr>
+
+<h2>🎓 TIPS DO EGZAMINU</h2>
+
+<ol>
+<li><strong>Rozpoznaj use case</strong> - każdy serwis ma swoje zastosowanie</li>
+<li><strong>Serverless first</strong> - AWS preferuje rozwiązania serverless</li>
+<li><strong>Managed services</strong> - używaj gotowych serwisów zamiast budować od zera</li>
+<li><strong>Cost optimization</strong> - batch vs real-time, reserved instances</li>
+<li><strong>Security</strong> - IAM, encryption, VPC</li>
+<li><strong>Scalability</strong> - auto-scaling, distributed training</li>
+</ol>
+
+<hr>
+
+<h2>📖 NAJCZĘSTSZE PYTANIA NA EGZAMINIE</h2>
+
+<ul>
+<li><strong>Kiedy użyć SageMaker vs Bedrock?</strong> Custom model vs gotowy LLM</li>
+<li><strong>Kiedy użyć Lambda vs SageMaker Endpoint?</strong> Mały model/niski ruch vs duży model/wysoki ruch</li>
+<li><strong>Kiedy użyć Rekognition vs własny model?</strong> Standardowe zadania vs specjalistyczne</li>
+<li><strong>Co to jest Data Catalog?</strong> Metadata repository dla Glue/Athena</li>
+<li><strong>Batch vs Real-time inference?</strong> Nie potrzebujesz natychmiastowej odpowiedzi vs potrzebujesz</li>
+<li><strong>Overfitting?</strong> Za mało danych lub za skomplikowany model</li>
+<li><strong>Model interpretability?</strong> Jak łatwo wyjaśnić decyzje modelu</li>
+</ul>
+
+<hr>
+
+<p style="text-align: center; font-size: 1.2em; margin-top: 40px;"><strong>Powodzenia na egzaminie! 🚀</strong></p>
+
+</body>
+</html>

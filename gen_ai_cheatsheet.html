@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gen AI Ściągawka - Token, Vector, Embedding</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: #333;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 10mm;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #FF9900;
+            font-size: 20pt;
+            margin-bottom: 5mm;
+            border-bottom: 3px solid #232F3E;
+            padding-bottom: 3mm;
+        }
+        
+        h2 {
+            background: #232F3E;
+            color: white;
+            padding: 4mm;
+            font-size: 14pt;
+            margin-top: 5mm;
+            margin-bottom: 3mm;
+        }
+        
+        h3 {
+            color: #FF9900;
+            font-size: 12pt;
+            margin-top: 3mm;
+            margin-bottom: 2mm;
+            border-left: 4px solid #FF9900;
+            padding-left: 3mm;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 3mm 0;
+            font-size: 9pt;
+        }
+        
+        th {
+            background: #232F3E;
+            color: white;
+            padding: 3mm;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            border: 1px solid #ddd;
+            padding: 3mm;
+            vertical-align: top;
+        }
+        
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        
+        .code {
+            background: #f4f4f4;
+            border-left: 3px solid #FF9900;
+            padding: 3mm;
+            font-family: 'Courier New', monospace;
+            font-size: 8pt;
+            margin: 2mm 0;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            background: #FFF3CD;
+            padding: 2mm;
+            border-left: 3px solid #FFC107;
+            margin: 2mm 0;
+        }
+        
+        .box {
+            border: 2px solid #232F3E;
+            padding: 3mm;
+            margin: 3mm 0;
+            background: #f8f9fa;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3mm;
+            margin: 3mm 0;
+        }
+        
+        .cost {
+            background: #d4edda;
+            border: 1px solid #28a745;
+            padding: 2mm;
+            font-weight: bold;
+        }
+        
+        ul {
+            margin: 2mm 0;
+            padding-left: 5mm;
+        }
+        
+        li {
+            margin: 1mm 0;
+        }
+        
+        @media print {
+            body {
+                padding: 0;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚀 Gen AI Ściągawka: Token, Vector, Embedding</h1>
+
+<h2>1. TOKEN - Podstawowa Jednostka Tekstu</h2>
+
+<div class="box">
+    <strong>Definicja:</strong> Najmniejsza jednostka tekstu rozumiana przez model AI
+</div>
+
+<table>
+    <tr>
+        <th>Język</th>
+        <th>Przykład Tokenizacji</th>
+        <th>Liczba Tokenów</th>
+    </tr>
+    <tr>
+        <td>Angielski</td>
+        <td>"Hello world!" → ["Hello", " world", "!"]</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>Polski</td>
+        <td>"Cześć świecie" → ["Cze", "ść", " świ", "ecie"]</td>
+        <td>4</td>
+    </tr>
+    <tr>
+        <td>Kod</td>
+        <td>"def hello():" → ["def", " hello", "(", ")", ":"]</td>
+        <td>5</td>
+    </tr>
+</table>
+
+<h3>Reguły Tokenizacji</h3>
+<ul>
+    <li><strong>1 token ≈ 4 znaki</strong> (angielski)</li>
+    <li><strong>1 token ≈ 2-3 znaki</strong> (polski, chiński)</li>
+    <li><strong>1 token ≈ ¾ słowa</strong> (średnio)</li>
+</ul>
+
+<div class="code">
+# Python - liczenie tokenów
+import tiktoken
+
+encoder = tiktoken.encoding_for_model("gpt-4")
+tokens = encoder.encode("Hello world!")
+print(len(tokens))  # 3
+</div>
+
+<h3>Koszty (Tokeny)</h3>
+<table>
+    <tr>
+        <th>Model</th>
+        <th>Input (1K tokens)</th>
+        <th>Output (1K tokens)</th>
+    </tr>
+    <tr>
+        <td>GPT-4 Turbo</td>
+        <td>$0.01</td>
+        <td>$0.03</td>
+    </tr>
+    <tr>
+        <td>GPT-3.5 Turbo</td>
+        <td>$0.0005</td>
+        <td>$0.0015</td>
+    </tr>
+    <tr>
+        <td>Claude 3 Sonnet</td>
+        <td>$0.003</td>
+        <td>$0.015</td>
+    </tr>
+    <tr>
+        <td>AWS Titan</td>
+        <td>$0.0008</td>
+        <td>$0.0016</td>
+    </tr>
+</table>
+
+<h3>Limity Kontekstu</h3>
+<table>
+    <tr>
+        <th>Model</th>
+        <th>Max Tokens</th>
+        <th>Równowartość</th>
+    </tr>
+    <tr>
+        <td>GPT-4 Turbo</td>
+        <td>128,000</td>
+        <td>~300 stron A4</td>
+    </tr>
+    <tr>
+        <td>GPT-3.5</td>
+        <td>16,000</td>
+        <td>~40 stron A4</td>
+    </tr>
+    <tr>
+        <td>Claude 3</td>
+        <td>200,000</td>
+        <td>~500 stron A4</td>
+    </tr>
+</table>
+
+<div class="page-break"></div>
+
+<h2>2. VECTOR (Embedding) - Reprezentacja Znaczenia</h2>
+
+<div class="box">
+    <strong>Definicja:</strong> Lista liczb reprezentująca znaczenie tekstu w przestrzeni wielowymiarowej
+</div>
+
+<h3>Przykład</h3>
+<div class="code">
+"dog" → [0.2, -0.5, 0.8, 0.1, ..., 0.3]  # 1536 liczb
+"cat" → [0.3, -0.4, 0.7, 0.2, ..., 0.4]  # podobny vector!
+"car" → [-0.8, 0.9, -0.2, 0.5, ..., -0.1] # różny vector
+</div>
+
+<h3>Właściwości Vectorów</h3>
+<table>
+    <tr>
+        <th>Właściwość</th>
+        <th>Opis</th>
+        <th>Przykład</th>
+    </tr>
+    <tr>
+        <td>Wymiarowość</td>
+        <td>Liczba elementów w vectorze</td>
+        <td>1536 (OpenAI), 768 (BERT)</td>
+    </tr>
+    <tr>
+        <td>Podobieństwo</td>
+        <td>Bliskie vectory = podobne znaczenie</td>
+        <td>cos(dog, cat) = 0.85</td>
+    </tr>
+    <tr>
+        <td>Odległość</td>
+        <td>Dalekie vectory = różne znaczenie</td>
+        <td>cos(dog, car) = 0.12</td>
+    </tr>
+</table>
+
+<h3>Modele Embedding</h3>
+<table>
+    <tr>
+        <th>Model</th>
+        <th>Wymiary</th>
+        <th>Koszt (1M tokens)</th>
+        <th>Use Case</th>
+    </tr>
+    <tr>
+        <td>text-embedding-3-small</td>
+        <td>1536</td>
+        <td>$0.02</td>
+        <td>Ogólne, tanie</td>
+    </tr>
+    <tr>
+        <td>text-embedding-3-large</td>
+        <td>3072</td>
+        <td>$0.13</td>
+        <td>Wysoka jakość</td>
+    </tr>
+    <tr>
+        <td>Amazon Titan Embeddings</td>
+        <td>1024</td>
+        <td>$0.0001</td>
+        <td>AWS native</td>
+    </tr>
+    <tr>
+        <td>sentence-transformers</td>
+        <td>768</td>
+        <td>FREE</td>
+        <td>Open source, local</td>
+    </tr>
+</table>
+
+<div class="code">
+# Python - tworzenie vectora
+import openai
+
+response = openai.embeddings.create(
+    model="text-embedding-3-small",
+    input="Cześć jak się masz?"
+)
+vector = response.data[0].embedding
+# [0.123, -0.456, 0.789, ..., 0.234]  # 1536 liczb
+</div>
+
+<h3>Obliczanie Podobieństwa</h3>
+<div class="code">
+# Cosine Similarity
+import numpy as np
+
+def cosine_similarity(v1, v2):
+    return np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+
+similarity = cosine_similarity(vector1, vector2)
+# 0.0 - 1.0 (1.0 = identyczne)
+</div>
+
+<div class="page-break"></div>
+
+<h2>3. EMBEDDING - Proces Zamiany Tekstu na Vector</h2>
+
+<div class="box">
+    <strong>Definicja:</strong> Proces transformacji tekstu w reprezentację numeryczną (vector)
+</div>
+
+<h3>Przepływ</h3>
+<div class="code">
+Tekst → Tokenizacja → Model Embedding → Vector
+
+"Hello" → ["Hello"] → Neural Network → [0.2, -0.5, 0.8, ...]
+</div>
+
+<h3>Zastosowania</h3>
+<table>
+    <tr>
+        <th>Use Case</th>
+        <th>Opis</th>
+        <th>Przykład</th>
+    </tr>
+    <tr>
+        <td>Semantic Search</td>
+        <td>Szukanie po znaczeniu, nie słowach</td>
+        <td>Query: "pies" → Wynik: "zwierzę domowe"</td>
+    </tr>
+    <tr>
+        <td>RAG</td>
+        <td>Retrieval Augmented Generation</td>
+        <td>Chatbot z bazą wiedzy</td>
+    </tr>
+    <tr>
+        <td>Similarity</td>
+        <td>Znajdowanie podobnych dokumentów</td>
+        <td>Rekomendacje artykułów</td>
+    </tr>
+    <tr>
+        <td>Clustering</td>
+        <td>Grupowanie tekstów</td>
+        <td>Kategoryzacja emaili</td>
+    </tr>
+    <tr>
+        <td>Classification</td>
+        <td>Klasyfikacja tekstu</td>
+        <td>Spam detection</td>
+    </tr>
+</table>
+
+<h2>4. PORÓWNANIE: Token vs Vector vs Embedding</h2>
+
+<table>
+    <tr>
+        <th>Aspekt</th>
+        <th>TOKEN</th>
+        <th>VECTOR</th>
+        <th>EMBEDDING</th>
+    </tr>
+    <tr>
+        <td><strong>Co to?</strong></td>
+        <td>Kawałek tekstu</td>
+        <td>Lista liczb</td>
+        <td>Proces</td>
+    </tr>
+    <tr>
+        <td><strong>Przykład</strong></td>
+        <td>"Hello"</td>
+        <td>[0.2, -0.5, 0.8]</td>
+        <td>text → vector</td>
+    </tr>
+    <tr>
+        <td><strong>Użycie</strong></td>
+        <td>Input/output LLM</td>
+        <td>Reprezentacja znaczenia</td>
+        <td>Tworzenie vectorów</td>
+    </tr>
+    <tr>
+        <td><strong>Rozmiar</strong></td>
+        <td>1-4 znaki</td>
+        <td>768-3072 liczb</td>
+        <td>N/A</td>
+    </tr>
+    <tr>
+        <td><strong>Koszt</strong></td>
+        <td>$0.0005-0.03 / 1K</td>
+        <td>$0.02-0.13 / 1M</td>
+        <td>Koszt modelu</td>
+    </tr>
+    <tr>
+        <td><strong>Use Case</strong></td>
+        <td>Chatbot, generacja</td>
+        <td>Search, similarity</td>
+        <td>Preprocessing</td>
+    </tr>
+</table>
+
+<h2>5. RAG (Retrieval Augmented Generation) - Połączenie</h2>
+
+<div class="highlight">
+    <strong>RAG = Vectory (search) + Tokeny (generation)</strong>
+</div>
+
+<div class="code">
+# Krok 1: Przygotowanie (VECTORY)
+docs = ["Doc 1 text", "Doc 2 text", "Doc 3 text"]
+doc_vectors = [embed(doc) for doc in docs]
+vector_db.store(doc_vectors)
+
+# Krok 2: User Query (VECTORY)
+question = "Jak działa AI?"
+q_vector = embed(question)
+
+# Krok 3: Wyszukiwanie (VECTORY)
+relevant_docs = vector_db.search(q_vector, top_k=3)
+
+# Krok 4: Generacja (TOKENY)
+prompt = f"Context: {relevant_docs}\nQuestion: {question}\nAnswer:"
+answer = llm.generate(prompt)  # używa tokenów!
+</div>
+
+<div class="page-break"></div>
+
+<h2>6. Vector Databases</h2>
+
+<table>
+    <tr>
+        <th>Database</th>
+        <th>Typ</th>
+        <th>Zalety</th>
+        <th>Koszt</th>
+    </tr>
+    <tr>
+        <td>Pinecone</td>
+        <td>Managed</td>
+        <td>Łatwy setup, szybki</td>
+        <td>$70/mies (starter)</td>
+    </tr>
+    <tr>
+        <td>Weaviate</td>
+        <td>Open Source</td>
+        <td>Self-hosted, darmowy</td>
+        <td>FREE (infra cost)</td>
+    </tr>
+    <tr>
+        <td>pgvector</td>
+        <td>PostgreSQL ext</td>
+        <td>Istniejąca baza</td>
+        <td>FREE</td>
+    </tr>
+    <tr>
+        <td>AWS OpenSearch</td>
+        <td>Managed</td>
+        <td>AWS native</td>
+        <td>$0.036/h (t3.small)</td>
+    </tr>
+    <tr>
+        <td>ChromaDB</td>
+        <td>Open Source</td>
+        <td>Prosty, lokalny</td>
+        <td>FREE</td>
+    </tr>
+</table>
+
+<h2>7. AWS Services - Cheat Sheet</h2>
+
+<table>
+    <tr>
+        <th>Service</th>
+        <th>Typ</th>
+        <th>Input</th>
+        <th>Output</th>
+        <th>Koszt</th>
+    </tr>
+    <tr>
+        <td><strong>Bedrock (Claude)</strong></td>
+        <td>LLM</td>
+        <td>Tokeny</td>
+        <td>Tokeny</td>
+        <td>$0.008/1K in</td>
+    </tr>
+    <tr>
+        <td><strong>Titan Embeddings</strong></td>
+        <td>Embedding</td>
+        <td>Tekst</td>
+        <td>Vector (1024)</td>
+        <td>$0.0001/1K</td>
+    </tr>
+    <tr>
+        <td><strong>OpenSearch</strong></td>
+        <td>Vector DB</td>
+        <td>Vector</td>
+        <td>Search results</td>
+        <td>$0.036/h</td>
+    </tr>
+    <tr>
+        <td><strong>Kendra</strong></td>
+        <td>Search</td>
+        <td>Docs</td>
+        <td>Answers</td>
+        <td>$810/mies</td>
+    </tr>
+    <tr>
+        <td><strong>SageMaker</strong></td>
+        <td>ML Platform</td>
+        <td>Custom</td>
+        <td>Custom</td>
+        <td>Variable</td>
+    </tr>
+</table>
+
+<h2>8. Przykłady Kodu - Quick Reference</h2>
+
+<h3>OpenAI - Tokeny (Chat)</h3>
+<div class="code">
+import openai
+
+response = openai.chat.completions.create(
+    model="gpt-4-turbo",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+print(response.choices[0].message.content)
+print(f"Tokens: {response.usage.total_tokens}")
+</div>
+
+<h3>OpenAI - Vectory (Embeddings)</h3>
+<div class="code">
+response = openai.embeddings.create(
+    model="text-embedding-3-small",
+    input="Your text here"
+)
+vector = response.data[0].embedding  # 1536 liczb
+</div>
+
+<h3>AWS Bedrock - Tokeny</h3>
+<div class="code">
+import boto3, json
+
+bedrock = boto3.client('bedrock-runtime')
+response = bedrock.invoke_model(
+    modelId='anthropic.claude-v2',
+    body=json.dumps({
+        "prompt": "Hello!",
+        "max_tokens_to_sample": 100
+    })
+)
+</div>
+
+<h3>AWS Bedrock - Vectory</h3>
+<div class="code">
+response = bedrock.invoke_model(
+    modelId='amazon.titan-embed-text-v1',
+    body=json.dumps({"inputText": "Your text"})
+)
+vector = json.loads(response['body'])['embedding']
+</div>
+
+<h3>Semantic Search</h3>
+<div class="code">
+# 1. Embed documents
+docs = ["Doc 1", "Doc 2", "Doc 3"]
+doc_vectors = [embed(d) for d in docs]
+
+# 2. Embed query
+query_vector = embed("search query")
+
+# 3. Find similar
+from sklearn.metrics.pairwise import cosine_similarity
+similarities = cosine_similarity([query_vector], doc_vectors)
+best_match = docs[similarities.argmax()]
+</div>
+
+<div class="highlight" style="margin-top: 10mm; text-align: center; font-size: 11pt;">
+    <strong>💡 Zapamiętaj:</strong><br>
+    Tokeny = Koszt generacji | Vectory = Koszt wyszukiwania<br>
+    RAG = Vectory (znajdź) + Tokeny (wygeneruj odpowiedź)
+</div>
+
+<div style="text-align: center; margin-top: 10mm; font-size: 8pt; color: #666;">
+    © 2024 | AWS Certified AI Practitioner Study Guide
+</div>
+
+</body>
+</html>

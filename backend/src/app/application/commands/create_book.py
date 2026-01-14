@@ -1,10 +1,12 @@
 import uuid
+import logging
 
 from app.application.dto.book_dto import CreateBookRequest, BookResponse
 from app.domain.entities.book import Book
 from app.domain.ports.book_repository import BookRepository
 from app.domain.errors import BookErrors
 
+logger = logging.getLogger(__name__)
 
 class CreateBookCommand:
     def __init__(self, repo: BookRepository):
@@ -25,6 +27,8 @@ class CreateBookCommand:
             chapters=[],
         )
         self.repo.add(book)
+        self.repo.session.commit()
+        logger.info(f"Book created: {book.id} - {book.title}")
 
         return BookResponse(
             id=book.id,

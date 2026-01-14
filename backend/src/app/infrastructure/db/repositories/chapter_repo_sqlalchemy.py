@@ -39,7 +39,6 @@ class SqlAlchemyChapterRepository(ChapterRepository):
 
     def add(self, chapter: Chapter) -> None:
         self.session.add(_domain_to_row_chapter(chapter=chapter))
-        self.session.commit()
 
     def get(self, chapter_id: str) -> Optional[Chapter]:
         chapter_row = self.session.get(ChapterDB, chapter_id)
@@ -51,7 +50,6 @@ class SqlAlchemyChapterRepository(ChapterRepository):
         result = self.session.execute(
             delete(ChapterDB).where(ChapterDB.book_id == book_id)
         )
-        self.session.commit()
         return bool(result.rowcount and result.rowcount > 0) 
     
     def add_many(self, chapters: Iterable[Chapter]) -> int:
@@ -60,7 +58,6 @@ class SqlAlchemyChapterRepository(ChapterRepository):
         chapters_list.sort(key=lambda c: (c.parent_id is not None, c.chapter_number))
 
         self.session.add_all([_domain_to_row_chapter(chapter) for chapter in chapters_list])
-        self.session.commit()
         return len(chapters_list)
     
     def list_for_book(self, book_id: str) -> Iterable[Chapter]:

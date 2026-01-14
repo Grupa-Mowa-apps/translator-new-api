@@ -47,7 +47,6 @@ class SqlAlchemyBookRepository(BookRepository):
                 status=book.status.value, 
                 version=book.version,
         ))
-        self.session.commit()
 
     def get(self, book_id: str) -> Optional[Book]:
         book_row = self.session.get(BookDB, book_id)
@@ -71,7 +70,6 @@ class SqlAlchemyBookRepository(BookRepository):
         book_row.file_id = book.file_id
         book_row.status = book.status
         book_row.version = book.version
-        self.session.commit()
         return True
 
     def delete(self, book_id: str) -> bool:
@@ -79,7 +77,6 @@ class SqlAlchemyBookRepository(BookRepository):
         if book_row is None:
             return False
         self.session.delete(book_row)
-        self.session.commit()
         return True
 
     def list_books_for_owner(self, owner_id: str) -> Iterable[Book]:

@@ -1,10 +1,11 @@
 "This module contains quotes processing in order to hide them later from LLM"
 
 import re
+from typing import List, Tuple, Dict
 from app.domain.value_objects.quotation_marks import QuoteType
 from app.domain.errors import QuoteTypeErrors
 
-def _get_quote_patterns(quote_type: QuoteType) -> list[str]:
+def _get_quote_patterns(quote_type: QuoteType) -> List[str]:
     """
     Creates a list of quotation mark patterns for a given language.
     
@@ -34,7 +35,7 @@ def _get_quote_patterns(quote_type: QuoteType) -> list[str]:
 
     return result
 
-def find_quotes_matches(paragraph: str, quote_type: QuoteType) -> list[re.Match]:
+def find_quotes_matches(paragraph: str, quote_type: QuoteType) -> List[re.Match]:
     """
     Creates a list of re.Match for all found quotes.
 
@@ -43,7 +44,7 @@ def find_quotes_matches(paragraph: str, quote_type: QuoteType) -> list[re.Match]
         quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
 
     Returns:
-        list[re.Match]: List of re.Matches for all found quotes.
+        List[re.Match]: List of re.Matches for all found quotes.
     """
 
     quote_patterns = _get_quote_patterns(quote_type=quote_type)
@@ -54,7 +55,7 @@ def find_quotes_matches(paragraph: str, quote_type: QuoteType) -> list[re.Match]
     matches.sort(key=lambda m: m.start())
     return matches
 
-def find_quotes_in_paragraph(paragraph: str, quote_type: QuoteType) -> list[str]:
+def find_quotes_in_paragraph(paragraph: str, quote_type: QuoteType) -> List[str]:
     """
     Creates a list of quotes as strings for all found quotation marks (together with the quotation marks) in a paragraph.
 
@@ -63,7 +64,7 @@ def find_quotes_in_paragraph(paragraph: str, quote_type: QuoteType) -> list[str]
         quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
 
     Returns:
-        list[str]: List of quotes as strings together with the quotation marks.
+        List[str]: List of quotes as strings together with the quotation marks.
     """    
     matches = find_quotes_matches(paragraph=paragraph, quote_type=quote_type)
     quotes = []
@@ -74,16 +75,16 @@ def find_quotes_in_paragraph(paragraph: str, quote_type: QuoteType) -> list[str]
         quotes.append(quote)
     return quotes
 
-def find_quotes_in_text(paragraphs: list[str], quote_type: QuoteType) -> list[str]:
+def find_quotes_in_text(paragraphs: List[str], quote_type: QuoteType) -> List[str]:
     """
     Creates a list of quotes as strings for all found quotation marks (together with the quotation marks) in a text (list of paragraphs).
 
     Args:
-        paragraphs(list[str]): List of paragraphs (text) we are searching for quotations in.
+        paragraphs(List[str]): List of paragraphs (text) we are searching for quotations in.
         quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
 
     Returns:
-        list[str]: List of quotes as strings together with the quotation marks.
+        List[str]: List of quotes as strings together with the quotation marks.
     """
 
     all_quotes = []
@@ -93,18 +94,18 @@ def find_quotes_in_text(paragraphs: list[str], quote_type: QuoteType) -> list[st
 
     return all_quotes
 
-def remove_quotes_from_paragraph(paragraph: str, quote_list: list[str], quote_type: QuoteType, start_index: int=0) -> tuple[str, dict, int]:
+def remove_quotes_from_paragraph(paragraph: str, quote_list: List[str], quote_type: QuoteType, start_index: int=0) -> Tuple[str, Dict, int]:
     """
     Removes, and replaces with code, quotes from a paragraph so that they will not be visible for the LLM.
 
     Args:
         paragraph(str): Paragraph in which we are looking for the quotes.
-        quote_list(list[str]): List of quotes we are searching for.
+        quote_list(List[str]): List of quotes we are searching for.
         quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
         start_index(int): The number of quote we start counting from.
 
     Returns:
-        tuple[str, dict, int]: Returns a tuple with updated paragraphs with codes instead of quotes, a dictionary with 
+        Tuple[str, Dict, int]: Returns a tuple with updated paragraphs with codes instead of quotes, a dictionary with 
         codes and their corresponding quotes and the number of quotes taken out of the paragraph.
     """
 
@@ -124,17 +125,17 @@ def remove_quotes_from_paragraph(paragraph: str, quote_list: list[str], quote_ty
             updated_paragraph = re.sub(escaped_quote, f'{code}', updated_paragraph)
     return (updated_paragraph, quotes_dict, quote_counter)
 
-def remove_quotes_from_text(paragraphs: list[str], quote_list: list[str], quote_type: QuoteType) -> tuple[list[str], dict]:
+def remove_quotes_from_text(paragraphs: List[str], quote_list: List[str], quote_type: QuoteType) -> Tuple[List[str], Dict]:
     """
     Removes, and replaces with code, quotes from a list of paragraphs so that they will not be visible for the LLM.
 
     Args:
-        paragraphs(list[str]): List of paragraphs in which we are looking for the quotes.
-        quote_list(list[str]): List of quotes we are searching for.
+        paragraphs(List[str]): List of paragraphs in which we are looking for the quotes.
+        quote_list(List[str]): List of quotes we are searching for.
         quote_type(QuoteType): Types of quotes that are used in the text - French (« ») or German (» «).
 
     Returns:
-        tuple[str, dict, int]: Returns a tuple with updated paragraphs with codes instead of quotes, a dictionary with 
+        Tuple[str, Dict, int]: Returns a tuple with updated paragraphs with codes instead of quotes, a dictionary with 
         codes and their corresponding quotes and the number of quotes taken out of the paragraph.
     """
 
@@ -174,13 +175,13 @@ def insert_quotes_to_paragraph(no_quotes_paragraph: str, quotes_dict: dict) -> s
 
     return result_paragraph
 
-def insert_quotes_to_text(no_quotes_paragraphs: list[str], quotes_dict: dict) -> list[str]:
+def insert_quotes_to_text(no_quotes_paragraphs: List[str], quotes_dict: Dict) -> List[str]:
     """
     Inserts quotes into a text (list of paragraphs) based on quotes dictionary.
 
     Args:
         no_quotes_paragraphs(str): A list of paragraph with removed quotes and with codes insted.
-        quotes_dict(dict): A dictionary with codes and their corresponding quotes and the number of quotes taken out of the 
+        quotes_dict(Dict): A dictionary with codes and their corresponding quotes and the number of quotes taken out of the 
         paragraph.
 
     Returns:

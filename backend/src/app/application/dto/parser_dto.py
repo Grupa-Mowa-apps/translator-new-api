@@ -1,10 +1,10 @@
 from pydantic import BaseModel
-
+from typing import Optional
 from app.domain.value_objects.quotation_marks import QuoteType
 
 class ExportParserRequest(BaseModel):
     quote_type: QuoteType
-    excel_filename: str | None = None
+    excel_filename: Optional[str] = None
 
 class ExportParserResponse(BaseModel):
     annotation_set_id: str
@@ -15,7 +15,7 @@ class ExportParserResponse(BaseModel):
 
 class ApplyParserTranslationsRequest(BaseModel):
     annotation_set_id: str
-    output_md_filename: str | None = None
+    output_md_filename: Optional[str] = None
 
 class ApplyParserTranslationsResponse(BaseModel):
     output_md_path: str

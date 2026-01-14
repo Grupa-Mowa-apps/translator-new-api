@@ -1,5 +1,6 @@
 import uuid
 import logging
+from typing import Optional
 from app.domain.ports.file_repository import FileRepository
 from app.application.dto.file_dto import FileResponse, UploadFileRequest
 from app.domain.entities.file import File
@@ -19,8 +20,8 @@ class UploadFileCommand:
         kind: FileKind,
         filename: str,
         content: bytes,
-        content_type: str | None = None,
-        book_id: str | None = None,
+        content_type: Optional[str] = None,
+        book_id: Optional[str] = None,
     ) -> FileResponse:
         storage_path = self.storage.save(
             owner_id=owner_id,

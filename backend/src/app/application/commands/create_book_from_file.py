@@ -1,10 +1,12 @@
 import uuid
+import logging
 from app.domain.ports.book_repository import BookRepository
 from app.domain.ports.file_repository import FileRepository
 from app.application.dto.book_dto import BookResponse, CreateBookRequest
 from app.domain.errors import BookErrors, FileErrors
 from app.domain.entities.book import Book
 
+logger = logging.getLogger(__name__)
 
 class CreateBookFromFileCommand:
     def __init__(self, book_repo: BookRepository, file_repo: FileRepository):
@@ -12,6 +14,7 @@ class CreateBookFromFileCommand:
         self.file_repo = file_repo
 
     def run(self, dto: CreateBookRequest) -> BookResponse:
+        logger.info(f"Creating book from file: {dto.file_id}")
         file = self.file_repo.get(dto.file_id)
         if not file:
             raise ValueError(FileErrors.FILE_NOT_FOUND)
@@ -33,6 +36,9 @@ class CreateBookFromFileCommand:
 
         file.attach_to_book(book_id=book.id)
         self.file_repo.update(file=file)
+        
+        self.book_repo.session.commit()
+        logger.info(f"Book created from file: {book.id} - {book.title}")
 
         return BookResponse(
             id=book.id,

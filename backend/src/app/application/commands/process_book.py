@@ -1,6 +1,7 @@
 """ This module implements a command for mapping file content into Book entity """
 
 import uuid
+import logging
 from app.application.dto.book_dto import BookResponse, ProcessBookRequest
 from app.domain.entities.chapter import Chapter
 from app.domain.errors import BookErrors, FileErrors
@@ -10,6 +11,8 @@ from app.domain.ports.chapter_repository import ChapterRepository
 from app.domain.ports.file_repository import FileRepository
 from app.domain.ports.file_storage import FileStorage
 from app.domain.value_objects.chapter_content import ChapterContent
+
+logger = logging.getLogger(__name__)
 
 
 class ProcessBookCommand:
@@ -28,6 +31,7 @@ class ProcessBookCommand:
         self.book_mapper = book_mapper
 
     def run(self, dto: ProcessBookRequest) -> BookResponse:
+        logger.info(f"Processing book: {dto.book_id}")
         book = self.book_repo.get(book_id=dto.book_id)
 
         if book is None:
@@ -73,10 +77,15 @@ class ProcessBookCommand:
 
             book.mark_mapped()
             self.book_repo.update(book=book)
+            
+            self.book_repo.session.commit()
+            logger.info(f"Book processed successfully: {book.id}")
 
         except Exception as e:
             book.mark_failed()
             self.book_repo.update(book=book)
+            self.book_repo.session.commit()
+            logger.error(f"Book processing failed: {book.id} - {e}")
             raise ValueError(f"{BookErrors.BOOK_MAPPING_FAILED}: {e}") from e 
         
         return BookResponse(

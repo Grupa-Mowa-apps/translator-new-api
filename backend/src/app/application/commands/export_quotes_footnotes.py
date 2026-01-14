@@ -1,4 +1,5 @@
 import uuid
+import logging
 from app.domain.ports.excel_quotes_footnotes import ExcelQuotesFootnotesPort
 from app.domain.ports.book_repository import BookRepository
 from app.domain.errors import BookErrors, FileErrors
@@ -6,6 +7,8 @@ from app.application.dto.parser_dto import ExportParserRequest, ExportParserResp
 from app.domain.ports.annotation_set_repository import AnnotationSetRepository
 from app.domain.entities.annotation_set import AnnotationSet
 from app.domain.ports.file_repository import FileRepository
+
+logger = logging.getLogger(__name__)
 
 class ExportQuotesFootnotesCommand:
     def __init__(
@@ -21,6 +24,7 @@ class ExportQuotesFootnotesCommand:
         self.file_repo = file_repo
 
     def run(self, book_id: str, dto: ExportParserRequest) -> ExportParserResponse:
+        logger.info(f"Exporting quotes/footnotes for book: {book_id}")
         book = self.book_repo.get(book_id=book_id)
         if not book:
             raise ValueError(BookErrors.BOOK_NOT_FOUND)    
@@ -46,6 +50,9 @@ class ExportQuotesFootnotesCommand:
 
         book.mark_parsed()
         self.book_repo.update(book=book)
+        
+        self.book_repo.session.commit()
+        logger.info(f"Exported quotes/footnotes for book: {book_id} to {excel_path}")
 
         return ExportParserResponse(
             annotation_set_id=annotation_set.id,
