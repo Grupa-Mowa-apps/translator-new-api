@@ -13,3 +13,5 @@ __pycache__/
 # Test databases
 *.db
 test.db
+
+.DS_Store

@@ -17,7 +17,7 @@ class Book:
     
     chapters: List[Chapter]
 
-    file_path: Optional[str] = None
+    file_id: Optional[str] = None
     
     status: BookStatus = BookStatus.UPLOADED
     version: int = INITIAL_VERSION
@@ -39,6 +39,10 @@ class Book:
 
     def change_quotation_marks(self, new_qt: QuoteType) -> None:
         self.quotation_marks = new_qt
+        self._update_version()
+
+    def mark_mapped(self) -> None:
+        self.status = BookStatus.MAPPED
         self._update_version()
 
     def mark_parsed(self) -> None:

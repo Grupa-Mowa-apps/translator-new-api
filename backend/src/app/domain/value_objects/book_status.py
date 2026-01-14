@@ -2,6 +2,7 @@ from enum import Enum
 
 class BookStatus(str, Enum):
     UPLOADED = "uploaded"
+    MAPPED = "mapped"
     PARSED = "parsed"
     ANNOTATIONS_APPLIED = "annotations_applied"
     READY_TO_TRANSLATE = "ready_to_translate"

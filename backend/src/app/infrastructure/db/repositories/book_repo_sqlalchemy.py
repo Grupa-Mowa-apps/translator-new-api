@@ -5,30 +5,47 @@ from app.domain.entities.chapter import Chapter
 from app.infrastructure.db.models import BookDB, ChapterDB
 from typing import Optional, Iterable
 
-def _row_to_domain_book(book: BookDB) -> Book:
-    return Book(id=book.id, owner_id=book.owner_id,
-                title=book.title, genre=book.genre, quotation_marks=book.quotation_marks,
-                file_path=book.file_path,
-                chapters=[_row_to_domain_chapter(ch) for ch in book.chapters],
-                status=book.status, version=book.version
-                )
+from app.domain.value_objects.quotation_marks import QuoteType
+from app.domain.value_objects.book_status import BookStatus
+
+def _row_to_domain_book(row: BookDB) -> Book:
+    return Book(
+        id=row.id, 
+        owner_id=row.owner_id,
+        title=row.title, 
+        genre=row.genre, 
+        quotation_marks=QuoteType(row.quotation_marks),
+        file_id=row.file_id,
+        chapters=[_row_to_domain_chapter(ch) for ch in row.chapters],
+        status=BookStatus(row.status), 
+        version=row.version,
+    )
 
 def _row_to_domain_chapter(chapter: ChapterDB) -> Chapter:
-    return Chapter(id=chapter.id, book_id=chapter.book_id, parent_id=chapter.parent_id,
-                   chapter_number=chapter.chapter_number, title=chapter.title,
-                   content=chapter.content
-                   )
+    return Chapter(
+        id=chapter.id, 
+        book_id=chapter.book_id, 
+        parent_id=chapter.parent_id,
+        chapter_number=chapter.chapter_number, 
+        title=chapter.title,
+        content=chapter.content,
+    )
 
 class SqlAlchemyBookRepository(BookRepository):
     def __init__(self, session: Session):
         self.session = session
 
     def add(self, book: Book) -> None:
-        self.session.add(BookDB(
-            id=book.id, owner_id=book.owner_id,
-            title=book.title, genre=book.genre, quotation_marks=book.quotation_marks,
-            file_path=book.file_path,
-            status=book.status, version=book.version
+        self.session.add(
+            BookDB(
+                id=book.id, 
+                owner_id=book.owner_id,
+                title=book.title, 
+                genre=book.genre, 
+                quotation_marks=book.quotation_marks.value,
+                file_id=book.file_id,
+                status=book.status.value, 
+                version=book.version,
         ))
         self.session.commit()
 
@@ -51,7 +68,7 @@ class SqlAlchemyBookRepository(BookRepository):
         book_row.title = book.title
         book_row.genre = book.genre
         book_row.quotation_marks = book.quotation_marks
-        book_row.file_path = book.file_path
+        book_row.file_id = book.file_id
         book_row.status = book.status
         book_row.version = book.version
         self.session.commit()

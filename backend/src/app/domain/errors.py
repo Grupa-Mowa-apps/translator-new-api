@@ -23,6 +23,13 @@ class BookErrors:
     GENRE_CANNOT_BE_EMPTY = "Genre cannot be empty"
     BOOK_NOT_FOUND = "There is no book with such id"
     BOOK_FILE_PATH_NOT_SET = "Book file path is not set"
+    BOOK_FILE_PATH_NOT_SET = "Book file path is not set"
+    TITLE_ALREADY_EXISTS = "Book with this title already exists"
+    FILE_NOT_FOUND = "Book file not found"
+    BOOK_MAPPING_FAILED = "Book mapping failed"
+
+class ChapterErrors:
+    CHAPTER_NOT_FOUND = "Chapter not found"
 
 class FileErrors:
     FILENAME_CANNOT_BE_EMPTY = "Filename cannot be empty"
@@ -31,6 +38,7 @@ class FileErrors:
     BOOK_ID_CANNOT_BE_EMPTY = "Book id cannot be empty"
     INVALID_FILE_KIND = "Invalid file kind"
     FILE_NOT_FOUND = "File not found"
+    INVALID_STORAGE_PATH = "Invalid storage path"
 
 class QuoteTypeErrors:
     INVALID_QUOTE_TYPE = "Invalid quote type"
