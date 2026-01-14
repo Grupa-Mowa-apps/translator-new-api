@@ -27,9 +27,9 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             quote_type: QuoteType, 
             excel_path: str | None = None,
     ) -> tuple[str, dict]:
-        md_path = Path(md_path)
+        md_path = self._resolve_md_path(md_path=md_path)
 
-        analyzer = MarkdownAnalyzerAdapter(file_path=md_path)
+        analyzer = MarkdownAnalyzerAdapter(file_path=str(md_path))
         md_text = analyzer.load_text()
         headers = analyzer.identify_headers()
         footnotes_raw = analyzer.identify_footnotes()
@@ -125,3 +125,9 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
         out_path.write_text(md_text, encoding="utf-8")
 
         return str(out_path)
+    
+    def _resolve_md_path(self, md_path: str | Path) -> Path:
+        path = Path(md_path)
+        if path.is_absolute():
+            return path
+        return (self.base_dir / path).resolve()
