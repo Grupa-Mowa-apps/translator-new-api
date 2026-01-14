@@ -4,6 +4,7 @@ from unittest.mock import Mock
 
 from app.domain.entities.file import File
 from app.domain.ports.file_repository import FileRepository
+from app.domain.ports.file_storage import FileStorage
 from app.application.commands.upload_file import UploadFileCommand
 from app.application.commands.update_file import UpdateFileCommand
 from app.application.commands.delete_file import DeleteFileCommand
@@ -19,18 +20,25 @@ def mock_file_repository():
     repo.session = Mock()
     return repo
 
+@pytest.fixture
+def mock_file_storage():
+    storage = Mock(spec=FileStorage)
+    storage.save.return_value = "/storage/path/file.md"
+    return storage
+
 class TestFileCommands:
-    def test_create_file_successfully(self, mock_file_repository):
-        command = UploadFileCommand(mock_file_repository)
-        dto = UploadFileRequest(
+    def test_create_file_successfully(self, mock_file_repository, mock_file_storage):
+        command = UploadFileCommand(mock_file_repository, mock_file_storage)
+        
+        result = command.run(
             owner_id="ownerid",
             kind=FileKind.MARKDOWN,
             filename="filename",
+            content=b"test content",
         )
 
-        result = command.run(dto)
-
         mock_file_repository.add.assert_called_once()
+        mock_file_storage.save.assert_called_once()
 
         added_file = mock_file_repository.add.call_args[0][0]
         assert isinstance(added_file, File)
@@ -69,23 +77,24 @@ class TestFileCommands:
         assert result.kind == FileKind.XLSX
         assert result.filename == "new-filename"
 
-    def test_delete_file_successfully(self, mock_file_repository):
+    def test_delete_file_successfully(self, mock_file_repository, mock_file_storage):
         existing_file = File(
             id="file1", owner_id="owner1", 
             kind=FileKind.MARKDOWN, path="file.md", filename="markdown-file",
         )
         mock_file_repository.get.return_value = existing_file
 
-        command = DeleteFileCommand(mock_file_repository)
+        command = DeleteFileCommand(mock_file_repository, mock_file_storage)
         command.run(file_id="file1")
 
         mock_file_repository.get.assert_called_once_with("file1")
+        mock_file_storage.delete.assert_called_once_with("file.md")
         mock_file_repository.delete.assert_called_once_with("file1")
 
-    def test_should_reject_delete_nonexistent_file(self, mock_file_repository):
+    def test_should_reject_delete_nonexistent_file(self, mock_file_repository, mock_file_storage):
         mock_file_repository.get.return_value = None
 
-        command = DeleteFileCommand(mock_file_repository)
+        command = DeleteFileCommand(mock_file_repository, mock_file_storage)
         nonexistent_id = "nonexistent-id"
 
         with pytest.raises(ValueError) as e:

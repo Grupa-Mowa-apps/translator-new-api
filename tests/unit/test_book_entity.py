@@ -13,7 +13,7 @@ def book():
         title="Title",
         genre="essay",
         quotation_marks=QuoteType.FR,
-        file_path=None,
+        file_id=None,
         chapters=[chapter],
     )
 
