@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 
 from app.domain.entities.annotation_set import AnnotationSet
@@ -27,7 +27,7 @@ def _to_orm(annotation_entity: AnnotationSet) -> AnnotationSetDB:
 
 class SqlAlchemyAnnotationSetRepository(AnnotationSetRepository):
     def __init__(self, session: Session):
-        self.session = session
+        self.session: Session = session
 
     def add(self, annotation_set: AnnotationSet) -> None:
         annotation_row = _to_orm(annotation_set)
@@ -67,7 +67,6 @@ class SqlAlchemyAnnotationSetRepository(AnnotationSetRepository):
         self.session.delete(annotation_row)
         return True
     
-from typing import List
     def list_for_book(self, book_id: str) -> List[AnnotationSet]:
         annotation_rows = self.session.query(AnnotationSetDB).filter(AnnotationSetDB.book_id == book_id)
         return [_to_domain(annotation_model=annotation_row) for annotation_row in annotation_rows]

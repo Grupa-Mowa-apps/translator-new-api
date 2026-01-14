@@ -33,7 +33,7 @@ def _row_to_domain_chapter(chapter: ChapterDB) -> Chapter:
 
 class SqlAlchemyBookRepository(BookRepository):
     def __init__(self, session: Session):
-        self.session = session
+        self.session: Session = session
 
     def add(self, book: Book) -> None:
         self.session.add(
