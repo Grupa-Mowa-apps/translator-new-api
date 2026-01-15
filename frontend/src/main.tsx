@@ -9,7 +9,7 @@ import App from './App'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PrimeReactProvider value={{ ripple: true, locale: 'pl' }}>
+    <PrimeReactProvider value={{ ripple: true }}>
       <App />
     </PrimeReactProvider>
   </StrictMode>,
