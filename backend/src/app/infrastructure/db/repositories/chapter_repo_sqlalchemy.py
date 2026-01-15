@@ -7,10 +7,10 @@ from app.domain.ports.chapter_repository import ChapterRepository
 from app.domain.value_objects.chapter_content import ChapterContent
 from app.infrastructure.db.models import ChapterDB
 
-def _content_to_db(content: ChapterContent | None) -> str | None:
+def _content_to_db(content: Optional[ChapterContent]) -> Optional[str]:
     return None if content is None else content.text
 
-def _db_to_content(text: str | None) -> ChapterContent | None:
+def _db_to_content(text: Optional[str]) -> Optional[ChapterContent]:
     return None if text is None else ChapterContent(text=text, footnotes=None)
 
 def _row_to_domain_chapter(row: ChapterDB) -> Chapter:

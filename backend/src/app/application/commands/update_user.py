@@ -9,7 +9,7 @@ class UpdateUserCommand:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
-    def run(self, user_id: str, dto: UpdateUserRequest) -> UserResponse:
+    def execute(self, user_id: str, dto: UpdateUserRequest) -> UserResponse:
         logger.info(f"Updating user: {user_id}")
         u = self.repo.get(user_id)
         if not u:
@@ -22,4 +22,4 @@ class UpdateUserCommand:
         self.repo.update(u)
         self.repo.session.commit()
         logger.info(f"User updated successfully: {user_id}")
-        return UserResponse(id=u.id, email=u.email, name=u.name)
+        return UserResponse.from_entity(u)

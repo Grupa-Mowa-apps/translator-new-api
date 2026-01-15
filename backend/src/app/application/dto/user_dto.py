@@ -13,3 +13,7 @@ class UserResponse(BaseModel):
     id: str
     email: EmailStr
     name: Optional[str]
+
+    @classmethod
+    def from_entity(cls, user):
+        return cls(id=user.id, email=user.email, name=user.name)

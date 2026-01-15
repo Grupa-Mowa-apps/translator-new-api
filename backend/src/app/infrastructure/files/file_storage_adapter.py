@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import re
 from uuid import uuid4
+from typing import Optional
 
 from app.domain.ports.file_storage import FileStorage
 from app.domain.errors import FileErrors
@@ -16,7 +17,7 @@ def _sanitize_filename(name: str) -> str:
     return name[:200] or "file"
 
 class FileStorageAdapter(FileStorage):
-    def __init__(self, base_dir: Path | None = None):
+    def __init__(self, base_dir: Optional[Path] = None):
         if base_dir is None:
             base_dir = Path(os.environ.get("FILE_STORAGE_DIR", "/app/backend/storage"))
         self.base_dir = base_dir
@@ -26,7 +27,7 @@ class FileStorageAdapter(FileStorage):
         owner_id: str, 
         filename: str, 
         content: bytes, 
-        content_type: str | None = None
+        content_type: Optional[str] = None
     ) -> str:
         
         clean_filename = _sanitize_filename(filename)

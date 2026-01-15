@@ -11,3 +11,4 @@ email-validator
 mrkdwn_analysis
 pandas
 openpyxl
+debugpy

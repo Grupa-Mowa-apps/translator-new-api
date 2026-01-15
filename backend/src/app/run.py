@@ -1,5 +1,14 @@
 from fastapi import FastAPI
 import logging
+import os
+
+# Debug support for Docker
+if os.getenv("ENABLE_DEBUG") == "true":
+    import debugpy
+    debugpy.listen(("0.0.0.0", 5678))
+    print("⏳ Waiting for debugger attach on port 5678...")
+    debugpy.wait_for_client()
+    print("✅ Debugger attached!")
 
 from app.api.http.controllers.file_controller import router as files_router
 from app.api.http.controllers.users_controller import router as users_router

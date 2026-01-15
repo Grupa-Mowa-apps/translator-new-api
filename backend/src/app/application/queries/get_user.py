@@ -7,8 +7,8 @@ class GetUserQuery:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
-    def run(self, user_id: str) -> Optional[UserResponse]:
+    def execute(self, user_id: str) -> Optional[UserResponse]:
         user = self.repo.get(user_id)
         if not user:
             raise ValueError(UserErrors.USER_NOT_FOUND)
-        return UserResponse(id=user.id, email=user.email, name=user.name)
+        return UserResponse.from_entity(user)

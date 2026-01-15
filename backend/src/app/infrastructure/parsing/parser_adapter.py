@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+from typing import Optional, Tuple, Dict
 
 from app.domain.ports.excel_quotes_footnotes import ExcelQuotesFootnotesPort
 from app.domain.ports.markdown_analyzer import MarkdownAnalyzerPort
@@ -25,8 +26,8 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
     def export_from_markdown(
             self, md_path: str, 
             quote_type: QuoteType, 
-            excel_path: str | None = None,
-    ) -> tuple[str, dict]:
+            excel_path: Optional[str] = None,
+    ) -> Tuple[str, Dict]:
         md_path = self._resolve_md_path(md_path=md_path)
 
         analyzer = MarkdownAnalyzerAdapter(file_path=str(md_path))
@@ -82,7 +83,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             self, 
             excel_path: str,
             md_input_path: str, 
-            md_output_path: str | None = None
+            md_output_path: Optional[str] = None
     ) -> str:
         excel_path = Path(excel_path)
         md_input_path = Path(md_input_path)
@@ -126,7 +127,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
 
         return str(out_path)
     
-    def _resolve_md_path(self, md_path: str | Path) -> Path:
+    def _resolve_md_path(self, md_path) -> Path:
         path = Path(md_path)
         if path.is_absolute():
             return path

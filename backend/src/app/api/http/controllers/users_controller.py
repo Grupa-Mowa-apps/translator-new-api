@@ -33,7 +33,7 @@ def create_user(dto: CreateUserRequest, db: Session = Depends(get_db)):
 @router.get("/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
 def get_user(user_id: str, db: Session=Depends(get_db)):
     try:
-        return GetUserQuery(user_repo(db)).run(user_id)
+        return GetUserQuery(user_repo(db)).execute(user_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
@@ -44,12 +44,12 @@ def list_users(
     email_like: Optional[str] = None,
     db: Session = Depends(get_db)
 ):
-    return ListUsersQuery(user_repo(db)).run(limit, offset, email_like)
+    return ListUsersQuery(user_repo(db)).execute(limit, offset, email_like)
 
 @router.put("/{user_id}", response_model=UserResponse, status_code=status.HTTP_200_OK)
 def update_user(user_id: str, dto: UpdateUserRequest, db: Session=Depends(get_db)):
     try:
-        return UpdateUserCommand(user_repo(db)).run(user_id, dto)
+        return UpdateUserCommand(user_repo(db)).execute(user_id, dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
