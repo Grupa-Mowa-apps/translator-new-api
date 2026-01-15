@@ -62,7 +62,7 @@ def export_parser(book_id: str, dto: ExportParserRequest, db: Session = Depends(
             excel_port=get_parser_port(),
             file_repo=get_file_repo(db),
         )
-        return cmd.run(book_id=book_id, dto=dto)
+        return cmd.execute(book_id=book_id, dto=dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -79,7 +79,7 @@ def apply_parser(book_id: str, dto: ApplyParserTranslationsRequest, db: Session 
             excel_port=get_parser_port(),
             file_repo=get_file_repo(db),
         )
-        return cmd.run(book_id=book_id, dto=dto)
+        return cmd.execute(book_id=book_id, dto=dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -130,7 +130,7 @@ def export_parser_and_download(
     cmd: ExportQuotesFootnotesCommand = Depends(get_export_cmd),
 ):
     try:
-        result = cmd.run(book_id=book_id, dto=dto)  # ExportParserResponse
+        result = cmd.execute(book_id=book_id, dto=dto)  # ExportParserResponse
         xlsx_path = Path(result.excel_path)
 
         if not xlsx_path.exists():

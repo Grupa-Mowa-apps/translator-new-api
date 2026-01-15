@@ -12,7 +12,7 @@ class CreateBookCommand:
     def __init__(self, repo: BookRepository):
         self.repo = repo
 
-    def run(self, dto: CreateBookRequest) -> BookResponse:
+    def execute(self, dto: CreateBookRequest) -> BookResponse:
         existing = self.repo.get_by_title(dto.title)
         if existing and existing.owner_id == dto.owner_id:
             raise ValueError(BookErrors.TITLE_ALREADY_EXISTS)
@@ -27,7 +27,6 @@ class CreateBookCommand:
             chapters=[],
         )
         self.repo.add(book)
-        self.repo.session.commit()
         logger.info(f"Book created: {book.id} - {book.title}")
 
         return BookResponse(

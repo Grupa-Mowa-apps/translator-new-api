@@ -31,7 +31,7 @@ async def upload_file(
     try:
         content = await file.read()
         cmd = UploadFileCommand(repo=file_repo(db=db), storage=file_storage())
-        return cmd.run(
+        return cmd.execute(
             owner_id=owner_id,
             filename=file.filename or "file",
             content=content,
@@ -44,7 +44,7 @@ async def upload_file(
 @router.get("/{file_id}", response_model=FileResponse, status_code=status.HTTP_200_OK)
 def get_file(file_id: str, db: Session = Depends(get_db)):
     try:
-        return GetFileQuery(file_repo(db)).run(file_id)
+        return GetFileQuery(file_repo(db)).execute(file_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
@@ -55,7 +55,7 @@ def list_files_for_owner(
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    return ListFilesForOwnerQuery(file_repo(db)).run(owner_id, kind, limit)
+    return ListFilesForOwnerQuery(file_repo(db)).execute(owner_id, kind, limit)
 
 @router.get("/by-book/{book_id}", response_model=List[FileResponse], status_code=status.HTTP_200_OK)
 def list_files_for_book(
@@ -64,11 +64,11 @@ def list_files_for_book(
     limit: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db)
 ):
-    return ListFilesForBookQuery(file_repo(db)).run(book_id, kind, limit)
+    return ListFilesForBookQuery(file_repo(db)).execute(book_id, kind, limit)
 
 @router.delete("/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_file(file_id: str, db: Session = Depends(get_db)):
     try:
-        DeleteFileCommand(file_repo(db), file_storage()).run(file_id)
+        DeleteFileCommand(file_repo(db), file_storage()).execute(file_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

@@ -20,6 +20,5 @@ class UpdateUserCommand:
         if dto.name:
             u.change_name(dto.name)
         self.repo.update(u)
-        self.repo.session.commit()
         logger.info(f"User updated successfully: {user_id}")
         return UserResponse.from_entity(u)

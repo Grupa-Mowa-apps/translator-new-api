@@ -10,7 +10,7 @@ class DeleteFileCommand:
         self.repo = repo
         self.storage = storage
 
-    def run(self, file_id: str) -> None:
+    def execute(self, file_id: str) -> None:
         file = self.repo.get(file_id)
         if not file:
             raise ValueError(FileErrors.FILE_NOT_FOUND)

@@ -30,7 +30,7 @@ class ProcessBookCommand:
         self.file_storage = file_storage
         self.book_mapper = book_mapper
 
-    def run(self, dto: ProcessBookRequest) -> BookResponse:
+    def execute(self, dto: ProcessBookRequest) -> BookResponse:
         logger.info(f"Processing book: {dto.book_id}")
         book = self.book_repo.get(book_id=dto.book_id)
 
@@ -78,13 +78,11 @@ class ProcessBookCommand:
             book.mark_mapped()
             self.book_repo.update(book=book)
             
-            self.book_repo.session.commit()
             logger.info(f"Book processed successfully: {book.id}")
 
         except Exception as e:
             book.mark_failed()
             self.book_repo.update(book=book)
-            self.book_repo.session.commit()
             logger.error(f"Book processing failed: {book.id} - {e}")
             raise ValueError(f"{BookErrors.BOOK_MAPPING_FAILED}: {e}") from e 
         

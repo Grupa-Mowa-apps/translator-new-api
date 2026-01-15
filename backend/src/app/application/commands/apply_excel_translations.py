@@ -21,7 +21,7 @@ class ApplyExcelTranslationsCommand:
         self.excel_port = excel_port
         self.file_repo = file_repo
 
-    def run(self, book_id: str, dto: ApplyParserTranslationsRequest) -> ApplyParserTranslationsResponse:
+    def execute(self, book_id: str, dto: ApplyParserTranslationsRequest) -> ApplyParserTranslationsResponse:
         logger.info(f"Applying translations for book: {book_id}")
         book = self.book_repo.get(book_id=book_id)
         if not book:
@@ -51,7 +51,6 @@ class ApplyExcelTranslationsCommand:
         book.mark_annotations_applied()
         self.book_repo.update(book=book)
         
-        self.book_repo.session.commit()
         logger.info(f"Translations applied for book: {book_id}")
 
         return ApplyParserTranslationsResponse(output_md_path=output_md_path)

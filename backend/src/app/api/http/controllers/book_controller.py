@@ -50,7 +50,7 @@ def create_book(dto: CreateBookRequest, db: Session = Depends(get_db)):
             book_repo=book_repo(db),
             file_repo=file_repo(db),
         )
-        return cmd.run(dto)
+        return cmd.execute(dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -58,7 +58,7 @@ def create_book(dto: CreateBookRequest, db: Session = Depends(get_db)):
 @router.get("/{book_id}", response_model=BookResponse, status_code=status.HTTP_200_OK)
 def get_book(book_id: str, db: Session = Depends(get_db)):
     try:
-        return GetBookQuery(book_repo(db)).run(book_id)
+        return GetBookQuery(book_repo(db)).execute(book_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
@@ -66,7 +66,7 @@ def get_book(book_id: str, db: Session = Depends(get_db)):
 @router.get("", response_model=list[BookResponse], status_code=status.HTTP_200_OK)
 def list_books(owner_id: str, db: Session = Depends(get_db)):
     try:
-        return ListBooksForOwnerQuery(book_repo(db)).run(owner_id)
+        return ListBooksForOwnerQuery(book_repo(db)).execute(owner_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     
@@ -80,7 +80,7 @@ def mapp_book(book_id: str, db: Session = Depends(get_db)):
             file_storage=file_storage(),
             book_mapper=book_mapper(),
         )
-        return cmd.run(dto=ProcessBookRequest(book_id=book_id))
+        return cmd.execute(dto=ProcessBookRequest(book_id=book_id))
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     
@@ -106,7 +106,7 @@ def get_book_full(book_id: str, db: Session = Depends(get_db)):
             book_repo=book_repo(db),
             chapter_repo=chapter_repo(db),
         )
-        book = query.run(book_id)
+        book = query.execute(book_id)
 
         return BookWithChaptersResponse(
             id=book.id,

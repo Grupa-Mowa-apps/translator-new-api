@@ -13,7 +13,7 @@ class GetBookWithChaptersQuery:
         self.book_repo = book_repo
         self.chapter_repo = chapter_repo
 
-    def run(self, book_id: str) -> Book:
+    def execute(self, book_id: str) -> Book:
         book = self.book_repo.get(book_id)
         if not book:
             raise ValueError(BookErrors.BOOK_NOT_FOUND)

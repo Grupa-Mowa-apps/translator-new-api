@@ -11,13 +11,12 @@ class CreateUserCommand:
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
-    def run(self, dto: CreateUserRequest) -> UserResponse:
+    def execute(self, dto: CreateUserRequest) -> UserResponse:
         logger.info(f"Creating user with email: {dto.email}")
         if self.repo.get_by_email(dto.email):
             logger.warning(f"Email already in use: {dto.email}")
             raise ValueError(UserErrors.EMAIL_ALREADY_IN_USE)
         user = User(id=uuid.uuid4().hex, email=dto.email, name=dto.name)
         self.repo.add(user)
-        self.repo.session.commit()
         logger.info(f"User created successfully: {user.id}")
-        return UserResponse(id=user.id, email=user.email, name=user.name)
+        return UserResponse.from_entity(user)

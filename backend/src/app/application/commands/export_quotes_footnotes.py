@@ -23,7 +23,7 @@ class ExportQuotesFootnotesCommand:
         self.excel_port = excel_port
         self.file_repo = file_repo
 
-    def run(self, book_id: str, dto: ExportParserRequest) -> ExportParserResponse:
+    def execute(self, book_id: str, dto: ExportParserRequest) -> ExportParserResponse:
         logger.info(f"Exporting quotes/footnotes for book: {book_id}")
         book = self.book_repo.get(book_id=book_id)
         if not book:
@@ -51,7 +51,6 @@ class ExportQuotesFootnotesCommand:
         book.mark_parsed()
         self.book_repo.update(book=book)
         
-        self.book_repo.session.commit()
         logger.info(f"Exported quotes/footnotes for book: {book_id} to {excel_path}")
 
         return ExportParserResponse(

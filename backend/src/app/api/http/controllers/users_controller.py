@@ -26,7 +26,7 @@ def book_repo(db: Session):
 @router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(dto: CreateUserRequest, db: Session = Depends(get_db)):
     try:
-        return CreateUserCommand(user_repo(db)).run(dto)
+        return CreateUserCommand(user_repo(db)).execute(dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
     
@@ -56,14 +56,14 @@ def update_user(user_id: str, dto: UpdateUserRequest, db: Session=Depends(get_db
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(user_id: str, db: Session=Depends(get_db)):
     try:
-        DeleteUserCommand(user_repo(db)).run(user_id)
+        DeleteUserCommand(user_repo(db)).execute(user_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     
 @router.get("/{user_id}/books", response_model=List[BookResponse], status_code=status.HTTP_200_OK)
 def list_user_books(user_id: str, db: Session = Depends(get_db)):
-    return GetUserBooksQuery(book_repo(db)).run(user_id)
+    return GetUserBooksQuery(book_repo(db)).execute(user_id)
 
 @router.get("/{owner_id}/books", response_model=List[BookResponse], status_code=status.HTTP_200_OK)
 def list_user_books(owner_id: str, db: Session=Depends(get_db)):
-    return GetUserBooksQuery(book_repo(db)).run(owner_id)
+    return GetUserBooksQuery(book_repo(db)).execute(owner_id)

@@ -14,7 +14,7 @@ class UploadFileCommand:
         self.repo = repo
         self.storage = storage
 
-    def run(
+    def execute(
         self,
         owner_id: str,
         kind: FileKind,

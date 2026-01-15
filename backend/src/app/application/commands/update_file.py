@@ -10,7 +10,7 @@ class UpdateFileCommand:
     def __init__(self, repo: FileRepository):
         self.repo = repo
 
-    def run(self, file_id: str, dto: UpdateFileRequest) -> Optional[FileResponse]:
+    def execute(self, file_id: str, dto: UpdateFileRequest) -> Optional[FileResponse]:
         file = self.repo.get(file_id)
         if not file:
             raise ValueError(FileErrors.FILE_NOT_FOUND)
@@ -21,7 +21,6 @@ class UpdateFileCommand:
         if dto.filename:
             file.rename(dto.filename)
         self.repo.update(file)
-        self.repo.session.commit()
         logger.info(f"File updated: {file.id}")
         
         return FileResponse(

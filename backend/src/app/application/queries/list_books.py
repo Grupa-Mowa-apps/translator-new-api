@@ -8,7 +8,7 @@ class ListBooksForOwnerQuery:
     def __init__(self, repo: BookRepository):
         self.repo = repo
 
-    def run(self, owner_id: str) -> List[BookResponse]:
+    def execute(self, owner_id: str) -> List[BookResponse]:
         books = self.repo.list_books_for_owner(owner_id)
         return [
             BookResponse(

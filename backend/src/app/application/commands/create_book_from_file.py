@@ -13,7 +13,7 @@ class CreateBookFromFileCommand:
         self.book_repo = book_repo
         self.file_repo = file_repo
 
-    def run(self, dto: CreateBookRequest) -> BookResponse:
+    def execute(self, dto: CreateBookRequest) -> BookResponse:
         logger.info(f"Creating book from file: {dto.file_id}")
         file = self.file_repo.get(dto.file_id)
         if not file:
@@ -37,7 +37,6 @@ class CreateBookFromFileCommand:
         file.attach_to_book(book_id=book.id)
         self.file_repo.update(file=file)
         
-        self.book_repo.session.commit()
         logger.info(f"Book created from file: {book.id} - {book.title}")
 
         return BookResponse(

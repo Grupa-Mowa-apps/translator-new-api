@@ -8,7 +8,7 @@ class GetFileQuery:
     def __init__(self, repo: FileRepository):
         self.repo = repo
 
-    def run(self, file_id: str) -> Optional[FileResponse]:
+    def execute(self, file_id: str) -> Optional[FileResponse]:
         file = self.repo.get(file_id)
         if not file:
             raise ValueError(FileErrors.FILE_NOT_FOUND)

@@ -7,7 +7,7 @@ class GetBookQuery:
     def __init__(self, repo: BookRepository):
         self.repo = repo
 
-    def run(self, book_id: str) -> BookResponse:
+    def execute(self, book_id: str) -> BookResponse:
         book = self.repo.get(book_id)
         if not book:
             raise ValueError(BookErrors.BOOK_NOT_FOUND)

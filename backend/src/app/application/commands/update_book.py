@@ -9,7 +9,7 @@ class UpdateBookCommand:
     def __init__(self, repo: BookRepository):
         self.repo = repo
 
-    def run(self, book_id: str, dto: UpdateBookRequest) -> BookResponse:
+    def execute(self, book_id: str, dto: UpdateBookRequest) -> BookResponse:
         logger.info(f"Updating book: {book_id}")
         book = self.repo.get(book_id)
         if not book:
@@ -32,7 +32,6 @@ class UpdateBookCommand:
         if not ok:
             raise ValueError(BookErrors.BOOK_NOT_FOUND)
         
-        self.repo.session.commit()
         logger.info(f"Book updated: {book_id}")
 
         return BookResponse(
