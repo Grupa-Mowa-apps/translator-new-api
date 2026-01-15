@@ -10,22 +10,63 @@ interface AddUserDialogProps {
     onHide: () => void
 }
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const MAX_NAME_LENGTH = 100
+
 const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
     const { addUser } = useUserContext()
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [emailError, setEmailError] = useState<string | null>(null)
+    const [nameError, setNameError] = useState<string | null>(null)
+
+    const validateEmail = (value: string): boolean => {
+        if (!value.trim()) {
+            setEmailError('Email jest wymagany')
+            return false
+        }
+        if (!EMAIL_REGEX.test(value)) {
+            setEmailError('Nieprawid\u0142owy format email')
+            return false
+        }
+        setEmailError(null)
+        return true
+    }
+
+    const validateName = (value: string): boolean => {
+        if (value && value.length > MAX_NAME_LENGTH) {
+            setNameError(`Imi\u0119 nie mo\u017ce przekracza\u0107 ${MAX_NAME_LENGTH} znak\u00f3w`)
+            return false
+        }
+        setNameError(null)
+        return true
+    }
 
     const handleSubmit = async () => {
+        const isEmailValid = validateEmail(email)
+        const isNameValid = validateName(name)
+
+        if (!isEmailValid || !isNameValid) {
+            return
+        }
+
         setError(null)
         setLoading(true)
 
         try {
-            const newUser = await createUserRest({ email, name: name || undefined })
+            const trimmedEmail = email.trim()
+            const trimmedName = name.trim()
+            const newUser = await createUserRest({ 
+                email: trimmedEmail, 
+                name: trimmedName || undefined 
+            })
             addUser(newUser)
             setEmail('')
             setName('')
+            setEmailError(null)
+            setNameError(null)
             onHide()
         } catch (err: any) {
             setError(err.message)
@@ -38,6 +79,8 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
         setEmail('')
         setName('')
         setError(null)
+        setEmailError(null)
+        setNameError(null)
         onHide()
     }
 
@@ -65,14 +108,18 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        onBlur={() => validateEmail(email)}
                         placeholder="user@example.com"
                         required
                         style={{
                             padding: '0.75rem',
-                            borderColor: '#667eea',
+                            borderColor: emailError ? '#ef4444' : '#667eea',
                             borderWidth: '2px'
                         }}
                     />
+                    {emailError && (
+                        <small style={{ color: '#ef4444' }}>{emailError}</small>
+                    )}
                 </div>
 
                 <div className="flex flex-column gap-2">
@@ -83,13 +130,18 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
                         id="name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        onBlur={() => validateName(name)}
                         placeholder="Jan Kowalski"
+                        maxLength={MAX_NAME_LENGTH}
                         style={{
                             padding: '0.75rem',
-                            borderColor: '#667eea',
+                            borderColor: nameError ? '#ef4444' : '#667eea',
                             borderWidth: '2px'
                         }}
                     />
+                    {nameError && (
+                        <small style={{ color: '#ef4444' }}>{nameError}</small>
+                    )}
                 </div>
 
                 {error && (
