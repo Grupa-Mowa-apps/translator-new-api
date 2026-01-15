@@ -6,7 +6,7 @@ const App: FC = () => {
     return (
         <div className="app-container">
             <div className="app-card">
-                <h1>Translator App</h1>
+                <h1>Parse And Translate</h1>
                 <p style={{ color: '#64748b', marginBottom: '2rem' }}>
                     Nowoczesna aplikacja do tłumaczeń
                 </p>
