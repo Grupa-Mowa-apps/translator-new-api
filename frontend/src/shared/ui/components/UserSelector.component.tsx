@@ -1,10 +1,10 @@
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
+import { useUserContext } from '../../context/useUserContext'
 
 const UserSelector: FC = () => {
-    const [selectedUser, setSelectedUser] = useState<string | null>(null)
-    const users: string[] = ['User 1', 'User 2', 'User 3']
+    const { users, selectedUser, setSelectedUser } = useUserContext();
 
     return (
         <div className="flex flex-column gap-3 mb-4">
