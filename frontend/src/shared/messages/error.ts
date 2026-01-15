@@ -11,4 +11,8 @@ export const errorMessages = {
     sseError: "Sse error",
     xlsxFormatError: "The file must be in .xlsx format",
     incorrectChapterSelection: "Incorrect chapter selection",
+    userAlreadyExists: "Użytkownik o tym emailu już istnieje",
+    userNotFound: "Użytkownik nie został znaleziony",
+    createUserFailed: "Nie udało się utworzyć użytkownika",
+    fetchUsersFailed: "Nie udało się pobrać listy użytkowników",
 } as const;

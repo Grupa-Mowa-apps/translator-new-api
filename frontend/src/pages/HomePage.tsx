@@ -6,10 +6,10 @@ const HomePage: FC = () => {
     return (
         <div className="app-container">
             <div className="app-card">
-                <h1>Parse And Translate</h1>
+                <h1>P And Translate</h1>
                 <UserSelector />
             </div>
-            <Footer />
+            <Footer />arse
         </div>
     )
 }
