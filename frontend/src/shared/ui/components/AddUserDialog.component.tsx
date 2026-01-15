@@ -1,7 +1,8 @@
-import { FC, useState } from 'react'
+import { FC, useState, useRef } from 'react'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
+import { Toast } from 'primereact/toast'
 import { createUserRest } from '../../infrastructure/api/userApi'
 import { useUserContext } from '../../context/useUserContext'
 
@@ -15,6 +16,7 @@ const MAX_NAME_LENGTH = 100
 
 const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
     const { addUser } = useUserContext()
+    const toast = useRef<Toast>(null)
     const [email, setEmail] = useState('')
     const [name, setName] = useState('')
     const [loading, setLoading] = useState(false)
@@ -63,6 +65,12 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
                 name: trimmedName || undefined 
             })
             addUser(newUser)
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Sukces',
+                detail: 'U\u017cytkownik zosta\u0142 dodany',
+                life: 3000
+            })
             setEmail('')
             setName('')
             setEmailError(null)
@@ -85,19 +93,21 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
     }
 
     return (
-        <Dialog
-            visible={visible}
-            onHide={handleClose}
-            header="Dodaj użytkownika"
-            style={{ width: '450px', borderRadius: '20px', overflow: 'hidden' }}
-            contentStyle={{ padding: '2rem' }}
-            headerStyle={{ 
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: 'white',
-                padding: '1.5rem',
-                borderRadius: '20px 20px 0 0'
-            }}
-        >
+        <>
+            <Toast ref={toast} />
+            <Dialog
+                visible={visible}
+                onHide={handleClose}
+                header="Dodaj użytkownika"
+                style={{ width: '450px', borderRadius: '20px', overflow: 'hidden' }}
+                contentStyle={{ padding: '2rem' }}
+                headerStyle={{ 
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: 'white',
+                    padding: '1.5rem',
+                    borderRadius: '20px 20px 0 0'
+                }}
+            >
             <div className="flex flex-column gap-4">
                 <div className="flex flex-column gap-2">
                     <label htmlFor="email" style={{ fontWeight: '600', color: '#64748b' }}>
@@ -176,6 +186,7 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
                 </div>
             </div>
         </Dialog>
+        </>
     )
 }
 
