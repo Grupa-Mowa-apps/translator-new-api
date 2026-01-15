@@ -1,0 +1,1 @@
+export type Quote = 'fr' | 'ge';

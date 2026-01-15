@@ -1,0 +1,16 @@
+export const validationMessages = {
+    fileMustBeMarkdown: 'The file must be in Markdown format (.md)',
+    fileIsEmpty: 'The file is empty — please upload a valid Markdown file',
+    fileMustBeExcel: 'The file must be in .xlsx format',
+    fileIsEmptyExcel: 'The Excel file is empty',
+    fileIsEmptyMarkdown: 'The Markdown file is empty',
+    quoteTypeRequired: 'Please select a quotation type',
+    titleRequired: 'Please enter the book title',
+    genreRequired: 'Please enter the book genre',
+    chaptersSelectionRequired: "You must select at least one chapter or choose 'all'.",
+    invalidChapterId: 'The chapter list contains an invalid identifier.',
+    fileIsRequired: 'A file is required',
+    quotesTypeIsRequired: 'Quotation type is required.',
+    excelFileRequired: "An Excel file is required",
+    bookIdIsRequired: 'The book id is required',
+} as const;
