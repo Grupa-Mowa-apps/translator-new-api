@@ -1,7 +1,7 @@
 import { FC, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
-import { mapBookRest, exportParserRest } from '../../infrastructure/api/bookApi'
+import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
     bookId: string
@@ -41,16 +41,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
         setLoading(true)
         try {
             await mapBookRest(bookId)
-            const blob = await exportParserRest(bookId, quotationMarks)
-            
-            const url = window.URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = `${title}_przypisy.xlsx`
-            document.body.appendChild(a)
-            a.click()
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(a)
+            await exportParserRest(bookId, quotationMarks)
             
             if (onBookUpdated) {
                 onBookUpdated()
@@ -65,7 +56,14 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
     const handleDownloadAnnotations = async () => {
         setLoading(true)
         try {
-            const blob = await exportParserRest(bookId, quotationMarks)
+            const annotations = await getAnnotationsRest(bookId)
+            if (annotations.length === 0) {
+                console.error('No annotations found')
+                return
+            }
+            
+            const latestAnnotation = annotations[0]
+            const blob = await downloadAnnotationRest(bookId, latestAnnotation.id)
             
             const url = window.URL.createObjectURL(blob)
             const a = document.createElement('a')
