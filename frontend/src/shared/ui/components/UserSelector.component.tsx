@@ -1,17 +1,48 @@
-import { FC, useState } from 'react'
+import { FC, useState, useRef } from 'react'
 import { Dropdown, DropdownChangeEvent } from 'primereact/dropdown'
 import { Button } from 'primereact/button'
+import { Toast } from 'primereact/toast'
 import { useUserContext } from '../../context/useUserContext'
 import AddUserDialog from './AddUserDialog.component'
 import DeleteUserDialog from './DeleteUserDialog.component'
+import { deleteUserRest } from '../../infrastructure/api/userApi'
 
 const UserSelector: FC = () => {
-    const { users, selectedUser, setSelectedUser } = useUserContext();
+    const { users, selectedUser, setSelectedUser, removeUser } = useUserContext();
+    const toast = useRef<Toast>(null)
     const [dialogVisible, setDialogVisible] = useState(false)
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
+    const [deleteLoading, setDeleteLoading] = useState(false)
+
+    const handleDeleteUser = async () => {
+        if (!selectedUser) return
+        
+        setDeleteLoading(true)
+        try {
+            await deleteUserRest(selectedUser.id)
+            removeUser(selectedUser.id)
+            toast.current?.show({
+                severity: 'success',
+                summary: 'Sukces',
+                detail: 'Użytkownik został usunięty',
+                life: 3000
+            })
+            setDeleteDialogVisible(false)
+        } catch (error) {
+            toast.current?.show({
+                severity: 'error',
+                summary: 'Błąd',
+                detail: 'Nie udało się usunąć użytkownika',
+                life: 3000
+            })
+        } finally {
+            setDeleteLoading(false)
+        }
+    }
 
     return (
         <>
+            <Toast ref={toast} />
             <div className="flex flex-column gap-3 mb-4">
                 <label htmlFor="user-dropdown" style={{ fontWeight: '600', color: '#64748b' }}>
                     Wybierz swoje konto (lub dodaj jeśli jeszcze tego nie zrobiłaś/eś):
@@ -76,11 +107,8 @@ const UserSelector: FC = () => {
                 visible={deleteDialogVisible} 
                 onHide={() => setDeleteDialogVisible(false)}
                 user={selectedUser}
-                onConfirm={() => {
-                    // TODO: implement delete logic
-                    console.log('Delete user:', selectedUser)
-                    setDeleteDialogVisible(false)
-                }}
+                onConfirm={handleDeleteUser}
+                loading={deleteLoading}
             />
         </>
     )

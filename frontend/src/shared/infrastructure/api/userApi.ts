@@ -9,6 +9,13 @@ export async function fetchAllUsersRest(): Promise<UserResponseDTO[]> {
     return res.json()
 }
 
+export async function deleteUserRest(userId: string): Promise<void> {
+    const res = await fetch(`${env.apiUrl}/users/${userId}`, {
+        method: 'DELETE',
+    })
+    if (!res.ok) throw new Error('Failed to delete user')
+}
+
 export async function createUserRest(data: CreateUserRequestDTO): Promise<UserResponseDTO> {
     try {
         const res = await fetch(`${env.apiUrl}/users`, {

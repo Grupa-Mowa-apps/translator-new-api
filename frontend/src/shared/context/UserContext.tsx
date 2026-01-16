@@ -7,6 +7,7 @@ export interface UserState {
     selectedUser: UserResponseDTO | null
     setSelectedUser: (user: UserResponseDTO | null) => void
     addUser: (user: UserResponseDTO) => void
+    removeUser: (userId: string) => void
     isLoading: boolean
 }
 
@@ -28,8 +29,15 @@ export const UserProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setUsers((prev) => [...prev, user])
     }
 
+    const removeUser = (userId: string) => {
+        setUsers((prev) => prev.filter(u => u.id !== userId))
+        if (selectedUser?.id === userId) {
+            setSelectedUser(null)
+        }
+    }
+
     return (
-        <UserContext.Provider value={{ users, selectedUser, setSelectedUser, addUser, isLoading }}>
+        <UserContext.Provider value={{ users, selectedUser, setSelectedUser, addUser, removeUser, isLoading }}>
             {children}
         </UserContext.Provider>
     )
