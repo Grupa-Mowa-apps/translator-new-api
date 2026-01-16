@@ -9,7 +9,7 @@ const HomePage: FC = () => {
                 <h1>Parse And Translate</h1>
                 <UserSelector />
             </div>
-            <Footer />arse
+            <Footer />
         </div>
     )
 }
