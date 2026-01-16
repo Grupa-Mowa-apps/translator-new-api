@@ -39,13 +39,71 @@ const AddBookDialog: FC<AddBookDialogProps> = ({ visible, onHide, userId }) => {
         }
 
         setLoading(true)
-        // TODO: Logika uploadu
-        console.log({ file, title, genre, quotationType, userId })
-        
-        setTimeout(() => {
-            setLoading(false)
+        setError(null)
+
+        try {
+            // Krok 1: Upload pliku
+            const formData = new FormData()
+            formData.append('owner_id', userId)
+            formData.append('kind', 'markdown')
+            formData.append('file', file)
+
+            console.log('=== UPLOAD FILE ===')
+            console.log('owner_id:', userId)
+            console.log('kind:', 'markdown')
+            console.log('file:', file.name, file.type, file.size)
+
+            const fileResponse = await fetch(`${import.meta.env.VITE_API_URL}/files`, {
+                method: 'POST',
+                body: formData,
+            })
+
+            if (!fileResponse.ok) {
+                const errorData = await fileResponse.json()
+                console.error('File upload error:', errorData)
+                throw new Error(errorData.detail || 'Nie udało się wgrać pliku')
+            }
+
+            const fileData = await fileResponse.json()
+            console.log('File uploaded:', fileData)
+
+            // Krok 2: Tworzenie książki
+            const bookData = {
+                owner_id: userId,
+                title: title,
+                genre: genre,
+                quotation_marks: quotationType,
+                file_id: fileData.id
+            }
+
+            console.log('=== CREATE BOOK ===')
+            console.log('Book data:', bookData)
+
+            const bookResponse = await fetch(`${import.meta.env.VITE_API_URL}/books`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(bookData),
+            })
+
+            if (!bookResponse.ok) {
+                const errorData = await bookResponse.json()
+                console.error('Book creation error:', errorData)
+                throw new Error(errorData.detail || 'Nie udało się utworzyć książki')
+            }
+
+            const bookResult = await bookResponse.json()
+            console.log('Book created:', bookResult)
+
+            // Sukces
             handleClose()
-        }, 1000)
+        } catch (err: any) {
+            console.error('Error:', err)
+            setError(err.message)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const handleClose = () => {
