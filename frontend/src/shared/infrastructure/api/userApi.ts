@@ -3,6 +3,12 @@ import { env } from '../../config/apiConfig'
 import { errorMessages } from '../../messages/error'
 import { handleApiError } from './apiErrorHandler'
 
+export async function fetchAllUsersRest(): Promise<UserResponseDTO[]> {
+    const res = await fetch(`${env.apiUrl}/users?limit=100`)
+    if (!res.ok) throw new Error('Failed to fetch users')
+    return res.json()
+}
+
 export async function createUserRest(data: CreateUserRequestDTO): Promise<UserResponseDTO> {
     try {
         const res = await fetch(`${env.apiUrl}/users`, {
