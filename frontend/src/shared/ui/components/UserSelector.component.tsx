@@ -11,6 +11,7 @@ const UserSelector: FC = () => {
     const { users, selectedUser, setSelectedUser, removeUser } = useUserContext();
     const toast = useRef<Toast>(null)
     const [dialogVisible, setDialogVisible] = useState(false)
+    const [editDialogVisible, setEditDialogVisible] = useState(false)
     const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
     const [deleteLoading, setDeleteLoading] = useState(false)
 
@@ -72,6 +73,29 @@ const UserSelector: FC = () => {
                     )}
                     />
                     <Button
+                        icon="pi pi-pencil"
+                        outlined
+                        disabled={!selectedUser}
+                        onClick={() => setEditDialogVisible(true)}
+                        style={{ 
+                            padding: '0.75rem',
+                            borderColor: '#f59e0b',
+                            color: '#f59e0b'
+                        }}
+                        tooltip="Edytuj użytkownika"
+                        tooltipOptions={{ 
+                            position: 'top',
+                            className: 'custom-tooltip',
+                            style: { 
+                                backgroundColor: '#667eea',
+                                color: 'white',
+                                padding: '0.5rem 0.75rem',
+                                borderRadius: '6px',
+                                fontSize: '0.875rem'
+                            }
+                        }}
+                    />
+                    <Button
                         icon="pi pi-trash"
                         severity="danger"
                         outlined
@@ -103,6 +127,12 @@ const UserSelector: FC = () => {
                 </div>
             </div>
             <AddUserDialog visible={dialogVisible} onHide={() => setDialogVisible(false)} />
+            <AddUserDialog 
+                visible={editDialogVisible} 
+                onHide={() => setEditDialogVisible(false)}
+                user={selectedUser}
+                mode="edit"
+            />
             <DeleteUserDialog 
                 visible={deleteDialogVisible} 
                 onHide={() => setDeleteDialogVisible(false)}

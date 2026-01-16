@@ -1,28 +1,43 @@
-import { FC, useState, useRef } from 'react'
+import { FC, useState, useRef, useEffect } from 'react'
 import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
 import { createUserRest } from '../../infrastructure/api/userApi'
 import { useUserContext } from '../../context/useUserContext'
+import { UserResponseDTO } from '../../dto/userDTO'
 
 interface AddUserDialogProps {
     visible: boolean
     onHide: () => void
+    user?: UserResponseDTO | null
+    mode?: 'add' | 'edit'
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_NAME_LENGTH = 100
 
-const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
+const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide, user, mode = 'add' }) => {
     const { addUser } = useUserContext()
     const toast = useRef<Toast>(null)
-    const [email, setEmail] = useState('')
-    const [name, setName] = useState('')
+    const [email, setEmail] = useState(user?.email || '')
+    const [name, setName] = useState(user?.name || '')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [emailError, setEmailError] = useState<string | null>(null)
     const [nameError, setNameError] = useState<string | null>(null)
+
+    const isEditMode = mode === 'edit'
+
+    useEffect(() => {
+        if (visible && user) {
+            setEmail(user.email)
+            setName(user.name || '')
+        } else if (visible && !user) {
+            setEmail('')
+            setName('')
+        }
+    }, [visible, user, mode])
 
     const validateEmail = (value: string): boolean => {
         if (!value.trim()) {
@@ -98,11 +113,13 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
             <Dialog
                 visible={visible}
                 onHide={handleClose}
-                header="Dodaj użytkownika"
+                header={isEditMode ? "Edytuj użytkownika" : "Dodaj użytkownika"}
                 style={{ width: '450px', borderRadius: '20px', overflow: 'hidden' }}
                 contentStyle={{ padding: '2rem' }}
                 headerStyle={{ 
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    background: isEditMode 
+                        ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+                        : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                     color: 'white',
                     padding: '1.5rem',
                     borderRadius: '20px 20px 0 0'
@@ -176,8 +193,8 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide }) => {
                         style={{ padding: '0.75rem 1.5rem' }}
                     />
                     <Button
-                        label="Dodaj"
-                        icon="pi pi-check"
+                        label={isEditMode ? "Zapisz" : "Dodaj"}
+                        icon={isEditMode ? "pi pi-check" : "pi pi-check"}
                         onClick={handleSubmit}
                         disabled={!email || loading}
                         loading={loading}
