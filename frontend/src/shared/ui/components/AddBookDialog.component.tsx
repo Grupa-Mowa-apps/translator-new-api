@@ -14,16 +14,14 @@ interface AddBookDialogProps {
 const AddBookDialog: FC<AddBookDialogProps> = ({ visible, onHide, userId }) => {
     const [title, setTitle] = useState('')
     const [genre, setGenre] = useState('')
-    const [quotationType, setQuotationType] = useState<string>('french')
+    const [quotationType, setQuotationType] = useState<string>('fr')
     const [file, setFile] = useState<File | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
     const quotationTypes = [
-        { label: 'Podwójne (")', value: 'double' },
-        { label: 'Pojedyncze (\')', value: 'single' },
-        { label: 'Francuskie («»)', value: 'french' },
-        { label: 'Niemieckie („")', value: 'german' }
+        { label: 'Francuskie («»)', value: 'fr' },
+        { label: 'Niemieckie („")', value: 'ge' }
     ]
 
     const handleFileSelect = (event: FileUploadHandlerEvent) => {
