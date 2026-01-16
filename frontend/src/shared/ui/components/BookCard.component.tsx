@@ -1,14 +1,19 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
+import { mapBookRest, exportParserRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
+    bookId: string
     title: string
     genre: string
     status: string
+    quotationMarks: string
+    onBookUpdated?: () => void
 }
 
-const BookCard: FC<BookCardProps> = ({ title, genre, status }) => {
+const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMarks, onBookUpdated }) => {
+    const [loading, setLoading] = useState(false)
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'translated': return 'success'
@@ -24,7 +29,54 @@ const BookCard: FC<BookCardProps> = ({ title, genre, status }) => {
             case 'in_translation': return 'W trakcie'
             case 'ready_to_translate': return 'Gotowa'
             case 'uploaded': return 'Wgrana'
+            case 'mapped': return 'Zmapowana'
+            case 'parsed': return 'Sparsowana'
             default: return status
+        }
+    }
+
+    const handleParser = async () => {
+        setLoading(true)
+        try {
+            await mapBookRest(bookId)
+            const blob = await exportParserRest(bookId, quotationMarks)
+            
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${title}_przypisy.xlsx`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+            
+            if (onBookUpdated) {
+                onBookUpdated()
+            }
+        } catch (err) {
+            console.error('Parser error:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDownloadAnnotations = async () => {
+        setLoading(true)
+        try {
+            const blob = await exportParserRest(bookId, quotationMarks)
+            
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${title}_przypisy.xlsx`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (err) {
+            console.error('Download error:', err)
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -79,6 +131,21 @@ const BookCard: FC<BookCardProps> = ({ title, genre, status }) => {
                         severity="secondary"
                         outlined
                         size="small"
+                        onClick={handleParser}
+                        loading={loading}
+                        disabled={loading}
+                        style={{ flex: 1, padding: '0.5rem 1rem' }}
+                    />
+                )}
+                {['mapped', 'parsed'].includes(status) && (
+                    <Button
+                        label="Pobierz przypisy"
+                        icon="pi pi-download"
+                        severity="info"
+                        size="small"
+                        onClick={handleDownloadAnnotations}
+                        loading={loading}
+                        disabled={loading}
                         style={{ flex: 1, padding: '0.5rem 1rem' }}
                     />
                 )}

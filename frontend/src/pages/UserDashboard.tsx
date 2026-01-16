@@ -88,9 +88,12 @@ const UserDashboard: FC = () => {
                         {books.map(book => (
                             <BookCard
                                 key={book.id}
+                                bookId={book.id}
                                 title={book.title}
                                 genre={book.genre}
                                 status={book.status}
+                                quotationMarks={book.quotation_marks}
+                                onBookUpdated={fetchBooks}
                             />
                         ))}
                     </div>
