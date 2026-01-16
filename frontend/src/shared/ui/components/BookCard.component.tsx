@@ -72,20 +72,34 @@ const BookCard: FC<BookCardProps> = ({ title, genre, status }) => {
             />
 
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
-                <Button
-                    label="Tłumacz"
-                    icon="pi pi-language"
-                    size="small"
-                    style={{ flex: 1, padding: '0.5rem 1rem' }}
-                />
-                <Button
-                    label="Parser"
-                    icon="pi pi-file-edit"
-                    severity="secondary"
-                    outlined
-                    size="small"
-                    style={{ flex: 1, padding: '0.5rem 1rem' }}
-                />
+                {status === 'uploaded' && (
+                    <Button
+                        label="Parser"
+                        icon="pi pi-file-edit"
+                        severity="secondary"
+                        outlined
+                        size="small"
+                        style={{ flex: 1, padding: '0.5rem 1rem' }}
+                    />
+                )}
+                {['ready_to_translate', 'in_translation', 'translated'].includes(status) && (
+                    <>
+                        <Button
+                            label="Tłumacz"
+                            icon="pi pi-language"
+                            size="small"
+                            style={{ flex: 1, padding: '0.5rem 1rem' }}
+                        />
+                        <Button
+                            label="Parser"
+                            icon="pi pi-file-edit"
+                            severity="secondary"
+                            outlined
+                            size="small"
+                            style={{ flex: 1, padding: '0.5rem 1rem' }}
+                        />
+                    </>
+                )}
             </div>
         </div>
     )

@@ -9,9 +9,10 @@ interface AddBookDialogProps {
     visible: boolean
     onHide: () => void
     userId: string
+    onBookAdded?: () => void
 }
 
-const AddBookDialog: FC<AddBookDialogProps> = ({ visible, onHide, userId }) => {
+const AddBookDialog: FC<AddBookDialogProps> = ({ visible, onHide, userId, onBookAdded }) => {
     const [title, setTitle] = useState('')
     const [genre, setGenre] = useState('')
     const [quotationType, setQuotationType] = useState<string>('fr')
@@ -95,6 +96,9 @@ const AddBookDialog: FC<AddBookDialogProps> = ({ visible, onHide, userId }) => {
             console.log('Book created:', bookResult)
 
             // Sukces
+            if (onBookAdded) {
+                onBookAdded()
+            }
             handleClose()
         } catch (err: any) {
             console.error('Error:', err)

@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useUserContext } from '../shared/context/useUserContext'
 import DashboardHeader from '../shared/ui/components/DashboardHeader.component'
@@ -6,20 +6,37 @@ import BookCard from '../shared/ui/components/BookCard.component'
 import AddBookDialog from '../shared/ui/components/AddBookDialog.component'
 import Footer from '../shared/ui/components/Footer.component'
 import { Button } from 'primereact/button'
+import { BookResponseDTO } from '../shared/dto/bookDTO'
+import { getUserBooksRest } from '../shared/infrastructure/api/bookApi'
 
 const UserDashboard: FC = () => {
     const { userId } = useParams<{ userId: string }>()
     const { users } = useUserContext()
     const [addBookVisible, setAddBookVisible] = useState(false)
+    const [books, setBooks] = useState<BookResponseDTO[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     
     const user = users.find(u => u.id === userId)
 
-    // Mock books data
-    const mockBooks = [
-        { id: '1', title: 'Harry Potter', genre: 'Fantasy', status: 'translated' },
-        { id: '2', title: 'Lord of the Rings', genre: 'Fantasy', status: 'in_translation' },
-        { id: '3', title: 'The Hobbit', genre: 'Adventure', status: 'ready_to_translate' },
-    ]
+    const fetchBooks = async () => {
+        if (!userId) return
+        
+        setLoading(true)
+        setError(null)
+        try {
+            const data = await getUserBooksRest(userId)
+            setBooks(data)
+        } catch (err) {
+            setError('Nie udało się pobrać książek')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        fetchBooks()
+    }, [userId])
 
     if (!user) {
         return <div style={{ padding: '2rem', color: 'white' }}>Użytkownik nie znaleziony</div>
@@ -44,26 +61,47 @@ const UserDashboard: FC = () => {
                     />
                 </div>
                 
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-                    gap: '2rem'
-                }}>
-                    {mockBooks.map(book => (
-                        <BookCard
-                            key={book.id}
-                            title={book.title}
-                            genre={book.genre}
-                            status={book.status}
-                        />
-                    ))}
-                </div>
+                {loading && (
+                    <div style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>
+                        Ładowanie książek...
+                    </div>
+                )}
+
+                {error && (
+                    <div style={{ color: '#fee2e2', textAlign: 'center', padding: '2rem' }}>
+                        {error}
+                    </div>
+                )}
+
+                {!loading && !error && books.length === 0 && (
+                    <div style={{ color: 'white', textAlign: 'center', padding: '2rem' }}>
+                        Nie masz jeszcze żadnych książek. Dodaj pierwszą!
+                    </div>
+                )}
+
+                {!loading && !error && books.length > 0 && (
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                        gap: '2rem'
+                    }}>
+                        {books.map(book => (
+                            <BookCard
+                                key={book.id}
+                                title={book.title}
+                                genre={book.genre}
+                                status={book.status}
+                            />
+                        ))}
+                    </div>
+                )}
             </div>
             
             <AddBookDialog 
                 visible={addBookVisible} 
                 onHide={() => setAddBookVisible(false)}
                 userId={userId || ''}
+                onBookAdded={fetchBooks}
             />
             
             <Footer />
