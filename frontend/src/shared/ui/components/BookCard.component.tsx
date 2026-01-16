@@ -19,6 +19,8 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             case 'translated': return 'success'
             case 'in_translation': return 'info'
             case 'ready_to_translate': return 'warning'
+            case 'mapped': return 'warning'
+            case 'parsed': return 'info'
             default: return 'secondary'
         }
     }
@@ -29,7 +31,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             case 'in_translation': return 'W trakcie'
             case 'ready_to_translate': return 'Gotowa'
             case 'uploaded': return 'Wgrana'
-            case 'mapped': return 'Zmapowana'
+            case 'mapped': return 'Czeka na przypisy'
             case 'parsed': return 'Sparsowana'
             default: return status
         }
