@@ -1,13 +1,16 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useUserContext } from '../shared/context/useUserContext'
 import DashboardHeader from '../shared/ui/components/DashboardHeader.component'
 import BookCard from '../shared/ui/components/BookCard.component'
+import AddBookDialog from '../shared/ui/components/AddBookDialog.component'
 import Footer from '../shared/ui/components/Footer.component'
+import { Button } from 'primereact/button'
 
 const UserDashboard: FC = () => {
     const { userId } = useParams<{ userId: string }>()
     const { users } = useUserContext()
+    const [addBookVisible, setAddBookVisible] = useState(false)
     
     const user = users.find(u => u.id === userId)
 
@@ -31,7 +34,15 @@ const UserDashboard: FC = () => {
             <DashboardHeader userName={user.name || 'User'} userEmail={user.email} />
             
             <div style={{ padding: '2rem', maxWidth: '1400px', margin: '0 auto' }}>
-                <h2 style={{ color: 'white', marginBottom: '2rem' }}>Moje książki</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                    <h2 style={{ color: 'white', margin: 0 }}>Moje książki</h2>
+                    <Button
+                        label="Dodaj książkę"
+                        icon="pi pi-plus"
+                        onClick={() => setAddBookVisible(true)}
+                        style={{ padding: '0.75rem 1.5rem', gap: '1rem' }}
+                    />
+                </div>
                 
                 <div style={{
                     display: 'grid',
@@ -48,6 +59,12 @@ const UserDashboard: FC = () => {
                     ))}
                 </div>
             </div>
+            
+            <AddBookDialog 
+                visible={addBookVisible} 
+                onHide={() => setAddBookVisible(false)}
+                userId={userId || ''}
+            />
             
             <Footer />
         </div>
