@@ -19,3 +19,15 @@ class ApplyParserTranslationsRequest(BaseModel):
 
 class ApplyParserTranslationsResponse(BaseModel):
     output_md_path: str
+
+class UploadTranslatedExcelRequest(BaseModel):
+    book_id: str
+    filename: str
+    content: bytes
+    content_type: str | None = None
+
+class UploadTranslatedExcelResponse(BaseModel):
+    annotation_set_id: str
+    book_id: str
+    excel_path: str
+    status: str

@@ -7,9 +7,10 @@ class TranslationTaskErrors:
 class AnnotationSetErrors:
     MUST_BE_EXTRACTED_BEFORE_TRANSLATED = "Must be EXTRACTED before TRANSLATED"
     MUST_BE_TRANSLATED_BEFORE_REVIEWED = "Must be TRANSLATED before REVIEWED"
-    MUST_BE_REVIEWED_BEFORE_APPLIED = "Must be REVIEWED before APPLIED"
+    MUST_BE_TRANSLATED_BEFORE_APPLIED = "Must be TRANSALTED before APPLIED"
     ANNOTATION_SET_NOT_FOUND_FOR_BOOK = "Annotation set not found for the book"
     ANNOTATION_SET_NOT_FOUND = "There is no annotaation set with such id"
+    INVALID_EXCEL_FILE_TYPE = "Invalid file type. Only .xlxs allowed"
 
 class UserErrors:
     EMAIL_CANNOT_BE_EMPTY = "Email cannot be empty"

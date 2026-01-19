@@ -7,12 +7,26 @@ from app.infrastructure.db.models import AnnotationSetDB
 from app.domain.value_objects.annotation_status import AnnotationStatus
 from app.domain.errors import AnnotationSetErrors
 
+def _parse_status(db_value) -> AnnotationStatus:
+    if isinstance(db_value, AnnotationStatus):
+        return db_value
+
+    s = str(db_value).strip()
+
+    if s.startswith("AnnotationStatus."):
+        s = s.split(".", 1)[1]
+
+    if s in AnnotationStatus.__members__:
+        return AnnotationStatus[s]
+
+    return AnnotationStatus(s)
+
 def _to_domain(annotation_model: AnnotationSetDB) -> AnnotationSet:
     return AnnotationSet(
         id=annotation_model.id,
         book_id=annotation_model.book_id,
         file_path=annotation_model.file_path,
-        status=annotation_model.status,
+        status=_parse_status(annotation_model.status),
         version=annotation_model.version,
     )
 
@@ -21,7 +35,7 @@ def _to_orm(annotation_entity: AnnotationSet) -> AnnotationSetDB:
         id=annotation_entity.id,
         book_id=annotation_entity.book_id,
         file_path=annotation_entity.file_path,
-        status=str(annotation_entity.status),
+        status=annotation_entity.status.value,
         version=annotation_entity.version,
     )
 
