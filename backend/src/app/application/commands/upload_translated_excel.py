@@ -20,7 +20,7 @@ class UploadTranslatedExcelCommand:
         self.annotation_repo = annotation_repo
         self.file_storage = file_storage
 
-    def run(self, dto: UploadTranslatedExcelRequest) -> UploadTranslatedExcelResponse:
+    def execute(self, dto: UploadTranslatedExcelRequest) -> UploadTranslatedExcelResponse:
         book = self.book_repo.get(book_id=dto.book_id)
         if book is None:
             raise ValueError(BookErrors.BOOK_NOT_FOUND)
