@@ -122,7 +122,7 @@ def apply_parser_and_download(book_id: str, dto: ApplyParserTranslationsRequest,
             excel_port=get_parser_port(),
             file_repo=get_file_repo(db),
         )
-        result = cmd.run(book_id=book_id, dto=dto)
+        result = cmd.execute(book_id=book_id, dto=dto)
         md_path = Path(result.output_md_path)
 
         if not md_path.exists():
@@ -168,7 +168,7 @@ def export_parser_and_download(
     cmd: ExportQuotesFootnotesCommand = Depends(get_export_cmd),
 ):
     try:
-        result = cmd.run(book_id=book_id, dto=dto)
+        result = cmd.execute(book_id=book_id, dto=dto)
         xlsx_path = Path(result.excel_path)
 
         if not xlsx_path.exists():
@@ -213,7 +213,7 @@ async def upload_translated_excel(
             file_storage=get_file_storage(),
         )
 
-        return cmd.run(
+        return cmd.execute(
             dto=UploadTranslatedExcelRequest(
                 book_id=book_id,
                 filename=excel_file.filename or "translated_excel.xlsx",
