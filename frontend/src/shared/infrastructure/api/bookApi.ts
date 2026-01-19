@@ -48,6 +48,16 @@ export const getAnnotationsRest = async (bookId: string): Promise<any[]> => {
     return response.json()
 }
 
+export const downloadAnnotationRest = async (bookId: string, annotationSetId: string): Promise<Blob> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/annotations/${annotationSetId}/download`)
+    
+    if (!response.ok) {
+        throw new Error('Nie udało się pobrać pliku')
+    }
+    
+    return response.blob()
+}
+
 export const uploadTranslatedExcelRest = async (bookId: string, file: File): Promise<{ annotation_set_id: string }> => {
     const formData = new FormData()
     formData.append('excel_file', file)
