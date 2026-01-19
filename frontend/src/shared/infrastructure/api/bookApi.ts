@@ -48,11 +48,33 @@ export const getAnnotationsRest = async (bookId: string): Promise<any[]> => {
     return response.json()
 }
 
-export const downloadAnnotationRest = async (bookId: string, annotationSetId: string): Promise<Blob> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/annotations/${annotationSetId}/download`)
+export const uploadTranslatedExcelRest = async (bookId: string, file: File): Promise<{ annotation_set_id: string }> => {
+    const formData = new FormData()
+    formData.append('excel_file', file)
+    
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/parser/upload-translated`, {
+        method: 'POST',
+        body: formData
+    })
     
     if (!response.ok) {
-        throw new Error('Nie udało się pobrać pliku')
+        throw new Error('Nie udało się wgrać pliku')
+    }
+    
+    return response.json()
+}
+
+export const applyTranslationsRest = async (bookId: string, annotationSetId: string): Promise<Blob> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/parser/apply-download`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ annotation_set_id: annotationSetId })
+    })
+    
+    if (!response.ok) {
+        throw new Error('Nie udało się zastosować tłumaczeń')
     }
     
     return response.blob()

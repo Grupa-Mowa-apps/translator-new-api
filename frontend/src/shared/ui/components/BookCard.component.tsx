@@ -2,7 +2,7 @@ import { FC, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest } from '../../infrastructure/api/bookApi'
+import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
     bookId: string
@@ -16,6 +16,7 @@ interface BookCardProps {
 const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMarks, onBookUpdated }) => {
     const [loading, setLoading] = useState(false)
     const [translatedFile, setTranslatedFile] = useState<File | null>(null)
+    const [error, setError] = useState<string | null>(null)
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'translated': return 'success'
@@ -85,11 +86,36 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
     const handleFileSelect = (event: FileUploadHandlerEvent) => {
         const selectedFile = event.files[0]
         setTranslatedFile(selectedFile)
+        setError(null)
     }
 
     const handleApplyTranslations = async () => {
-        console.log('Apply translations:', translatedFile)
-        // TODO: Implement upload and apply logic
+        if (!translatedFile) return
+
+        setLoading(true)
+        setError(null)
+        try {
+            const uploadResult = await uploadTranslatedExcelRest(bookId, translatedFile)
+            const blob = await applyTranslationsRest(bookId, uploadResult.annotation_set_id)
+            
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${title}_przetlumaczona.md`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+            
+            setTranslatedFile(null)
+            if (onBookUpdated) {
+                onBookUpdated()
+            }
+        } catch (err: any) {
+            setError(err.message || 'Wystąpił błąd')
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -227,6 +253,19 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                         loading={loading}
                         style={{ width: '100%', padding: '0.5rem 1rem' }}
                     />
+
+                    {error && (
+                        <div style={{ 
+                            color: '#ef4444', 
+                            fontSize: '0.875rem',
+                            padding: '0.75rem',
+                            background: '#fee2e2',
+                            borderRadius: '8px',
+                            marginTop: '0.5rem'
+                        }}>
+                            {error}
+                        </div>
+                    )}
                 </div>
             )}
         </div>
