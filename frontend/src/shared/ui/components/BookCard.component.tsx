@@ -1,6 +1,7 @@
 import { FC, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
+import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
 import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
@@ -14,6 +15,7 @@ interface BookCardProps {
 
 const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMarks, onBookUpdated }) => {
     const [loading, setLoading] = useState(false)
+    const [translatedFile, setTranslatedFile] = useState<File | null>(null)
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'translated': return 'success'
@@ -80,6 +82,16 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
         }
     }
 
+    const handleFileSelect = (event: FileUploadHandlerEvent) => {
+        const selectedFile = event.files[0]
+        setTranslatedFile(selectedFile)
+    }
+
+    const handleApplyTranslations = async () => {
+        console.log('Apply translations:', translatedFile)
+        // TODO: Implement upload and apply logic
+    }
+
     return (
         <div style={{
             background: 'rgba(255, 255, 255, 0.95)',
@@ -137,18 +149,6 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                         style={{ flex: 1, padding: '0.5rem 1rem' }}
                     />
                 )}
-                {['mapped', 'parsed'].includes(status) && (
-                    <Button
-                        label="Pobierz przypisy"
-                        icon="pi pi-download"
-                        severity="info"
-                        size="small"
-                        onClick={handleDownloadAnnotations}
-                        loading={loading}
-                        disabled={loading}
-                        style={{ flex: 1, padding: '0.5rem 1rem' }}
-                    />
-                )}
                 {['ready_to_translate', 'in_translation', 'translated'].includes(status) && (
                     <>
                         <Button
@@ -168,6 +168,67 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                     </>
                 )}
             </div>
+
+            {['mapped', 'parsed'].includes(status) && (
+                <div style={{
+                    background: 'rgba(102, 126, 234, 0.05)',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '12px',
+                    padding: '1rem',
+                    marginTop: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.75rem'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                        <i className="pi pi-file-excel" style={{ color: '#667eea', fontSize: '1.25rem' }}></i>
+                        <span style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>Sekcja tłumaczeń</span>
+                    </div>
+
+                    <Button
+                        label="Pobierz przypisy"
+                        icon="pi pi-download"
+                        severity="info"
+                        size="small"
+                        onClick={handleDownloadAnnotations}
+                        loading={loading}
+                        disabled={loading}
+                        style={{ width: '100%', padding: '0.5rem 1rem' }}
+                    />
+
+                    <div style={{ height: '1px', background: '#e2e8f0', margin: '0.25rem 0' }}></div>
+
+                    <label style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>
+                        Wgraj przetłumaczony plik:
+                    </label>
+
+                    <FileUpload
+                        mode="basic"
+                        name="translatedFile"
+                        accept=".xlsx"
+                        maxFileSize={10000000}
+                        customUpload
+                        uploadHandler={handleFileSelect}
+                        chooseLabel={translatedFile ? translatedFile.name : "Wybierz plik .xlsx"}
+                        auto
+                        style={{ width: '100%' }}
+                        chooseOptions={{
+                            style: { padding: '0.5rem 1rem', fontSize: '0.875rem', width: '100%' }
+                        }}
+                    />
+
+                    <Button
+                        label="Zastosuj tłumaczenia"
+                        icon="pi pi-check"
+                        severity="success"
+                        size="small"
+                        onClick={handleApplyTranslations}
+                        disabled={!translatedFile || loading}
+                        loading={loading}
+                        style={{ width: '100%', padding: '0.5rem 1rem' }}
+                    />
+                </div>
+            )}
         </div>
     )
 }
