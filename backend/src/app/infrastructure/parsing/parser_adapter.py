@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Any
 import pandas as pd
 from typing import Optional, Tuple, Dict
 
@@ -19,16 +20,20 @@ from app.domain.services.parser.blockquotes_inserter import apply_blockquotes_tr
 from app.domain.constants import PARSER_COLUMNS
 from app.infrastructure.parsing.markdown_analyzer_adapter import MarkdownAnalyzerAdapter
 
+from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
+
+
 class ParserAdapter(ExcelQuotesFootnotesPort):
     def __init__(self, base_dir: str):
         self.base_dir = Path(base_dir)
 
     def export_from_markdown(
-            self, md_path: str, 
-            quote_type: QuoteType, 
-            excel_path: Optional[str] = None,
-    ) -> Tuple[str, Dict]:
-        md_path = self._resolve_md_path(md_path=md_path)
+        self,
+        md_path: str,
+        quote_type: QuoteType,
+        excel_path: str | None = None,
+    ) -> tuple[str, dict]:
+        md_path = self._resolve_path(path=md_path)
 
         analyzer = MarkdownAnalyzerAdapter(file_path=str(md_path))
         md_text = analyzer.load_text()
@@ -74,6 +79,9 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
         filename = excel_path or f"{md_path.stem}_quotes_footnotes.xlsx"
         out_path = out_dir / filename
 
+        text_cols = df_final.select_dtypes(include=["object"]).columns
+        df_final[text_cols] = df_final[text_cols].applymap(self._clean_text_for_excel_cell)
+
         df_final.to_excel(out_path, index=False)
 
         stats = {"footnotes": len(footnotes_dict), "quotes": len(quotes_pl), "blockquotes": len(blockquotes_pl)}
@@ -85,8 +93,8 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             md_input_path: str, 
             md_output_path: Optional[str] = None
     ) -> str:
-        excel_path = Path(excel_path)
-        md_input_path = Path(md_input_path)
+        excel_path = self._resolve_path(excel_path)
+        md_input_path = self._resolve_path(md_input_path)
 
         df = pd.read_excel(excel_path)
 
@@ -122,13 +130,24 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
         out_dir.mkdir(parents=True, exist_ok=True)
 
         out_name = md_output_path or f"{md_input_path.stem}_REPLACED.md"
+        if not out_name.lower().endswith(".md"):
+            out_name += ".md"
         out_path = out_dir / out_name
         out_path.write_text(md_text, encoding="utf-8")
 
         return str(out_path)
     
-    def _resolve_md_path(self, md_path) -> Path:
-        path = Path(md_path)
-        if path.is_absolute():
-            return path
-        return (self.base_dir / path).resolve()
+    def _resolve_path(self, path: str | Path) -> Path:
+        p = Path(path)
+        if p.is_absolute():
+            return p
+        return (self.base_dir / p).resolve()
+
+    def _clean_text_for_excel_cell(self, value: Any) -> Any:
+        if not isinstance(value, str):
+            return value
+
+        sanitized = value.replace("\v", "\n")
+        sanitized = sanitized.replace("\r\n", "\n").replace("\r", "\n")
+        sanitized = ILLEGAL_CHARACTERS_RE.sub("", sanitized)
+        return sanitized

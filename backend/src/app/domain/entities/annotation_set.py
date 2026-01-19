@@ -21,7 +21,16 @@ class AnnotationSet:
         self.status = AnnotationStatus.TRANSLATED
         self._update_version()
 
+    # def mark_reviewed(self) -> None:
+    #     if self.status != AnnotationStatus.TRANSLATED:
+    #         raise ValueError(AnnotationSetErrors.MUST_BE_TRANSLATED_BEFORE_REVIEWED)
+    #     self.status = AnnotationStatus.REVIEWED
+    #     self._update_version()
+
     def mark_applied(self) -> None:
+        print("=================")
+        print(self.status)
+        print(type(self.status), self.status)
         if self.status != AnnotationStatus.TRANSLATED:
             raise ValueError(AnnotationSetErrors.MUST_BE_TRANSLATED_BEFORE_APPLIED)
         self.status = AnnotationStatus.APPLIED

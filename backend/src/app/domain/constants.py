@@ -31,3 +31,5 @@ PARSER_COLUMNS = [
     "quotes PL","przypis powiązany","quotes EN",
     "blockquotes PL","blockquotes EN",
 ]
+
+EXCEl_FILE_EXTENSION = ".xlsx"

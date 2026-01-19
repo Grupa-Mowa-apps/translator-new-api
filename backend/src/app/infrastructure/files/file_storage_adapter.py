@@ -41,15 +41,18 @@ class FileStorageAdapter(FileStorage):
         absolute_path = (self.base_dir / relative_path).resolve()
 
         absolute_path.write_bytes(content)
-        return str(relative_path).replace(os.sep, "/")
+        return str(absolute_path).replace(os.sep, "/")
     
     def delete(self, storage_path: str) -> None:
         if not storage_path:
             return
 
-        relative_path = Path(storage_path)
+        # relative_path = Path(storage_path)
+        # base = self.base_dir.resolve()
+        # absolute_path = (self.base_dir / relative_path).resolve()
+
         base = self.base_dir.resolve()
-        absolute_path = (self.base_dir / relative_path).resolve()
+        absolute_path = self._to_absolute(storage_path)
 
         if base not in absolute_path.parents and absolute_path != base:
             raise ValueError(FileErrors.INVALID_STORAGE_PATH)
@@ -61,9 +64,12 @@ class FileStorageAdapter(FileStorage):
         if not storage_path:
             raise ValueError(FileErrors.INVALID_STORAGE_PATH)
         
-        relative_path = Path(storage_path)
+        # relative_path = Path(storage_path)
+        # base = self.base_dir.resolve()
+        # absolute_path = (self.base_dir / relative_path).resolve()
+
         base = self.base_dir.resolve()
-        absolute_path = (self.base_dir / relative_path).resolve()
+        absolute_path = self._to_absolute(storage_path)
 
         if base not in absolute_path.parents and absolute_path != base:
             raise ValueError(FileErrors.INVALID_STORAGE_PATH)
@@ -80,3 +86,7 @@ class FileStorageAdapter(FileStorage):
             return data.decode(encoding=encoding)
         except UnicodeDecodeError:
             return data.decode(encoding=encoding, errors="replace")
+        
+    def _to_absolute(self, storage_path: str) -> Path:
+        path = Path(storage_path)
+        return path.resolve() if path.is_absolute() else (self.base_dir / path).resolve()
