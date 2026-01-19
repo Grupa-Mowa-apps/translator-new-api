@@ -21,10 +21,15 @@ const HomePage: FC = () => {
                 <h1>Parse And Translate</h1>
                 <UserSelector />
                 <Button 
-                    label="Rozpocznij" 
+                    label="Parsuj i tłumacz" 
                     icon="pi pi-arrow-right" 
                     iconPos="right"
-                    size="large"
+                    style={{ 
+                        width: '66%', 
+                        padding: '0.75rem',
+                        backgroundColor: '#f59e0b',
+                        borderColor: '#f59e0b'
+                    }}
                     onClick={handleStart}
                     disabled={!selectedUser}
                 />
