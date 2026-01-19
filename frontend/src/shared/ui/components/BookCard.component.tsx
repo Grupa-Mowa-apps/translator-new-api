@@ -24,6 +24,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             case 'ready_to_translate': return 'warning'
             case 'mapped': return 'warning'
             case 'parsed': return 'warning'
+            case 'annotations_applied': return 'success'
             default: return 'secondary'
         }
     }
@@ -36,6 +37,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             case 'uploaded': return 'Wgrana'
             case 'mapped': return 'Czeka na przypisy'
             case 'parsed': return 'Przypisy do tłumaczenia'
+            case 'annotations_applied': return 'Tłumaczenia zastosowane'
             default: return status
         }
     }
@@ -195,7 +197,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                 )}
             </div>
 
-            {['mapped', 'parsed'].includes(status) && (
+            {['mapped', 'parsed', 'annotations_applied'].includes(status) && (
                 <div style={{
                     background: 'rgba(102, 126, 234, 0.05)',
                     border: '1px solid #e2e8f0',
