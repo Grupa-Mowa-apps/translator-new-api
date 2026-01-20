@@ -221,11 +221,11 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
                         <i className="pi pi-file-excel" style={{ color: '#667eea', fontSize: '1.25rem' }}></i>
-                        <span style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>Sekcja tłumaczeń</span>
+                        <span style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>Sekcja przypisów i cytatów</span>
                     </div>
 
                     <Button
-                        label="Pobierz przypisy"
+                        label="Pobierz przypisy do tłumaczenia"
                         icon="pi pi-download"
                         severity="info"
                         size="small"
@@ -253,7 +253,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                             <div style={{ height: '1px', background: '#e2e8f0', margin: '0.25rem 0' }}></div>
 
                             <label style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>
-                                Wgraj przetłumaczony plik:
+                                Wgraj przetłumaczony plik z przypisami i cytatami:
                             </label>
 
                             <FileUpload
@@ -272,7 +272,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                             />
 
                             <Button
-                                label="Zastosuj tłumaczenia"
+                                label="Zastosuj przetłumaczone przypisy"
                                 icon="pi pi-check"
                                 severity="success"
                                 size="small"
