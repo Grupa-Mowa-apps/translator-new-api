@@ -3,7 +3,7 @@ import { Dialog } from 'primereact/dialog'
 import { InputText } from 'primereact/inputtext'
 import { Button } from 'primereact/button'
 import { Toast } from 'primereact/toast'
-import { createUserRest } from '../../infrastructure/api/userApi'
+import { createUserRest, updateUserRest } from '../../infrastructure/api/userApi'
 import { useUserContext } from '../../context/useUserContext'
 import { UserResponseDTO } from '../../dto/userDTO'
 
@@ -18,7 +18,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const MAX_NAME_LENGTH = 100
 
 const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide, user, mode = 'add' }) => {
-    const { addUser } = useUserContext()
+    const { addUser, updateUser } = useUserContext()
     const toast = useRef<Toast>(null)
     const [email, setEmail] = useState(user?.email || '')
     const [name, setName] = useState(user?.name || '')
@@ -75,17 +75,32 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide, user, mode = '
         try {
             const trimmedEmail = email.trim()
             const trimmedName = name.trim()
-            const newUser = await createUserRest({ 
-                email: trimmedEmail, 
-                name: trimmedName || undefined 
-            })
-            addUser(newUser)
-            toast.current?.show({
-                severity: 'success',
-                summary: 'Sukces',
-                detail: 'U\u017cytkownik zosta\u0142 dodany',
-                life: 3000
-            })
+            
+            if (isEditMode && user) {
+                const updatedUser = await updateUserRest(user.id, { 
+                    email: trimmedEmail, 
+                    name: trimmedName || undefined 
+                })
+                updateUser(updatedUser)
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Sukces',
+                    detail: 'U\u017cytkownik zosta\u0142 zaktualizowany',
+                    life: 3000
+                })
+            } else {
+                const newUser = await createUserRest({ 
+                    email: trimmedEmail, 
+                    name: trimmedName || undefined 
+                })
+                addUser(newUser)
+                toast.current?.show({
+                    severity: 'success',
+                    summary: 'Sukces',
+                    detail: 'U\u017cytkownik zosta\u0142 dodany',
+                    life: 3000
+                })
+            }
             setEmail('')
             setName('')
             setEmailError(null)

@@ -24,7 +24,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             case 'ready_to_translate': return 'warning'
             case 'mapped': return 'warning'
             case 'parsed': return 'warning'
-            case 'annotations_applied': return 'success'
+            case 'annotations_applied': return 'info'
             default: return 'secondary'
         }
     }
@@ -224,49 +224,66 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                         style={{ width: '100%', padding: '0.5rem 1rem' }}
                     />
 
-                    <div style={{ height: '1px', background: '#e2e8f0', margin: '0.25rem 0' }}></div>
+                    {status === 'annotations_applied' && (
+                        <Button
+                            label="Pobierz oryginał z przypisami"
+                            icon="pi pi-file-export"
+                            severity="secondary"
+                            size="small"
+                            onClick={() => {}}
+                            loading={loading}
+                            disabled={loading}
+                            style={{ width: '100%', padding: '0.5rem 1rem' }}
+                        />
+                    )}
 
-                    <label style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>
-                        Wgraj przetłumaczony plik:
-                    </label>
+                    {status !== 'annotations_applied' && (
+                        <>
+                            <div style={{ height: '1px', background: '#e2e8f0', margin: '0.25rem 0' }}></div>
 
-                    <FileUpload
-                        mode="basic"
-                        name="translatedFile"
-                        accept=".xlsx"
-                        maxFileSize={10000000}
-                        customUpload
-                        uploadHandler={handleFileSelect}
-                        chooseLabel={translatedFile ? translatedFile.name : "Wybierz plik .xlsx"}
-                        auto
-                        style={{ width: '100%' }}
-                        chooseOptions={{
-                            style: { padding: '0.5rem 1rem', fontSize: '0.875rem', width: '100%' }
-                        }}
-                    />
+                            <label style={{ fontWeight: '600', color: '#64748b', fontSize: '0.875rem' }}>
+                                Wgraj przetłumaczony plik:
+                            </label>
 
-                    <Button
-                        label="Zastosuj tłumaczenia"
-                        icon="pi pi-check"
-                        severity="success"
-                        size="small"
-                        onClick={handleApplyTranslations}
-                        disabled={!translatedFile || loading}
-                        loading={loading}
-                        style={{ width: '100%', padding: '0.5rem 1rem' }}
-                    />
+                            <FileUpload
+                                mode="basic"
+                                name="translatedFile"
+                                accept=".xlsx"
+                                maxFileSize={10000000}
+                                customUpload
+                                uploadHandler={handleFileSelect}
+                                chooseLabel={translatedFile ? translatedFile.name : "Wybierz plik .xlsx"}
+                                auto
+                                style={{ width: '100%' }}
+                                chooseOptions={{
+                                    style: { padding: '0.5rem 1rem', fontSize: '0.875rem', width: '100%' }
+                                }}
+                            />
 
-                    {error && (
-                        <div style={{ 
-                            color: '#ef4444', 
-                            fontSize: '0.875rem',
-                            padding: '0.75rem',
-                            background: '#fee2e2',
-                            borderRadius: '8px',
-                            marginTop: '0.5rem'
-                        }}>
-                            {error}
-                        </div>
+                            <Button
+                                label="Zastosuj tłumaczenia"
+                                icon="pi pi-check"
+                                severity="success"
+                                size="small"
+                                onClick={handleApplyTranslations}
+                                disabled={!translatedFile || loading}
+                                loading={loading}
+                                style={{ width: '100%', padding: '0.5rem 1rem' }}
+                            />
+
+                            {error && (
+                                <div style={{ 
+                                    color: '#ef4444', 
+                                    fontSize: '0.875rem',
+                                    padding: '0.75rem',
+                                    background: '#fee2e2',
+                                    borderRadius: '8px',
+                                    marginTop: '0.5rem'
+                                }}>
+                                    {error}
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             )}
