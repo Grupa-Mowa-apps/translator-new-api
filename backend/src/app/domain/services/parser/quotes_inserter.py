@@ -163,7 +163,7 @@ def apply_quotes_translations_with_report(markdown_text: str, translations: dict
         for pl, (en, count) in successful_occurrences.items()
     ]
 
-    successful_pl_set = set(successful_occurrences.keys())
+    successful_pl_set = set(_normalize_quote_key(k) for k in successful_occurrences.keys())
     failed = [
         {"type": "quote", "original_text": pl, "translation": en}
         for pl, en in translations.items()
