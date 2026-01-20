@@ -50,10 +50,13 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                 try {
                     const annotations = await getAnnotationsRest(bookId)
                     if (annotations.length > 0) {
-                        const latestId = annotations[0].id
-                        setLatestAnnotationSetId(latestId)
+                        // Znajdź annotation_set ze statusem APPLIED
+                        const appliedAnnotation = annotations.find(a => a.status.includes('APPLIED'))
+                        const annotationId = appliedAnnotation ? appliedAnnotation.id : annotations[0].id
                         
-                        const failedInfo = await getFailedApplicationsCountRest(bookId, latestId)
+                        setLatestAnnotationSetId(annotationId)
+                        
+                        const failedInfo = await getFailedApplicationsCountRest(bookId, annotationId)
                         setHasFailedApplications(failedInfo.has_failed)
                     }
                 } catch (err) {
