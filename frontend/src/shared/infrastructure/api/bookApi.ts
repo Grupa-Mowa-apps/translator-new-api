@@ -99,3 +99,23 @@ export const downloadBookWithTranslatedAnnotationsRest = async (bookId: string):
     
     return response.blob()
 }
+
+export const getFailedApplicationsCountRest = async (bookId: string, annotationSetId: string): Promise<{count: number, has_failed: boolean}> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/annotations/${annotationSetId}/failed-applications/count`)
+    
+    if (!response.ok) {
+        throw new Error('Nie udało się pobrać informacji o nieudanych tłumaczeniach')
+    }
+    
+    return response.json()
+}
+
+export const downloadFailedApplicationsRest = async (bookId: string, annotationSetId: string): Promise<Blob> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/annotations/${annotationSetId}/failed-applications/export`)
+    
+    if (!response.ok) {
+        throw new Error('Nie udało się pobrać pliku z nieudanymi tłumaczeniami')
+    }
+    
+    return response.blob()
+}

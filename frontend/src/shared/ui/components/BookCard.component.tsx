@@ -1,8 +1,8 @@
-import { FC, useState } from 'react'
+import { FC, useState, useEffect } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest, downloadBookWithTranslatedAnnotationsRest } from '../../infrastructure/api/bookApi'
+import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest, downloadBookWithTranslatedAnnotationsRest, getFailedApplicationsCountRest, downloadFailedApplicationsRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
     bookId: string
@@ -17,6 +17,8 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
     const [loading, setLoading] = useState(false)
     const [translatedFile, setTranslatedFile] = useState<File | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [latestAnnotationSetId, setLatestAnnotationSetId] = useState<string | null>(null)
+    const [hasFailedApplications, setHasFailedApplications] = useState(false)
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'translated': return 'success'
@@ -41,6 +43,26 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             default: return status
         }
     }
+
+    useEffect(() => {
+        if (status === 'annotations_applied') {
+            const fetchFailedApplications = async () => {
+                try {
+                    const annotations = await getAnnotationsRest(bookId)
+                    if (annotations.length > 0) {
+                        const latestId = annotations[0].id
+                        setLatestAnnotationSetId(latestId)
+                        
+                        const failedInfo = await getFailedApplicationsCountRest(bookId, latestId)
+                        setHasFailedApplications(failedInfo.has_failed)
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch annotation set:', err)
+                }
+            }
+            fetchFailedApplications()
+        }
+    }, [bookId, status])
 
     const handleParser = async () => {
         setLoading(true)
@@ -126,6 +148,28 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             document.body.removeChild(a)
         } catch (err) {
             console.error('Download error:', err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDownloadFailedApplications = async () => {
+        if (!latestAnnotationSetId) return
+        
+        setLoading(true)
+        try {
+            const blob = await downloadFailedApplicationsRest(bookId, latestAnnotationSetId)
+            
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${title}_nieudane_tlumaczenia.xlsx`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (err) {
+            console.error('Download failed applications error:', err)
         } finally {
             setLoading(false)
         }
@@ -236,16 +280,32 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                     />
 
                     {status === 'annotations_applied' && (
-                        <Button
-                            label="Pobierz oryginał z przypisami"
-                            icon="pi pi-file-export"
-                            severity="secondary"
-                            size="small"
-                            onClick={handleDownloadTranslatedBook}
-                            loading={loading}
-                            disabled={loading}
-                            style={{ width: '100%', padding: '0.5rem 1rem' }}
-                        />
+                        <>
+                            <Button
+                                label="Pobierz oryginał z przypisami"
+                                icon="pi pi-file-export"
+                                severity="success"
+                                size="small"
+                                onClick={handleDownloadTranslatedBook}
+                                loading={loading}
+                                disabled={loading}
+                                style={{ width: '100%', padding: '0.5rem 1rem' }}
+                            />
+                            
+                            {hasFailedApplications && (
+                                <Button
+                                    label="Pobierz nieudane tłumaczenia"
+                                    icon="pi pi-exclamation-triangle"
+                                    severity="warning"
+                                    outlined
+                                    size="small"
+                                    onClick={handleDownloadFailedApplications}
+                                    loading={loading}
+                                    disabled={loading}
+                                    style={{ width: '100%', padding: '0.5rem 1rem' }}
+                                />
+                            )}
+                        </>
                     )}
 
                     {status !== 'annotations_applied' && (

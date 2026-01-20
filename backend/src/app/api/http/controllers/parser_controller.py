@@ -163,6 +163,29 @@ def export_failed_applications(
         raise HTTPException(status_code=404, detail=str(e))
 
 @router.get(
+    "/{book_id}/annotations/{annotation_set_id}/failed-applications/count",
+    status_code=status.HTTP_200_OK,
+)
+def get_failed_applications_count(
+    book_id: str,
+    annotation_set_id: str,
+    db: Session = Depends(get_db),
+):
+    try:
+        annotation_set = get_annotation_repo(db).get(annotation_set_id)
+        if not annotation_set:
+            raise ValueError("Annotation set not found")
+        if annotation_set.book_id != book_id:
+            raise ValueError("Annotation set does not belong to this book")
+        
+        repo = get_failed_annotation_repo(db)
+        failed_list = repo.get_by_annotation_set(annotation_set_id)
+        
+        return {"count": len(failed_list), "has_failed": len(failed_list) > 0}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+@router.get(
     "/{book_id}/annotations",
     status_code=status.HTTP_200_OK,
 )
