@@ -17,7 +17,7 @@ class BookDB(Base):
     __tablename__ = "books"
 
     id = Column(String, primary_key=True)
-    owner_id = Column(String, ForeignKey("users.id", ondelete="RESTRICT"), index=True, nullable=False)
+    owner_id = Column(String, ForeignKey("users.id", ondelete="CASCADE"), index=True, nullable=False)
 
     title = Column(String, nullable=False)
     genre = Column(String, nullable=False)
