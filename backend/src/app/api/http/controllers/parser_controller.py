@@ -110,11 +110,11 @@ def download_annotation_set(book_id: str, annotation_set_id: str, db: Session = 
 #         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.post(
-    "/{book_id}/parser/apply-download",
+    "/{book_id}/parser/apply",
     response_model=ApplyParserTranslationsResponse,
     status_code=status.HTTP_200_OK,
 )
-def apply_parser_and_download(book_id: str, dto: ApplyParserTranslationsRequest, db: Session = Depends(get_db)):
+def apply_parser(book_id: str, dto: ApplyParserTranslationsRequest, db: Session = Depends(get_db)):
     try:
         cmd = ApplyExcelTranslationsCommand(
             book_repo=get_book_repo(db),
@@ -122,21 +122,7 @@ def apply_parser_and_download(book_id: str, dto: ApplyParserTranslationsRequest,
             excel_port=get_parser_port(),
             file_repo=get_file_repo(db),
         )
-        result = cmd.execute(book_id=book_id, dto=dto)
-        md_path = Path(result.output_md_path)
-
-        if not md_path.exists():
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Output markdown not found on disk: {md_path}",
-            )
-
-        return FileResponse(
-            path=str(md_path),
-            filename=md_path.name,
-            media_type="text/markdown",
-        )
-
+        return cmd.execute(book_id=book_id, dto=dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
@@ -156,6 +142,27 @@ def list_annotation_sets(book_id: str, db: Session = Depends(get_db)):
         }
         for a in rows
     ]
+
+@router.get(
+    "/{book_id}/download-with-translated-annotations",
+    status_code=status.HTTP_200_OK,
+)
+def download_book_with_translated_annotations(book_id: str, db: Session = Depends(get_db)):
+    try:
+        book = get_book_repo(db).get(book_id)
+        if not book or book.status.value != "annotations_applied":
+            raise ValueError("Book annotations not applied")
+        
+        file = get_file_repo(db).get(file_id=book.file_id)
+        md_path = Path(file.path)
+        
+        return FileResponse(
+            path=str(md_path),
+            filename=md_path.name,
+            media_type="text/markdown",
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
     
 @router.post(
     "/{book_id}/parser/export-download",

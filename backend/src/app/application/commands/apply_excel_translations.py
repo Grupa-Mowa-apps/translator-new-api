@@ -39,10 +39,10 @@ class ApplyExcelTranslationsCommand:
         
         excel_path = annotation_set.file_path
 
-        output_md_path = self.excel_port.apply_translations_from_excel(
+        self.excel_port.apply_translations_from_excel(
             excel_path=excel_path,
             md_input_path=file.path,
-            md_output_path=dto.output_md_filename,
+            md_output_path=file.path,
         )
 
         annotation_set.mark_applied()
@@ -53,4 +53,7 @@ class ApplyExcelTranslationsCommand:
         
         logger.info(f"Translations applied for book: {book_id}")
 
-        return ApplyParserTranslationsResponse(output_md_path=output_md_path)
+        return ApplyParserTranslationsResponse(
+            annotation_set_id=annotation_set.id,
+            status=annotation_set.status,
+        )

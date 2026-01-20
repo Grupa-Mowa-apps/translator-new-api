@@ -15,10 +15,10 @@ class ExportParserResponse(BaseModel):
 
 class ApplyParserTranslationsRequest(BaseModel):
     annotation_set_id: str
-    output_md_filename: Optional[str] = None
 
 class ApplyParserTranslationsResponse(BaseModel):
-    output_md_path: str
+    annotation_set_id: str
+    status: str
 
 class UploadTranslatedExcelRequest(BaseModel):
     book_id: str

@@ -2,7 +2,7 @@ import { FC, useState } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest } from '../../infrastructure/api/bookApi'
+import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest, downloadBookWithTranslatedAnnotationsRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
     bookId: string
@@ -98,16 +98,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
         setError(null)
         try {
             const uploadResult = await uploadTranslatedExcelRest(bookId, translatedFile)
-            const blob = await applyTranslationsRest(bookId, uploadResult.annotation_set_id)
-            
-            const url = window.URL.createObjectURL(blob)
-            const a = document.createElement('a')
-            a.href = url
-            a.download = `${title}_przetlumaczona.md`
-            document.body.appendChild(a)
-            a.click()
-            window.URL.revokeObjectURL(url)
-            document.body.removeChild(a)
+            await applyTranslationsRest(bookId, uploadResult.annotation_set_id)
             
             setTranslatedFile(null)
             if (onBookUpdated) {
@@ -115,6 +106,26 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             }
         } catch (err: any) {
             setError(err.message || 'Wystąpił błąd')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleDownloadTranslatedBook = async () => {
+        setLoading(true)
+        try {
+            const blob = await downloadBookWithTranslatedAnnotationsRest(bookId)
+            
+            const url = window.URL.createObjectURL(blob)
+            const a = document.createElement('a')
+            a.href = url
+            a.download = `${title}_z_tlumaczeniami.md`
+            document.body.appendChild(a)
+            a.click()
+            window.URL.revokeObjectURL(url)
+            document.body.removeChild(a)
+        } catch (err) {
+            console.error('Download error:', err)
         } finally {
             setLoading(false)
         }
@@ -166,7 +177,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto' }}>
                 {status === 'uploaded' && (
                     <Button
-                        label="Parser"
+                        label="Generuj przypisy i rozdziały"
                         icon="pi pi-file-edit"
                         severity="secondary"
                         outlined
@@ -230,7 +241,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                             icon="pi pi-file-export"
                             severity="secondary"
                             size="small"
-                            onClick={() => {}}
+                            onClick={handleDownloadTranslatedBook}
                             loading={loading}
                             disabled={loading}
                             style={{ width: '100%', padding: '0.5rem 1rem' }}

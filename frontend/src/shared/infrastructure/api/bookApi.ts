@@ -74,8 +74,8 @@ export const uploadTranslatedExcelRest = async (bookId: string, file: File): Pro
     return response.json()
 }
 
-export const applyTranslationsRest = async (bookId: string, annotationSetId: string): Promise<Blob> => {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/parser/apply-download`, {
+export const applyTranslationsRest = async (bookId: string, annotationSetId: string): Promise<{ annotation_set_id: string; status: string }> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/parser/apply`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -85,6 +85,16 @@ export const applyTranslationsRest = async (bookId: string, annotationSetId: str
     
     if (!response.ok) {
         throw new Error('Nie udało się zastosować tłumaczeń')
+    }
+    
+    return response.json()
+}
+
+export const downloadBookWithTranslatedAnnotationsRest = async (bookId: string): Promise<Blob> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}/download-with-translated-annotations`)
+    
+    if (!response.ok) {
+        throw new Error('Nie udało się pobrać pliku')
     }
     
     return response.blob()
