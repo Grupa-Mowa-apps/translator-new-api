@@ -5,6 +5,7 @@ from app.domain.errors import BookErrors, AnnotationSetErrors, FileErrors
 from app.application.dto.parser_dto import ApplyParserTranslationsRequest, ApplyParserTranslationsResponse
 from app.domain.ports.annotation_set_repository import AnnotationSetRepository
 from app.domain.ports.file_repository import FileRepository
+from app.domain.services.failed_annotation_application_service import FailedAnnotationApplicationService
 
 logger = logging.getLogger(__name__)
 
@@ -15,11 +16,13 @@ class ApplyExcelTranslationsCommand:
         annotation_repo: AnnotationSetRepository,
         excel_port: ExcelQuotesFootnotesPort,
         file_repo: FileRepository,
+        failed_service: FailedAnnotationApplicationService,
     ):
         self.book_repo = book_repo
         self.annotation_repo = annotation_repo
         self.excel_port = excel_port
         self.file_repo = file_repo
+        self.failed_service = failed_service
 
     def execute(self, book_id: str, dto: ApplyParserTranslationsRequest) -> ApplyParserTranslationsResponse:
         logger.info(f"Applying translations for book: {book_id}")
@@ -39,11 +42,15 @@ class ApplyExcelTranslationsCommand:
         
         excel_path = annotation_set.file_path
 
-        self.excel_port.apply_translations_from_excel(
+        output_path, failed_list = self.excel_port.apply_translations_from_excel(
             excel_path=excel_path,
             md_input_path=file.path,
             md_output_path=file.path,
         )
+
+        if failed_list:
+            self.failed_service.save_batch(annotation_set.id, failed_list)
+            logger.warning(f"Failed to apply {len(failed_list)} annotations for annotation_set: {annotation_set.id}")
 
         annotation_set.mark_applied()
         self.annotation_repo.update(annotation_set=annotation_set)

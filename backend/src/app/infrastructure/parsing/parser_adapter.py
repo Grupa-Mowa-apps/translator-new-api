@@ -13,9 +13,9 @@ from app.domain.services.parser.parser_extraction import (
     extract_blockquotes,
 )
 
-from app.domain.services.parser.footnotes_inserter import apply_footnotes_translations
-from app.domain.services.parser.quotes_inserter import apply_quotes_translations
-from app.domain.services.parser.blockquotes_inserter import apply_blockquotes_translations
+from app.domain.services.parser.footnotes_inserter import apply_footnotes_translations_with_report
+from app.domain.services.parser.quotes_inserter import apply_quotes_translations_with_report
+from app.domain.services.parser.blockquotes_inserter import apply_blockquotes_translations_with_report
 
 from app.domain.constants import PARSER_COLUMNS
 from app.infrastructure.parsing.markdown_analyzer_adapter import MarkdownAnalyzerAdapter
@@ -92,7 +92,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
             excel_path: str,
             md_input_path: str, 
             md_output_path: Optional[str] = None
-    ) -> str:
+    ) -> tuple[str, list[dict]]:
         excel_path = self._resolve_path(excel_path)
         md_input_path = self._resolve_path(md_input_path)
 
@@ -122,9 +122,16 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
 
         md_text = md_input_path.read_text(encoding="utf-8")
 
-        md_text = apply_footnotes_translations(md_text, footnotes)
-        md_text = apply_quotes_translations(md_text, quotes)
-        md_text = apply_blockquotes_translations(md_text, blockquotes)
+        all_failed = []
+
+        md_text, _, failed_footnotes = apply_footnotes_translations_with_report(md_text, footnotes)
+        all_failed.extend(failed_footnotes)
+
+        md_text, _, failed_quotes = apply_quotes_translations_with_report(md_text, quotes)
+        all_failed.extend(failed_quotes)
+
+        md_text, _, failed_blockquotes = apply_blockquotes_translations_with_report(md_text, blockquotes)
+        all_failed.extend(failed_blockquotes)
 
         out_dir = self.base_dir / "outputs"
         out_dir.mkdir(parents=True, exist_ok=True)
@@ -135,7 +142,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
         out_path = out_dir / out_name
         out_path.write_text(md_text, encoding="utf-8")
 
-        return str(out_path)
+        return str(out_path), all_failed
     
     def _resolve_path(self, path: str | Path) -> Path:
         p = Path(path)

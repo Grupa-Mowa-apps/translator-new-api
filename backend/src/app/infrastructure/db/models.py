@@ -86,6 +86,11 @@ class AnnotationSetDB(Base):
     version = Column(Integer, nullable=False, default=1)
 
     book = relationship("BookDB", back_populates="annotation_sets")
+    failed_applications = relationship(
+        "FailedAnnotationApplicationDB", 
+        back_populates="annotation_set", 
+        cascade="all, delete-orphan"
+    )
 
 class TranslationTaskDB(Base):
     __tablename__ = "translation_tasks"
@@ -126,3 +131,16 @@ class FileDB(Base):
         foreign_keys=[book_id],
         uselist=False,
     )
+
+class FailedAnnotationApplicationDB(Base):
+    __tablename__ = "failed_annotation_applications"
+
+    id = Column(String, primary_key=True)
+    annotation_set_id = Column(String, ForeignKey("annotation_sets.id", ondelete="CASCADE"), index=True, nullable=False)
+    
+    type = Column(String, nullable=False)
+    original_text = Column(Text, nullable=False)
+    translation = Column(Text, nullable=False)
+    created_at = Column(String, nullable=False)
+    
+    annotation_set = relationship("AnnotationSetDB", back_populates="failed_applications")

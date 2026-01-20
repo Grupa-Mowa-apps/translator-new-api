@@ -36,6 +36,25 @@ def upgrade() -> None:
         ondelete='SET NULL'
     )
     # ### end Alembic commands ###
+    
+    # Add failed_annotation_applications table
+    op.create_table(
+        'failed_annotation_applications',
+        sa.Column('id', sa.String(), nullable=False),
+        sa.Column('annotation_set_id', sa.String(), nullable=False),
+        sa.Column('type', sa.String(), nullable=False),
+        sa.Column('original_text', sa.Text(), nullable=False),
+        sa.Column('translation', sa.Text(), nullable=False),
+        sa.Column('created_at', sa.String(), nullable=False),
+        sa.ForeignKeyConstraint(['annotation_set_id'], ['annotation_sets.id'], ondelete='CASCADE'),
+        sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(
+        op.f('ix_failed_annotation_applications_annotation_set_id'),
+        'failed_annotation_applications',
+        ['annotation_set_id'],
+        unique=False
+    )
 
 
 def downgrade() -> None:
@@ -52,3 +71,10 @@ def downgrade() -> None:
     )
     op.drop_constraint('uq_chapters_book_chapter_number', 'chapters', type_='unique')
     # ### end Alembic commands ###
+    
+    # Drop failed_annotation_applications table
+    op.drop_index(
+        op.f('ix_failed_annotation_applications_annotation_set_id'),
+        table_name='failed_annotation_applications'
+    )
+    op.drop_table('failed_annotation_applications')

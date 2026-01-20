@@ -1,6 +1,6 @@
 from pathlib import Path
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, status, File
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from sqlalchemy.orm import Session
 
 from app.application.commands.upload_translated_excel import UploadTranslatedExcelCommand
@@ -12,8 +12,10 @@ from app.infrastructure.db.dependencies import get_db
 from app.infrastructure.db.repositories.annotation_set_repo_sqlalchemy import SqlAlchemyAnnotationSetRepository
 from app.infrastructure.db.repositories.book_repo_sqlalchemy import SqlAlchemyBookRepository
 from app.infrastructure.db.repositories.file_repo_sqlalchemy import SqlAlchemyFileRepository
+from app.infrastructure.db.repositories.failed_annotation_application_repo_sqlalchemy import FailedAnnotationApplicationRepoSQLAlchemy
 from app.infrastructure.files.file_storage_adapter import FileStorageAdapter
 from app.infrastructure.parsing.parser_adapter import ParserAdapter
+from app.domain.services.failed_annotation_application_service import FailedAnnotationApplicationService
 
 from app.application.commands.export_quotes_footnotes import ExportQuotesFootnotesCommand
 from app.application.commands.apply_excel_translations import ApplyExcelTranslationsCommand
@@ -42,6 +44,12 @@ def get_annotation_repo(db: Session = Depends(get_db)) -> AnnotationSetRepositor
 
 def get_parser_port() -> ExcelQuotesFootnotesPort:
     return ParserAdapter(base_dir="/app/backend/storage")
+
+def get_failed_annotation_repo(db: Session = Depends(get_db)) -> FailedAnnotationApplicationRepoSQLAlchemy:
+    return FailedAnnotationApplicationRepoSQLAlchemy(session=db)
+
+def get_failed_annotation_service(repo: FailedAnnotationApplicationRepoSQLAlchemy = Depends(get_failed_annotation_repo)) -> FailedAnnotationApplicationService:
+    return FailedAnnotationApplicationService(repo=repo)
 
 def get_export_cmd(
     book_repo: BookRepository = Depends(get_book_repo),
@@ -121,10 +129,38 @@ def apply_parser(book_id: str, dto: ApplyParserTranslationsRequest, db: Session 
             annotation_repo=get_annotation_repo(db),
             excel_port=get_parser_port(),
             file_repo=get_file_repo(db),
+            failed_service=get_failed_annotation_service(get_failed_annotation_repo(db)),
         )
         return cmd.execute(book_id=book_id, dto=dto)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@router.get(
+    "/{book_id}/annotations/{annotation_set_id}/failed-applications/export",
+    status_code=status.HTTP_200_OK,
+)
+def export_failed_applications(
+    book_id: str,
+    annotation_set_id: str,
+    db: Session = Depends(get_db),
+):
+    try:
+        annotation_set = get_annotation_repo(db).get(annotation_set_id)
+        if not annotation_set:
+            raise ValueError("Annotation set not found")
+        if annotation_set.book_id != book_id:
+            raise ValueError("Annotation set does not belong to this book")
+        
+        service = get_failed_annotation_service(get_failed_annotation_repo(db))
+        excel_file = service.export_to_excel(annotation_set_id)
+        
+        return StreamingResponse(
+            excel_file,
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers={"Content-Disposition": f"attachment; filename=failed_applications_{annotation_set_id}.xlsx"}
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.get(
     "/{book_id}/annotations",
