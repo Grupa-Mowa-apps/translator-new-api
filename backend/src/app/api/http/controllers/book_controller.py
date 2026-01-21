@@ -14,6 +14,7 @@ from app.infrastructure.db.repositories.file_repo_sqlalchemy import SqlAlchemyFi
 from app.application.dto.book_dto import BookWithChaptersResponse, CreateBookRequest, BookResponse, ProcessBookRequest
 from app.application.dto.chapter_dto import ChapterResponse
 from app.application.commands.create_book_from_file import CreateBookFromFileCommand
+from app.application.commands.delete_book import DeleteBookCommand
 from app.application.queries.get_book import GetBookQuery
 from app.application.queries.list_books import ListBooksForOwnerQuery
 from app.infrastructure.files.file_storage_adapter import FileStorageAdapter
@@ -131,3 +132,11 @@ def get_book_full(book_id: str, db: Session = Depends(get_db)):
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+@router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_book(book_id: str, owner_id: str, db: Session = Depends(get_db)):
+    try:
+        cmd = DeleteBookCommand(book_repo(db))
+        cmd.execute(book_id=book_id, owner_id=owner_id)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
