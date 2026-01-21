@@ -28,7 +28,7 @@ class BookDB(Base):
     status = Column(String, nullable=False, default="uploaded")
     version = Column(Integer, nullable=False, default=1)
 
-    owner = relationship("UserDB", back_populates="books")
+    owner = relationship("UserDB", back_populates="books", passive_deletes=True)
     chapters = relationship("ChapterDB", back_populates="book", cascade="all, delete-orphan")
     annotation_sets = relationship(
         "AnnotationSetDB", 
