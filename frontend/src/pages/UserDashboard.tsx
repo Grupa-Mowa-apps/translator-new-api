@@ -93,6 +93,7 @@ const UserDashboard: FC = () => {
                                 genre={book.genre}
                                 status={book.status}
                                 quotationMarks={book.quotation_marks}
+                                ownerId={userId || ''}
                                 onBookUpdated={fetchBooks}
                             />
                         ))}

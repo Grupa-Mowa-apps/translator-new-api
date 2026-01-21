@@ -119,3 +119,13 @@ export const downloadFailedApplicationsRest = async (bookId: string, annotationS
     
     return response.blob()
 }
+
+export const deleteBookRest = async (bookId: string, ownerId: string): Promise<void> => {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/books/${bookId}?owner_id=${ownerId}`, {
+        method: 'DELETE'
+    })
+    
+    if (!response.ok) {
+        throw new Error('Nie udało się usunąć książki')
+    }
+}

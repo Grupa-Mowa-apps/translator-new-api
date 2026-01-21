@@ -1,8 +1,9 @@
 import { FC, useState, useEffect } from 'react'
 import { Button } from 'primereact/button'
 import { Badge } from 'primereact/badge'
+import { Dialog } from 'primereact/dialog'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
-import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest, downloadBookWithTranslatedAnnotationsRest, getFailedApplicationsCountRest, downloadFailedApplicationsRest } from '../../infrastructure/api/bookApi'
+import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest, downloadBookWithTranslatedAnnotationsRest, getFailedApplicationsCountRest, downloadFailedApplicationsRest, deleteBookRest } from '../../infrastructure/api/bookApi'
 
 interface BookCardProps {
     bookId: string
@@ -10,15 +11,17 @@ interface BookCardProps {
     genre: string
     status: string
     quotationMarks: string
+    ownerId: string
     onBookUpdated?: () => void
 }
 
-const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMarks, onBookUpdated }) => {
+const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMarks, ownerId, onBookUpdated }) => {
     const [loading, setLoading] = useState(false)
     const [translatedFile, setTranslatedFile] = useState<File | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [latestAnnotationSetId, setLatestAnnotationSetId] = useState<string | null>(null)
     const [hasFailedApplications, setHasFailedApplications] = useState(false)
+    const [deleteDialogVisible, setDeleteDialogVisible] = useState(false)
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'translated': return 'success'
@@ -178,7 +181,24 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
         }
     }
 
+    const handleDeleteBook = async () => {
+        setLoading(true)
+        try {
+            await deleteBookRest(bookId, ownerId)
+            setDeleteDialogVisible(false)
+            if (onBookUpdated) {
+                onBookUpdated()
+            }
+        } catch (err) {
+            console.error('Delete book error:', err)
+            setError('Nie udało się usunąć książki')
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
+        <>
         <div style={{
             background: 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(10px)',
@@ -361,7 +381,49 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                     )}
                 </div>
             )}
+
+            <Button
+                label="Usuń książkę"
+                icon="pi pi-trash"
+                severity="danger"
+                outlined
+                size="small"
+                onClick={() => setDeleteDialogVisible(true)}
+                disabled={loading}
+                style={{ width: '100%', padding: '0.5rem 1rem', marginTop: '1rem' }}
+            />
         </div>
+
+        <Dialog
+            visible={deleteDialogVisible}
+            onHide={() => setDeleteDialogVisible(false)}
+            header="Usuń książkę"
+            style={{ width: '450px' }}
+        >
+            <div style={{ padding: '1rem' }}>
+                <p>Czy na pewno chcesz usunąć książkę <strong>{title}</strong>?</p>
+                <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Ta operacja jest nieodwracalna.</p>
+                
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem', justifyContent: 'flex-end' }}>
+                    <Button
+                        label="Anuluj"
+                        severity="secondary"
+                        outlined
+                        onClick={() => setDeleteDialogVisible(false)}
+                        disabled={loading}
+                    />
+                    <Button
+                        label="Usuń"
+                        icon="pi pi-trash"
+                        severity="danger"
+                        onClick={handleDeleteBook}
+                        loading={loading}
+                        disabled={loading}
+                    />
+                </div>
+            </div>
+        </Dialog>
+        </>
     )
 }
 
