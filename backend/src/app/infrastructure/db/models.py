@@ -10,8 +10,8 @@ class UserDB(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=True)
 
-    books = relationship("BookDB", back_populates="owner")
-    files = relationship("FileDB", back_populates="owner")
+    books = relationship("BookDB", foreign_keys="BookDB.owner_id", passive_deletes=True, cascade="all, delete-orphan")
+    files = relationship("FileDB", foreign_keys="FileDB.owner_id", passive_deletes=True, cascade="all, delete-orphan")
 
 class BookDB(Base):
     __tablename__ = "books"
@@ -28,7 +28,7 @@ class BookDB(Base):
     status = Column(String, nullable=False, default="uploaded")
     version = Column(Integer, nullable=False, default=1)
 
-    owner = relationship("UserDB", back_populates="books", passive_deletes=True)
+    owner = relationship("UserDB", passive_deletes=True)
     chapters = relationship("ChapterDB", back_populates="book", cascade="all, delete-orphan")
     annotation_sets = relationship(
         "AnnotationSetDB", 
@@ -124,7 +124,7 @@ class FileDB(Base):
     book_id = Column(String, ForeignKey("books.id", ondelete="SET NULL"), index=True, nullable=True)
     version = Column(Integer, nullable=False, default=1)
 
-    owner = relationship("UserDB", back_populates="files", uselist=False)
+    owner = relationship("UserDB", uselist=False, passive_deletes=True)
     book = relationship(
         "BookDB",
         back_populates="files",
