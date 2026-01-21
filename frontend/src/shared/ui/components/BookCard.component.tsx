@@ -183,15 +183,13 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
 
     const handleDeleteBook = async () => {
         setLoading(true)
+        setError(null)
         try {
             await deleteBookRest(bookId, ownerId)
+            if (onBookUpdated) {
+                await onBookUpdated()
+            }
             setDeleteDialogVisible(false)
-            // Small delay to ensure backend completes CASCADE delete
-            setTimeout(() => {
-                if (onBookUpdated) {
-                    onBookUpdated()
-                }
-            }, 100)
         } catch (err) {
             console.error('Delete book error:', err)
             setError('Nie udało się usunąć książki')
