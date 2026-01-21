@@ -221,18 +221,31 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             e.currentTarget.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.2)'
         }}
         >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <i className="pi pi-book" style={{ 
-                    fontSize: '2.5rem',
-                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                }}></i>
-                <div style={{ flex: 1 }}>
-                    <h3 style={{ margin: 0, color: '#1f2937', fontSize: '1.25rem' }}>{title}</h3>
-                    <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.875rem' }}>{genre}</p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <i className="pi pi-book" style={{ 
+                        fontSize: '2.5rem',
+                        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                    }}></i>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ margin: 0, color: '#1f2937', fontSize: '1.25rem' }}>{title}</h3>
+                        <p style={{ margin: '0.25rem 0 0 0', color: '#64748b', fontSize: '0.875rem' }}>{genre}</p>
+                    </div>
                 </div>
+                <Button
+                    icon="pi pi-trash"
+                    severity="danger"
+                    text
+                    rounded
+                    onClick={() => setDeleteDialogVisible(true)}
+                    disabled={loading}
+                    style={{ width: '2.5rem', height: '2.5rem' }}
+                    tooltip="Usuń książkę"
+                    tooltipOptions={{ position: 'left' }}
+                />
             </div>
 
             <Badge 
@@ -381,36 +394,54 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                     )}
                 </div>
             )}
-
-            <Button
-                label="Usuń książkę"
-                icon="pi pi-trash"
-                severity="danger"
-                outlined
-                size="small"
-                onClick={() => setDeleteDialogVisible(true)}
-                disabled={loading}
-                style={{ width: '100%', padding: '0.5rem 1rem', marginTop: '1rem' }}
-            />
         </div>
 
         <Dialog
             visible={deleteDialogVisible}
             onHide={() => setDeleteDialogVisible(false)}
             header="Usuń książkę"
-            style={{ width: '450px' }}
+            style={{ width: '450px', borderRadius: '20px', overflow: 'hidden' }}
+            contentStyle={{ padding: '2rem' }}
+            headerStyle={{ 
+                background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                color: 'white',
+                padding: '1.5rem',
+                borderRadius: '20px 20px 0 0'
+            }}
         >
-            <div style={{ padding: '1rem' }}>
-                <p>Czy na pewno chcesz usunąć książkę <strong>{title}</strong>?</p>
-                <p style={{ color: '#64748b', fontSize: '0.875rem' }}>Ta operacja jest nieodwracalna.</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '1rem',
+                    padding: '1rem',
+                    background: '#fef2f2',
+                    borderRadius: '8px',
+                    border: '2px solid #fecaca'
+                }}>
+                    <i className="pi pi-exclamation-triangle" style={{ fontSize: '2rem', color: '#ef4444' }}></i>
+                    <div>
+                        <p style={{ margin: 0, fontWeight: '600', color: '#1f2937' }}>
+                            Czy na pewno chcesz usunąć książkę?
+                        </p>
+                        <div style={{ marginTop: '0.5rem', color: '#64748b' }}>
+                            <div style={{ fontWeight: '600' }}>{title}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <p style={{ color: '#64748b', fontSize: '0.875rem', margin: 0 }}>
+                    Ta operacja jest nieodwracalna. Wszystkie dane powiązane z tą książką zostaną usunięte.
+                </p>
                 
-                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1.5rem', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
                     <Button
                         label="Anuluj"
                         severity="secondary"
                         outlined
                         onClick={() => setDeleteDialogVisible(false)}
                         disabled={loading}
+                        style={{ padding: '0.75rem 1.5rem' }}
                     />
                     <Button
                         label="Usuń"
@@ -419,6 +450,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                         onClick={handleDeleteBook}
                         loading={loading}
                         disabled={loading}
+                        style={{ padding: '0.75rem 1.5rem' }}
                     />
                 </div>
             </div>
