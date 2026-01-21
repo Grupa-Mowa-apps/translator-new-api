@@ -187,11 +187,12 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
             await deleteBookRest(bookId, ownerId)
             setDeleteDialogVisible(false)
             if (onBookUpdated) {
-                onBookUpdated()
+                await onBookUpdated()
             }
         } catch (err) {
             console.error('Delete book error:', err)
             setError('Nie udało się usunąć książki')
+            setDeleteDialogVisible(false)
         } finally {
             setLoading(false)
         }
