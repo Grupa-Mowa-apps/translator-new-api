@@ -19,6 +19,9 @@ jobs:
       - name: 🔄 Checkout repo
         uses: actions/checkout@v4
 
+      - name: Convert repo owner to lowercase
+        run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: 🏷️ Set branch tag from ref
         run: echo "BRANCH_TAG=$(echo ${GITHUB_REF##*/} | tr '/' '-')" >> $GITHUB_ENV
 
@@ -44,7 +47,7 @@ jobs:
 
             backend:
               container_name: translator-backend-${{ github.event.inputs.env_name }}
-              image: ghcr.io/${{ github.repository_owner }}/translator-backend:\${TAG}
+              image: ghcr.io/${{ env.REPO_OWNER }}/translator-backend:\${TAG}
               environment:
                 PYTHONPATH: /app/backend/src
                 POSTGRES_HOST: postgres
@@ -61,7 +64,7 @@ jobs:
 
             nginx:
               container_name: translator-nginx-${{ github.event.inputs.env_name }}
-              image: ghcr.io/${{ github.repository_owner }}/translator-nginx:\${TAG}
+              image: ghcr.io/${{ env.REPO_OWNER }}/translator-nginx:\${TAG}
               ports:
                 - "${PORT}:80"
               depends_on:
