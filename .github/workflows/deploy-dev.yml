@@ -10,9 +10,15 @@ on:
         options:
           - test_env_01
           - test_env_02
+  push:
+    branches:
+      - '**'
+    paths:
+      - '.github/workflows/deploy-dev.yml'
 
 jobs:
   deploy:
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
 
     steps:
