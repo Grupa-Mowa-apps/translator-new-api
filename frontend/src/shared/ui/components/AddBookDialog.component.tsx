@@ -97,7 +97,7 @@ const AddBookDialog: FC<AddBookDialogProps> = ({ visible, onHide, userId, onBook
 
             // Sukces
             if (onBookAdded) {
-                onBookAdded()
+                await onBookAdded()
             }
             handleClose()
         } catch (err: any) {
