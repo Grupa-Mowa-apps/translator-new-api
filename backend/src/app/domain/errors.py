@@ -47,3 +47,7 @@ class QuoteTypeErrors:
 class LLMErrors:
     LLM_REQUEST_FAILED = "LLM request failed"
     NO_CHOICES_IN_LLM_RESPONSE = "No choices in LLM response"
+    NO_MESSAGE_IN_FIRST_CHOICE = "No message in first choice"
+    NO_CONTENT_IN_MESSAGE = "No content in message"
+    NO_JSON_OUTPT = "LLM returned non-JSON output"
+    INVALID_JSON_STRUCTURE = "LLM return invalid JSON structure (expected list[str])"
