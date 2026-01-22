@@ -80,7 +80,7 @@ class ParserAdapter(ExcelQuotesFootnotesPort):
         out_path = out_dir / filename
 
         text_cols = df_final.select_dtypes(include=["object"]).columns
-        df_final[text_cols] = df_final[text_cols].applymap(self._clean_text_for_excel_cell)
+        df_final[text_cols] = df_final[text_cols].map(self._clean_text_for_excel_cell)
 
         df_final.to_excel(out_path, index=False)
 
