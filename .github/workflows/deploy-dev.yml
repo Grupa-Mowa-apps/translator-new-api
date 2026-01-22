@@ -31,7 +31,6 @@ jobs:
           if [ "${{ github.event.inputs.env_name }}" = "test_env_02" ]; then
             PORT=3002
           fi
-          TAG="${BRANCH_TAG}-latest"
           cat <<EOF > docker-compose.yml
           services:
             postgres:
@@ -47,7 +46,7 @@ jobs:
 
             backend:
               container_name: translator-backend-${{ github.event.inputs.env_name }}
-              image: ghcr.io/${{ env.REPO_OWNER }}/translator-backend:${TAG}
+              image: ghcr.io/${{ env.REPO_OWNER }}/translator-backend:${BRANCH_TAG}-latest
               environment:
                 PYTHONPATH: /app/backend/src
                 POSTGRES_HOST: postgres
@@ -64,7 +63,7 @@ jobs:
 
             nginx:
               container_name: translator-nginx-${{ github.event.inputs.env_name }}
-              image: ghcr.io/${{ env.REPO_OWNER }}/translator-nginx:${TAG}
+              image: ghcr.io/${{ env.REPO_OWNER }}/translator-nginx:${BRANCH_TAG}-latest
               ports:
                 - "${PORT}:80"
               depends_on:
