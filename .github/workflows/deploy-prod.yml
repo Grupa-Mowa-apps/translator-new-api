@@ -1,0 +1,105 @@
+name: 🧱 Deploy Production Container
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Convert repo owner to lowercase
+        run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Pobierz najnowszy tag z GitHub Releases
+        id: get_latest_tag
+        run: |
+          TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          if [ -z "$TAG" ]; then
+            echo "❌ Brak dostępnych release tagów. Przerywam."
+            exit 1
+          fi
+          VERSION=${TAG#v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TAG=$TAG" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Wygeneruj docker-compose.yml
+        run: |
+          cat <<EOF > docker-compose.yml
+          services:
+            postgres:
+              container_name: translator-postgres-prod
+              image: postgres:16
+              environment:
+                POSTGRES_USER: admin
+                POSTGRES_PASSWORD: root
+                POSTGRES_DB: translator_db
+              volumes:
+                - postgres-data-prod:/var/lib/postgresql/data
+              restart: unless-stopped
+
+            backend:
+              container_name: translator-backend-prod
+              image: ghcr.io/${{ env.REPO_OWNER }}/translator-backend:${VERSION}-prod
+              environment:
+                PYTHONPATH: /app/backend/src
+                POSTGRES_HOST: postgres
+                POSTGRES_PORT: 5432
+                POSTGRES_DB: translator_db
+                POSTGRES_USER: admin
+                POSTGRES_PASSWORD: root
+                FILE_STORAGE_DIR: /app/backend/storage
+              volumes:
+                - backend-storage-prod:/app/backend/storage
+              depends_on:
+                - postgres
+              restart: unless-stopped
+
+            nginx:
+              container_name: translator-nginx-prod
+              image: ghcr.io/${{ env.REPO_OWNER }}/translator-nginx:${VERSION}-prod
+              ports:
+                - "3000:80"
+              depends_on:
+                - backend
+              restart: unless-stopped
+
+          volumes:
+            postgres-data-prod:
+            backend-storage-prod:
+          EOF
+
+      - name: Upload docker-compose.yml to VPS
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: ./docker-compose.yml
+          target: /opt/translator_env/prod/
+
+      - name: Log in to GHCR on VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Deploy container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/translator_env/prod
+            docker compose down
+            docker compose pull
+            docker compose up -d
