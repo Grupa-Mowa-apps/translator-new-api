@@ -1,0 +1,104 @@
+name: 🚀 Deploy to TEST
+
+on:
+  workflow_dispatch:
+    inputs:
+      env_name:
+        description: 'Choose test env'
+        required: true
+        type: choice
+        options:
+          - test_env_01
+          - test_env_02
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔄 Checkout repo
+        uses: actions/checkout@v4
+
+      - name: 🏷️ Set branch tag from ref
+        run: echo "BRANCH_TAG=$(echo ${GITHUB_REF##*/} | tr '/' '-')" >> $GITHUB_ENV
+
+      - name: 🧩 Generate docker-compose.yml with dynamic port
+        run: |
+          PORT=3001
+          if [ "${{ github.event.inputs.env_name }}" = "test_env_02" ]; then
+            PORT=3002
+          fi
+          TAG="${BRANCH_TAG}-latest"
+          cat <<EOF > docker-compose.yml
+          services:
+            postgres:
+              container_name: translator-postgres-${{ github.event.inputs.env_name }}
+              image: postgres:16
+              environment:
+                POSTGRES_USER: admin
+                POSTGRES_PASSWORD: root
+                POSTGRES_DB: translator_db
+              volumes:
+                - postgres-data-${{ github.event.inputs.env_name }}:/var/lib/postgresql/data
+              restart: unless-stopped
+
+            backend:
+              container_name: translator-backend-${{ github.event.inputs.env_name }}
+              image: ghcr.io/${{ github.repository_owner }}/translator-backend:\${TAG}
+              environment:
+                PYTHONPATH: /app/backend/src
+                POSTGRES_HOST: postgres
+                POSTGRES_PORT: 5432
+                POSTGRES_DB: translator_db
+                POSTGRES_USER: admin
+                POSTGRES_PASSWORD: root
+                FILE_STORAGE_DIR: /app/backend/storage
+              volumes:
+                - backend-storage-${{ github.event.inputs.env_name }}:/app/backend/storage
+              depends_on:
+                - postgres
+              restart: unless-stopped
+
+            nginx:
+              container_name: translator-nginx-${{ github.event.inputs.env_name }}
+              image: ghcr.io/${{ github.repository_owner }}/translator-nginx:\${TAG}
+              ports:
+                - "${PORT}:80"
+              depends_on:
+                - backend
+              restart: unless-stopped
+
+          volumes:
+            postgres-data-${{ github.event.inputs.env_name }}:
+            backend-storage-${{ github.event.inputs.env_name }}:
+          EOF
+
+      - name: 📁 Upload docker-compose.yml
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          source: ./docker-compose.yml
+          target: /opt/translator_env/${{ github.event.inputs.env_name }}/
+
+      - name: 🔐 Log in to GHCR on VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: 🚀 Deploy container
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd /opt/translator_env/${{ github.event.inputs.env_name }}
+            docker compose down
+            docker compose pull
+            docker compose up -d

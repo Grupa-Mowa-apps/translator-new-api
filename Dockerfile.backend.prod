@@ -1,27 +1,18 @@
 FROM python:3.11-slim
 
-LABEL org.opencontainers.image.source="https://github.com/YOUR_USERNAME/translator-new-api"
-
 WORKDIR /app
 
-# Install postgresql-client for pg_isready
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements and install
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy backend code
 COPY backend ./backend
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-# Set environment
-ENV PYTHONPATH=/app/backend/src
 ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8000
-
-# Copy startup script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
