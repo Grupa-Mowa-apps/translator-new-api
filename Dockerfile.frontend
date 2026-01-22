@@ -1,0 +1,26 @@
+# Stage 1: Build
+FROM node:18 AS builder
+
+WORKDIR /app
+
+# Copy package files
+COPY frontend/package*.json ./
+RUN npm ci
+
+# Copy source code
+COPY frontend/ ./
+
+# Build app
+RUN npm run build
+
+# Stage 2: Serve (nginx will serve these files)
+FROM nginx:alpine
+
+# Copy built files to nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# We'll use custom nginx.conf from Dockerfile.nginx
+# This is just for standalone frontend if needed
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

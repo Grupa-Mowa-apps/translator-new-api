@@ -1,0 +1,63 @@
+services:
+  postgres:
+    container_name: translator-postgres
+    image: postgres:16
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: translator_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck: 
+      test: ["CMD-SHELL", "pg_isready -U admin -d translator_db -h localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - translator-network
+
+  backend:
+    container_name: translator-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.prod
+    environment:
+      PYTHONPATH: /app/backend/src
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: translator_db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: root
+      FILE_STORAGE_DIR: /app/backend/storage
+    volumes:
+      - backend-storage:/app/backend/storage
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - translator-network
+
+  nginx:
+    container_name: translator-nginx
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+      args:
+        VITE_API_URL: /api
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - translator-network
+
+volumes:
+  postgres-data:
+  backend-storage:
+
+networks:
+  translator-network:
+    driver: bridge

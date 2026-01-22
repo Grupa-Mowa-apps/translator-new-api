@@ -1,4 +1,4 @@
-import React, {ReactElement, useContext} from "react";
+import React, {ReactElement} from "react";
 import {labels} from "@/shared/messages/labels";
 import {BookSummaryDTO} from "@/shared/dto/bookSummaryDTO";
 import {useBooksContext} from "@/shared/context/useBooksContext";
