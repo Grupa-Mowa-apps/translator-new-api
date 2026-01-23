@@ -1,7 +1,9 @@
-import { FC } from 'react'
+import { FC, useRef } from 'react'
 import { Dialog } from 'primereact/dialog'
 import { Button } from 'primereact/button'
+import { Toast } from 'primereact/toast'
 import { UserResponseDTO } from '../../dto/userDTO'
+import styles from './DeleteUserDialog.module.css'
 
 interface DeleteUserDialogProps {
     visible: boolean
@@ -12,8 +14,15 @@ interface DeleteUserDialogProps {
 }
 
 const DeleteUserDialog: FC<DeleteUserDialogProps> = ({ visible, onHide, user, onConfirm, loading = false }) => {
+    const toast = useRef<Toast>(null)
     return (
-        <Dialog
+        <>
+            <Toast
+                ref={toast}
+                className={styles.toastTopRight}
+                appendTo={document.body}
+            />
+            <Dialog
             visible={visible}
             onHide={onHide}
             header="Usuń użytkownika"
@@ -75,6 +84,7 @@ const DeleteUserDialog: FC<DeleteUserDialogProps> = ({ visible, onHide, user, on
                 </div>
             </div>
         </Dialog>
+        </>
     )
 }
 

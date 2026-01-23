@@ -4,6 +4,7 @@ import { Badge } from 'primereact/badge'
 import { Dialog } from 'primereact/dialog'
 import { FileUpload, FileUploadHandlerEvent } from 'primereact/fileupload'
 import { mapBookRest, exportParserRest, getAnnotationsRest, downloadAnnotationRest, uploadTranslatedExcelRest, applyTranslationsRest, downloadBookWithTranslatedAnnotationsRest, getFailedApplicationsCountRest, downloadFailedApplicationsRest, deleteBookRest } from '../../infrastructure/api/bookApi'
+import styles from './UserSelector.module.css'
 
 interface BookCardProps {
     bookId: string
@@ -246,7 +247,7 @@ const BookCard: FC<BookCardProps> = ({ bookId, title, genre, status, quotationMa
                     disabled={loading}
                     style={{ width: '2.5rem', height: '2.5rem' }}
                     tooltip="Usuń książkę"
-                    tooltipOptions={{ position: 'left' }}
+                    tooltipOptions={{ position: 'left', className: styles.tooltipDelete }}
                 />
             </div>
 
