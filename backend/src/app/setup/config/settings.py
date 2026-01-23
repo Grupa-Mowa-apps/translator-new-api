@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 import logging
 from dotenv import load_dotenv
 
@@ -15,3 +16,5 @@ if not DATABASE_URL:
 LLM_MODEL = "chatgpt-4o-latest"
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+FILE_STORAGE_DIR = Path(os.getenv("FILE_STORAGE_DIR", "/app/backend/storage")).resolve()

@@ -3,6 +3,9 @@ class TranslationTaskErrors:
     PROGRESS_ONLY_IN_PROGRESS = "Progress can be updated only when IN_PROGRESS"
     MUST_BE_IN_PROGRESS_BEFORE_DONE = "Must be IN_PROGRESS before DONE"
     CANNOT_CANCEL_FINISHED = "Cannot cancel a finished task"
+    INVALID_LENGTH_OF_ORIGINAL_AND_DRAFT_TRANSLATIONS_PARAGRAPHS = "Original paragraphs and draft translations must have the same length"
+    INVALID_BATCH_SIZE = "Batch size must be > 0"
+    INVALID_TRANSALTION_CHOICE = "Either enable full translation or provide which chapters should be translated"
 
 class AnnotationSetErrors:
     MUST_BE_EXTRACTED_BEFORE_TRANSLATED = "Must be EXTRACTED before TRANSLATED"

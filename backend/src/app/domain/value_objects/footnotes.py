@@ -43,3 +43,6 @@ class FootnoteSet:
         header = f"Footnotes({len(self)}):"
         body = "\n".join(f" {str(f)}" for f in self.items)
         return header + ("\n" + body if body else "")
+    
+    def to_markdown(self) -> str:
+        return "\n".join(f"[^{f.id}]: {f.text}" for f in self.items)
