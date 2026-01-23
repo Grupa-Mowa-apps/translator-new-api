@@ -1,0 +1,23 @@
+.tooltipCustom :global(.p-tooltip-text) {
+    padding: 0.5rem 0.75rem !important;
+    background-color: #667eea !important;
+    color: white !important;
+    border-radius: 6px !important;
+    font-size: 0.875rem !important;
+}
+
+.tooltipCustom :global(.p-tooltip) {
+    padding: 0.5rem 0.75rem !important;
+}
+
+.tooltipDelete :global(.p-tooltip-text) {
+    padding: 0.5rem !important;
+    background-color: #778887 !important;
+    color: white !important;
+    border-radius: 6px !important;
+    font-size: 0.875rem !important;
+}
+
+.tooltipDelete :global(.p-tooltip) {
+    padding: 0.5rem !important;
+}

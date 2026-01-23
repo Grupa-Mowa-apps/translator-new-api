@@ -6,6 +6,7 @@ import { useUserContext } from '../../context/useUserContext'
 import AddUserDialog from './AddUserDialog.component'
 import DeleteUserDialog from './DeleteUserDialog.component'
 import { deleteUserRest } from '../../infrastructure/api/userApi'
+import styles from './UserSelector.module.css'
 
 const UserSelector: FC = () => {
     const { users, selectedUser, setSelectedUser, removeUser } = useUserContext();
@@ -85,14 +86,7 @@ const UserSelector: FC = () => {
                         tooltip="Edytuj użytkownika"
                         tooltipOptions={{ 
                             position: 'top',
-                            className: 'custom-tooltip',
-                            style: { 
-                                backgroundColor: '#667eea',
-                                color: 'white',
-                                padding: '0.5rem 0.75rem',
-                                borderRadius: '6px',
-                                fontSize: '0.875rem'
-                            }
+                            className: styles.tooltipCustom
                         }}
                     />
                     <Button
@@ -105,14 +99,7 @@ const UserSelector: FC = () => {
                         tooltip="Usuń użytkownika"
                         tooltipOptions={{ 
                             position: 'top',
-                            className: 'custom-tooltip',
-                            style: { 
-                                backgroundColor: '#778887',
-                                color: 'white',
-                                padding: '1rem 0.75rem',
-                                borderRadius: '6px',
-                                fontSize: '0.875rem'
-                            }
+                            className: styles.tooltipDelete
                         }}
                     />
                 </div>
