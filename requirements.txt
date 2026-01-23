@@ -12,3 +12,4 @@ mrkdwn_analysis
 pandas
 openpyxl
 debugpy
+openai

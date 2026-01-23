@@ -37,8 +37,8 @@ services:
     command: uvicorn app.run:app --host 0.0.0.0 --port 8000 --reload
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app/backend
+    # volumes:
+    #   - ./backend:/app/backend
     depends_on:
       - postgres
     env_file:
@@ -51,6 +51,7 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: root
       FILE_STORAGE_DIR: /app/backend/storage
+      WATCHFILES_FORCE_POLLING: "true"
 
 # frontend:
 
