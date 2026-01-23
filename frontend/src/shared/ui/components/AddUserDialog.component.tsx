@@ -6,6 +6,7 @@ import { Toast } from 'primereact/toast'
 import { createUserRest, updateUserRest } from '../../infrastructure/api/userApi'
 import { useUserContext } from '../../context/useUserContext'
 import { UserResponseDTO } from '../../dto/userDTO'
+import styles from './AddUserDialog.module.css'
 
 interface AddUserDialogProps {
     visible: boolean
@@ -124,7 +125,12 @@ const AddUserDialog: FC<AddUserDialogProps> = ({ visible, onHide, user, mode = '
 
     return (
         <>
-            <Toast ref={toast} />
+            <Toast
+                ref={toast}
+                className={styles.toastTopRight}
+                appendTo={document.body}
+            />
+
             <Dialog
                 visible={visible}
                 onHide={handleClose}
