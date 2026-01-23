@@ -1,9 +1,12 @@
 import os
 from pathlib import Path
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.application.commands.process_book import ProcessBookCommand
+from app.application.commands.run_translation import RunBookTranslationCommand
+from app.application.dto.translation_dto import TranslateBookRequest, TranslateBookResponse
 from app.application.queries.get_book_with_chapters import GetBookWithChaptersQuery
 from app.infrastructure.book.book_mapper_adapter import BookMapperAdapter
 from app.infrastructure.db.dependencies import get_db
@@ -18,7 +21,11 @@ from app.application.commands.delete_book import DeleteBookCommand
 from app.application.queries.get_book import GetBookQuery
 from app.application.queries.list_books import ListBooksForOwnerQuery
 from app.infrastructure.files.file_storage_adapter import FileStorageAdapter
+from app.infrastructure.llm.llm_completion_adapter import LLMCompletionAdapter
 from app.infrastructure.parsing.markdown_analyzer_adapter import MarkdownAnalyzerAdapter
+from app.infrastructure.translation.translation_adapter import TranslationAdapter
+
+from app.setup.config.settings import FILE_STORAGE_DIR
 
 router = APIRouter(prefix="/books", tags=["books"])
 
@@ -42,6 +49,12 @@ def book_mapper() -> BookMapperAdapter:
         file_path=str((base_dir / rel_path).resolve())
     )
     return BookMapperAdapter(md_analyzer_factory=md_analyzer_factory)
+
+def get_llm_port() -> LLMCompletionAdapter:
+    return LLMCompletionAdapter()
+
+def get_translation_port() -> TranslationAdapter:
+    return TranslationAdapter(llm=get_llm_port())
     
 
 @router.post("", response_model=BookResponse, status_code=status.HTTP_201_CREATED)
@@ -140,3 +153,34 @@ def delete_book(book_id: str, owner_id: str, db: Session = Depends(get_db)):
         cmd.execute(book_id=book_id, owner_id=owner_id)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+
+@router.post("/{book_id}/translation/run-download", response_model=TranslateBookResponse, status_code=status.HTTP_200_OK)
+def run_translation_and_download(
+    book_id: str,
+    dto: TranslateBookRequest,
+    db: Session = Depends(get_db),
+):
+    try:
+        cmd = RunBookTranslationCommand(
+            book_repo=book_repo(db),
+            translation_port=get_translation_port(),
+            file_repo=file_repo(db),
+            base_dir=FILE_STORAGE_DIR,
+        )
+
+        result = cmd.run(book_id=book_id, dto=dto)
+
+        md_path = Path(result.output_path)
+        if not md_path.exists():
+            raise HTTPException(status_code=500, detail=f"Translated file not found: {md_path}")
+
+        return FileResponse(
+            path=str(md_path),
+            filename=md_path.name,
+            media_type="text/markdown",
+        )
+
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Translation failed: {str(e)}")
