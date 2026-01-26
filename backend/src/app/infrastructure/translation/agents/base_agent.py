@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import json
+import re
 from typing import Any
 
 from app.domain.errors import LLMErrors
@@ -20,21 +21,10 @@ class BaseLLMAgent(ABC):
         """Main method to run an agent"""
         messages = self.build_messages(**kwargs)
         data = self.llm.create_completion(messages=messages, model=self.model)
-        return self._extract_translation_json(data=data)
-    
-    def _extract_translation_list(self, data: dict[str, Any]) -> list[str]:
-        """Converts raw content to a list of strings"""
         content = self._extract_content(data=data)
 
-        try:
-            translations = json.loads(content)
-        except json.JSONDecodeError as e:
-            raise RuntimeError(f"{LLMErrors.NO_JSON_OUTPT}: {content[:300]}") from e
-        
-        if not isinstance(translations, list) or not all(isinstance(x, str) for x in translations):
-            raise RuntimeError(f"{LLMErrors.INVALID_JSON_STRUCTURE}")
-        
-        return translations
+        parts = [p.strip() for p in re.split(r"\n\s*\n", content.strip())]
+        return parts
 
     def _extract_content(self, data: dict[str, Any]) -> str:
         """Extracts raw strings from JSON from OpenAI response"""

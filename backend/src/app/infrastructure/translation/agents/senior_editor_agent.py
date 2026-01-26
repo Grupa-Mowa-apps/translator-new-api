@@ -8,6 +8,9 @@ class SeniorEditorAgent(BaseLLMAgent):
         draft_translations: list[str] = kwargs["draft_translations"]
         genre: str = kwargs["genre"]
 
+        orig_joined = "\n\n".join(original_paragraphs)
+        draft_joined = "\n\n".join(draft_translations)
+
         return [
             {
                 "role": "developer",
@@ -33,10 +36,10 @@ class SeniorEditorAgent(BaseLLMAgent):
                 "role": "user",
                 "content": (
                     "Popraw poniższe tłumaczenia zgodnie z powyższymi zasadami.\n"
-                    "Nie zmieniaj struktury tekstu, formatowania przypisów ani nie dodawaj nowych treści."
+                    "Nie zmieniaj struktury tekstu, formatowania przypisów ani nie dodawaj nowych treści.\n\n"
+                    f"Dziedziny: {genre}"
+                    f"ORYGINAŁ:\n{orig_joined}\n\n"
+                    f"TŁUMACZENIE ROBOCZE:\n{draft_joined}"
                 ),
             },
-            {"role": "user", "content": f"Dziedziny: {genre}"},
-            {"role": "user", "content": f"Oryginały (lista): {original_paragraphs}"},
-            {"role": "user", "content": f"Tłumaczenia robocze (lista): {draft_translations}"},
         ]

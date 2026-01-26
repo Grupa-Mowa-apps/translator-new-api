@@ -6,6 +6,8 @@ class ActiveVoiceAgent(BaseLLMAgent):
     def build_messages(self, **kwargs) -> list[dict[str, Any]]:
         paragraphs: list[str] = kwargs["paragraphs"]
 
+        joined = "\n\n".join(paragraphs)
+
         return [
             {
                 "role": "system",
@@ -28,8 +30,8 @@ class ActiveVoiceAgent(BaseLLMAgent):
             {
                 "role": "user",
                 "content": (
-                    "Rewrite the following paragraphs by converting passive voice into active voice if applicable, according to the above rules."
+                    "Rewrite the following paragraphs by converting passive voice into active voice if applicable, according to the above rules.\n\n"
+                    f"TEXT:\n{joined}"
                 ),
             },
-            {"role": "user", "content": f"Paragraphs (list): {paragraphs}"},
         ]

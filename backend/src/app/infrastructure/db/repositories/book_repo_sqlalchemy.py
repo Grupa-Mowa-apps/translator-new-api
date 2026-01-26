@@ -7,6 +7,7 @@ from typing import Optional, Iterable
 
 from app.domain.value_objects.quotation_marks import QuoteType
 from app.domain.value_objects.book_status import BookStatus
+from app.domain.value_objects.chapter_content import ChapterContent
 
 def _row_to_domain_book(row: BookDB) -> Book:
     return Book(
@@ -21,6 +22,9 @@ def _row_to_domain_book(row: BookDB) -> Book:
         version=row.version,
     )
 
+def _db_to_content(text: Optional[str]) -> Optional[ChapterContent]:
+    return None if text is None else ChapterContent(text=text, footnotes=None)
+
 def _row_to_domain_chapter(chapter: ChapterDB) -> Chapter:
     return Chapter(
         id=chapter.id, 
@@ -28,7 +32,7 @@ def _row_to_domain_chapter(chapter: ChapterDB) -> Chapter:
         parent_id=chapter.parent_id,
         chapter_number=chapter.chapter_number, 
         title=chapter.title,
-        content=chapter.content,
+        content=_db_to_content(chapter.content),
     )
 
 class SqlAlchemyBookRepository(BookRepository):
@@ -66,9 +70,9 @@ class SqlAlchemyBookRepository(BookRepository):
             return False
         book_row.title = book.title
         book_row.genre = book.genre
-        book_row.quotation_marks = book.quotation_marks
+        book_row.quotation_marks = book.quotation_marks.value
         book_row.file_id = book.file_id
-        book_row.status = book.status
+        book_row.status = book.status.value
         book_row.version = book.version
         return True
 

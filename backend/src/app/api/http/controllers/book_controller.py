@@ -154,7 +154,7 @@ def delete_book(book_id: str, owner_id: str, db: Session = Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
-@router.post("/{book_id}/translation/run-download", response_model=TranslateBookResponse, status_code=status.HTTP_200_OK)
+@router.post("/{book_id}/translation/run-download", response_class=FileResponse, status_code=status.HTTP_200_OK)
 def run_translation_and_download(
     book_id: str,
     dto: TranslateBookRequest,
@@ -168,7 +168,7 @@ def run_translation_and_download(
             base_dir=FILE_STORAGE_DIR,
         )
 
-        result = cmd.run(book_id=book_id, dto=dto)
+        result = cmd.run(dto=dto)
 
         md_path = Path(result.output_path)
         if not md_path.exists():

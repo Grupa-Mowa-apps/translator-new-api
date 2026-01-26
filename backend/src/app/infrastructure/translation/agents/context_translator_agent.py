@@ -7,6 +7,8 @@ class ContextTranslatorAgent(BaseLLMAgent):
         paragraphs: list[str] = kwargs["paragraphs"]
         genre: str = kwargs["genre"]
 
+        joined = "\n\n".join(paragraphs)
+
         return [
             {
                 "role": "developer",
@@ -29,9 +31,9 @@ class ContextTranslatorAgent(BaseLLMAgent):
                 "role": "user",
                 "content": (
                     "Przetłumacz poniższe akapity zgodnie z zasadami.\n"
-                    "Nie zmieniaj żadnej innej struktury lub formatowania (w szczególności tytułów, przypisów (oznaczonych jako [^numer]), cytatów)."
+                    "Nie zmieniaj żadnej innej struktury lub formatowania (w szczególności tytułów, przypisów (oznaczonych jako [^numer]), cytatów).\n\n"
+                    f"Dziedziny: {genre}\n\n"
+                    f"TEKST:\n{joined}"
                 ),
             },
-            {"role": "user", "content": f"Dziedziny: {genre}"},
-            {"role": "user", "content": f"Akapity (lista): {paragraphs}"},
         ]

@@ -48,6 +48,9 @@ class RunBookTranslationCommand:
         output_name = dto.output_filename or f"{Path(file.path).stem}_translated.md"
         output_path = out_dir / output_name
 
+        if output_path.suffix.lower() != ".md":
+            output_path = output_path.with_suffix(".md")
+
         translated_chapters = 0
 
         for chapter in book.chapters:
@@ -63,7 +66,7 @@ class RunBookTranslationCommand:
                 self._append_to_file(path=output_path, text=chapter_text, footnotes_md=footnotes_md)
                 continue
 
-            paragraphs = chapter_text.split("\n")
+            paragraphs = chapter_text.split("\n\n")
             translated_paragraphs = []
 
             for i in range(0, len(paragraphs), dto.batch_size):
@@ -79,7 +82,7 @@ class RunBookTranslationCommand:
 
                 translated_paragraphs.extend(final)
 
-            final_text = "\n".join(translated_paragraphs)
+            final_text = "\n\n".join(translated_paragraphs)
             self._append_to_file(path=output_path, text=final_text, footnotes_md=footnotes_md)
             translated_chapters += 1
 
