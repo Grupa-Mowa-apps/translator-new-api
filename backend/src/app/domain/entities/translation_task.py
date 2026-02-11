@@ -12,6 +12,8 @@ class TranslationTask:
     total_chapters: Optional[int] = None
     message: Optional[str] = None
 
+    output_path: Optional[str] = None
+
     status: TranslationStatus = TranslationStatus.QUEUED
     progress: int = INITIAL_PROGRESS
     translated_chapters: int = INITIAL_TRANSLATED_CHAPTERS

@@ -1,0 +1,9 @@
+from typing import Optional, Protocol
+
+from app.domain.entities.translation_task import TranslationTask
+
+
+class TranslationTaskRepository(Protocol):
+    def add(self, task: TranslationTask) -> None: ...
+    def get(self, task_id: str) -> Optional[TranslationTask]: ...
+    def update(self, task: TranslationTask) -> bool: ...
