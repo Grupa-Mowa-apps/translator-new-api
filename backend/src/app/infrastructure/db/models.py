@@ -101,6 +101,8 @@ class TranslationTaskDB(Base):
     total_chapters = Column(Integer, nullable=True)
     message = Column(Text, nullable=True)
 
+    output_path = Column(Text, nullable=True)
+
     status = Column(String, nullable=False, default="queued")
     progress = Column(Integer, nullable=False, default=0)
     translated_chapters = Column(Integer, nullable=False, default=0)
