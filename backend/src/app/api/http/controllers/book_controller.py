@@ -199,7 +199,6 @@ async def run_translation_and_download_sync(
         tb = traceback.format_exc()
         raise HTTPException(status_code=500, detail=f"Translation failed: {e}\n\n{tb}")
 
-    
 @router.post("/{book_id}/translation/start", status_code=200)
 async def start_translation_async(
     book_id: str,
@@ -227,7 +226,6 @@ async def start_translation_async(
             db2.commit()
         except Exception:
             db2.rollback()
-            raise
         finally:
             db2.close()
 

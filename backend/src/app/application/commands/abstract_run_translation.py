@@ -88,11 +88,24 @@ class BaseRunBookTranslationCommand(ABC):
                 chapter_content = chapter.content
                 chapter_text = chapter_content.text if chapter_content else ""
 
+                if getattr(chapter, "title", None):
+                    chapter_text = f"## {chapter.title}\n\n{chapter_text}"
+
                 footnotes_obj = chapter_content.footnotes if chapter_content else None
                 footnotes_md = footnotes_obj.to_markdown() if footnotes_obj else ""
 
+                if not chapter_text.strip() and not footnotes_md.strip():
+                    continue
+
+                chapter_header = ""
+
                 if not should_translate:
-                    await asyncio.to_thread(self._append_to_file, output_path, chapter_text, footnotes_md)
+                    await asyncio.to_thread(
+                        self._append_to_file,
+                        output_path,
+                        chapter_header + chapter_text,
+                        footnotes_md,
+                    )
                     continue
 
                 paragraphs = chapter_text.split("\n\n")
